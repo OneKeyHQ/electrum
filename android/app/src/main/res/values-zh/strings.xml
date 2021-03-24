@@ -1315,7 +1315,7 @@
     <string name="title_coin_name">%s钱包</string>
     <string name="account">账户</string>
     <string name="wait_fee_loading_recommend">请等待手续费估算完成后在选择</string>
-    <string name="title_warning">Warning</string>
+    <string name="title_warning">警告</string>
     <string name="hint_gas_limit_too_little">Gas Limit 太少将会导致交易失败，是否继续？</string>
     <string name="service">客服</string>
     <string name="hint_https_error">HTTPS 证书有问题，是否继续？</string>

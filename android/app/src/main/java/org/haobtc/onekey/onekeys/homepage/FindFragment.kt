@@ -1,11 +1,16 @@
 package org.haobtc.onekey.onekeys.homepage
 
 import android.content.Context
+import android.net.http.SslError
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.SslErrorHandler
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.lifecycle.ViewModelProvider
+import com.github.lzyzsd.jsbridge.BridgeWebViewClient
 import com.github.lzyzsd.jsbridge.CallBackFunction
 import com.google.gson.Gson
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -17,15 +22,19 @@ import org.haobtc.onekey.bean.DAppBrowserBean
 import org.haobtc.onekey.bean.JsBridgeRequestBean
 import org.haobtc.onekey.bean.JsBridgeResponseBean
 import org.haobtc.onekey.business.wallet.DappManager
+import org.haobtc.onekey.constant.Vm
 import org.haobtc.onekey.constant.Vm.CoinType
 import org.haobtc.onekey.databinding.FragmentTabFindBinding
 import org.haobtc.onekey.onekeys.dappbrowser.ui.BaseAlertBottomDialog
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappBrowserActivity.Companion.start
+import org.haobtc.onekey.onekeys.dappbrowser.ui.DappResultAlertDialog
 import org.haobtc.onekey.ui.base.BaseFragment
 import org.haobtc.onekey.ui.dialog.SelectAccountBottomSheetDialog
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
+
 
 class FindFragment : BaseFragment(), OnBackPressedCallback {
 
@@ -52,11 +61,51 @@ class FindFragment : BaseFragment(), OnBackPressedCallback {
 
   override fun init(view: View) {}
 
+  private fun loadPage(random: String = "1") {
+    if (Vm.getEthNetwork() == Vm.PyenvETHNetworkType.MainNet) {
+      mBinding.webviewBridge.loadUrl("https://dapp.onekey.so?nocache=$random")
+    } else {
+      mBinding.webviewBridge.loadUrl("https://dapp.test.onekey.so?nocache=$random")
+    }
+  }
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     mAppWalletViewModel = ViewModelProvider(MyApplication.getInstance()).get(AppWalletViewModel::class.java)
-    mBinding.webviewBridge.loadUrl("https://dapp.onekey.so/")
+
+    mBinding.layoutSwipeRefresh.setOnRefreshListener {
+      loadPage(Random.nextInt().toString())
+    }
+
+    loadPage()
+
     mBinding.webviewBridge.settings.domStorageEnabled = true
+    mBinding.webviewBridge.webViewClient = object : BridgeWebViewClient(mBinding.webviewBridge) {
+      override fun onPageFinished(view: WebView?, url: String?) {
+        super.onPageFinished(view, url)
+        mBinding.layoutSwipeRefresh.isRefreshing = false
+      }
+
+      override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+        val aDialog = DappResultAlertDialog(requireContext())
+        aDialog.setTitle(R.string.title_warning)
+        aDialog.setIcon(DappResultAlertDialog.ERROR)
+        aDialog.setMessage(R.string.hint_https_error)
+        aDialog.setButtonText(R.string.action_continue)
+        aDialog.setButtonListener {
+          handler?.proceed()
+          aDialog.dismiss()
+        }
+        aDialog.setSecondaryButtonText(R.string.cancel)
+        aDialog.setSecondaryButtonListener {
+          mBinding.layoutSwipeRefresh.isRefreshing = false
+          handler?.cancel()
+          aDialog.dismiss()
+        }
+        aDialog.show()
+      }
+    }
+
     mBinding.webviewBridge.registerHandler(
         "callNativeMethod"
     ) { data: String?, function: CallBackFunction ->
@@ -73,7 +122,7 @@ class FindFragment : BaseFragment(), OnBackPressedCallback {
             }
           })
         }
-        "openURL"->{
+        "openURL" -> {
           start(requireContext(), params)
           function.onCallBack(mGson.toJson(JsBridgeResponseBean(id, "success")))
         }
