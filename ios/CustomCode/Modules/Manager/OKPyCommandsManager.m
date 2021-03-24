@@ -46,8 +46,6 @@ static dispatch_once_t once;
         }
         _sharedInstance.pyInstance = pIns;
 
-
-
         PyObject *pHwModule = PyImport_ImportModule([@"trezorlib.customer_ui" UTF8String]);//导入模块
         if (pHwModule == NULL) {
                PyErr_Print();
@@ -779,7 +777,8 @@ static dispatch_once_t once;
             kInterfaceget_tx_info_from_raw,
             kInterfaceget_default_fee_info,
             kInterface_add_token,
-            kInterface_get_customer_token_info
+            kInterface_get_customer_token_info,
+            kInterfaceList_wallets
         ]];
     }
     return _noTipsInterface;;

@@ -114,12 +114,8 @@
     [self showFirstUse];
     [self addNotifications];
     [OKPyCommandsManager sharedInstance];
-    id result =  [kPyCommandsManager callInterface:kInterfaceLoad_all_wallet parameter:@{}];
-    if (result == nil) {
-        [kTools debugTipMessage:@"load接口失败"];
-    }else{
-        [self checkWalletResetUI];
-    }
+    [kPyCommandsManager callInterface:kInterfaceLoad_all_wallet parameter:@{}];
+    [self checkWalletResetUI];
     [kUserSettingManager setDefaultSetings];
 }
 
@@ -173,7 +169,7 @@
                 }
             }
             dictM[@"tokens"] = walletM;
-            [self updateDataList:dictM isPush:YES];
+            [self updateDataList:dictM isPush:NO];
         }
     });
 }
@@ -190,18 +186,28 @@
         self.notiAssetModel = [OKNotiAssetModel mj_objectWithKeyValues:dict];
         tokens = self.notiAssetModel.tokens;
         coinModel.balance = self.notiAssetModel.balance;
-        coinModel.coinType = self.notiAssetModel.coin;
+        coinModel.coinType = [kWalletManager getShowUICoinType:self.notiAssetModel.coin];
         coinModel.money = self.notiAssetModel.fiat;
         coinModel.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
         [arrayM addObject:coinModel];
     }else{
-        OKSwitchWalletModel *switchWalletModel = [OKSwitchWalletModel mj_objectWithKeyValues:dict];
-        tokens = switchWalletModel.wallets;
-        coinModel.balance = @"0";
-        coinModel.coinType = kWalletManager.currentWalletInfo.coinType;
-        coinModel.money = @"0";
-        coinModel.iconImage = [NSString stringWithFormat:@"token_%@",[coinModel.coinType lowercaseString]];
-        [arrayM addObject:coinModel];
+        if (self.isRefreshing) {
+            self.notiAssetModel = [OKNotiAssetModel mj_objectWithKeyValues:dict];
+            tokens = self.notiAssetModel.tokens;
+            coinModel.balance = self.notiAssetModel.balance;
+            coinModel.coinType = [kWalletManager getShowUICoinType:self.notiAssetModel.coin];
+            coinModel.money = self.notiAssetModel.fiat;
+            coinModel.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
+            [arrayM addObject:coinModel];
+        }else{
+            OKSwitchWalletModel *switchWalletModel = [OKSwitchWalletModel mj_objectWithKeyValues:dict];
+            tokens = switchWalletModel.wallets;
+            coinModel.balance = @"0";
+            coinModel.coinType = [kWalletManager getShowUICoinType:@""];
+            coinModel.money = @"0";
+            coinModel.iconImage = [NSString stringWithFormat:@"token_%@",[kWalletManager.currentWalletInfo.coinType lowercaseString]];
+            [arrayM addObject:coinModel];
+        }
     }
     if (tokens.count != 0) {
         for (OKTokenAssetModel *model in tokens) {
@@ -230,7 +236,7 @@
         NSArray *barray = [fiatStr componentsSeparatedByString:@" "];
         NSString *bStr = [NSString stringWithFormat:@"%@ %@",kWalletManager.currentFiatSymbol,[barray firstObject]];
         if (fiatStr.length == 0) {
-            bStr = @"0";
+            bStr = @"--";
         }
         if (kWalletManager.showAsset) {
             bStr = @"****";
@@ -258,7 +264,7 @@
 
 - (void)onRefresh
 {
-    [self performSelector:@selector(loadData) withObject:nil afterDelay:1.5];
+    [self performSelector:@selector(loadData) withObject:nil afterDelay:1.0];
 }
 - (void)loadData
 {
@@ -269,6 +275,11 @@
 - (void)checkWalletResetUI
 {
     self.listWallets = [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
+    if (self.listWallets == nil) {
+        usleep(10000);
+        self.listWallets = [kPyCommandsManager callInterface:kInterfaceList_wallets parameter:@{}];
+    }
+
     if (self.listWallets.count > 0) {
         [self switchWallet];
     }else{

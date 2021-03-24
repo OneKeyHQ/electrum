@@ -101,9 +101,18 @@
 }
 
 - (BOOL)isIPAddress {
-    NSString *regex = @"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$";
+    NSString *regex = @"^(\\d{1,3}\\.){3}\\d{1,3}$";
     NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
     BOOL isMatch = [pred evaluateWithObject:self];
+    if (!isMatch) {
+        return isMatch;
+    }
+    NSArray *all = [self componentsSeparatedByString:@"."];
+    for (NSString *numStr in all) {
+        if ([numStr integerValue] > 255) {
+            return NO;
+        }
+    }
     return isMatch;
 }
 - (BOOL)containsChinese { // 包含中文

@@ -388,6 +388,24 @@ static dispatch_once_t once;
     }
 }
 
+- (NSDictionary *)unitIsDifferentDict
+{
+    if (!_unitIsDifferentDict) {
+        _unitIsDifferentDict = @{@"heco":@"HT",@"bsc":@"BNB"};
+    }
+    return _unitIsDifferentDict;
+}
+
+- (NSString *)getShowUICoinType:(NSString *)coinType
+{
+    NSString *coin = coinType;
+    if (coinType.length == 0 || coinType == nil) {
+        coin = self.currentWalletInfo.coinType;
+    }
+    NSString *showCoin = [self.unitIsDifferentDict safeStringForKey:coin];
+    return showCoin.length>0?[showCoin uppercaseString]:[coinType uppercaseString];
+}
+
 /// key
 /// @param key    币种类型     如果是token   key = token_coinType   eg: token_eth
 - (NSInteger)getPrecision:(NSString *)key

@@ -118,6 +118,7 @@ typedef enum{
 @property (nonatomic,strong) NSArray *supportFiatArray;
 @property (nonatomic,strong) NSArray *supportFiatsSymbol;
 @property (nonatomic,strong) NSDictionary *precisionDict;
+@property (nonatomic,strong) NSDictionary *unitIsDifferentDict;
 @property (nonatomic,assign)BOOL showAsset;
 @property (nonatomic,assign)BOOL isOpenAuthBiological;
 - (BOOL)showAsset;
@@ -125,6 +126,7 @@ typedef enum{
 - (void)setCurrentFiat:(NSString *)currentFiat;
 - (NSString *)getWalletTypeShowStr:(NSString *)type;
 - (OKWalletType)getWalletDetailType;
+- (NSString *)getShowUICoinType:(NSString *)coinType;
 + (OKWalletManager *)sharedInstance;
 
 - (void)clearCurrentWalletInfo;

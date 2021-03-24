@@ -405,7 +405,7 @@
         OKWalletListCollectionViewCellModel *model5 = [OKWalletListCollectionViewCellModel new];
         model5.coinType = @"BSC";
         model5.iconName = @"cointype_bsc";
-        model5.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model3.coinType];
+        model5.isSelected = [kWalletManager.currentSelectCoinType isEqualToString:model5.coinType];
         model5.headerWaletType = MyLocalizedString(@"BSC wallet", nil);
 
 
