@@ -169,10 +169,10 @@ public class Web3ViewClient extends WebViewClient {
     @Override
     public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
         DappResultAlertDialog aDialog = new DappResultAlertDialog(context);
-        aDialog.setTitle("警告");
+        aDialog.setTitle(R.string.warning);
         aDialog.setIcon(DappResultAlertDialog.ERROR);
-        aDialog.setMessage("HTTPS 证书有问题");
-        aDialog.setButtonText(R.string.confirm);
+        aDialog.setMessage(R.string.hint_https_error);
+        aDialog.setButtonText(R.string.action_continue);
         aDialog.setButtonListener(
                 v -> {
                     handler.proceed();
