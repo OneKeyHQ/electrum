@@ -108,7 +108,6 @@ public class DappActionSheetDialog extends BottomSheetDialog
         nextButton = findViewById(R.id.btn_confirm_pay);
         cancelButton = findViewById(R.id.img_cancel);
         mode = ActionSheetMode.SEND_TRANSACTION;
-        nextButton.setEnabled(true);
 
         signCallback = null;
 
@@ -209,7 +208,12 @@ public class DappActionSheetDialog extends BottomSheetDialog
         setupNextListener();
     }
 
+    public void enableNextButton() {
+        nextButton.setEnabled(true);
+    }
+
     public void setFeeDetails(@Nullable CurrentFeeDetails currentFeeDetails, boolean recommend) {
+        enableNextButton();
         mCurrentFeeDetails = currentFeeDetails;
         if (recommend) {
             mFeeType = FeeType.NORMAL;
