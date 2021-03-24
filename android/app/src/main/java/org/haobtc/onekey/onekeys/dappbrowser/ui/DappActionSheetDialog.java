@@ -127,6 +127,7 @@ public class DappActionSheetDialog extends BottomSheetDialog
                             DappFeeCustomSheetDialog.newInstance(
                                     mCurrentCoinTypeProvider.currentCoinType(),
                                     tx.recipient.toString(),
+                                    tx.value.toString(),
                                     tx.payload);
                     dappFeeCustomSheetDialog.setOnFeeSelectCallback(
                             new DappFeeCustomSheetDialog.OnFeeSelectCallback() {

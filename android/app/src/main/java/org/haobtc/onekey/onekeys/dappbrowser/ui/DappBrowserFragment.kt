@@ -661,7 +661,7 @@ class DappBrowserFragment : BaseFragment(),
           confirmationDialog?.enableNextButton()
         }
         Single
-            .fromCallable { PyEnv.getDefFeeInfo(currentWallet.coinType, transaction.recipient.toString(), "", transaction.payload).result }
+            .fromCallable { PyEnv.getDefFeeInfo(currentWallet.coinType, transaction.recipient.toString(), transaction.value, transaction.payload).result }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ currentFeeDetails ->

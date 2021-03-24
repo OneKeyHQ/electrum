@@ -13,10 +13,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.orhanobut.logger.Logger
 import com.scwang.smartrefresh.layout.util.SmartUtil
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
@@ -44,6 +42,7 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
   companion object {
     private const val EXT_COIN_TYPE = "coin_type"
     private const val EXT_TX_DATA = "tx_data"
+    private const val EXT_TX_AMOUNT = "tx_amount"
     private const val EXT_TX_TO_ADDRESS = "tx_to_address"
 
     @JvmStatic
@@ -51,12 +50,14 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
     fun newInstance(
         coinType: Vm.CoinType,
         toAddress: String,
+        value: String,
         data: String? = null,
     ): DappFeeCustomSheetDialog {
       return DappFeeCustomSheetDialog().apply {
         Bundle().apply {
           putString(EXT_COIN_TYPE, coinType.coinName)
           putString(EXT_TX_DATA, data)
+          putString(EXT_TX_AMOUNT, value)
           putString(EXT_TX_TO_ADDRESS, toAddress)
           arguments = this
         }
@@ -70,6 +71,7 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
   private lateinit var mCoinType: Vm.CoinType
   private lateinit var mToAddress: String
   private var mData: String? = null
+  private var mValue: BigInteger = BigInteger.ZERO
   private val mSystemConfigManager by lazy {
     SystemConfigManager(MyApplication.getInstance())
   }
@@ -106,6 +108,7 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
     mCoinType = Vm.CoinType.convertByCoinName(arguments?.getString(EXT_COIN_TYPE))
     mToAddress = arguments?.getString(EXT_TX_TO_ADDRESS) ?: ""
     mData = arguments?.getString(EXT_TX_DATA)
+    mValue = BigInteger(arguments?.getString(EXT_TX_AMOUNT) ?: "0")
   }
 
   private fun initViewModelListener() {
@@ -420,7 +423,7 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
   private fun loadFeeDetails() {
     Single
         .fromCallable {
-          PyEnv.getDefFeeInfo(mCoinType, mToAddress, "", mData).result
+          PyEnv.getDefFeeInfo(mCoinType, mToAddress, mValue, mData).result
         }
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())

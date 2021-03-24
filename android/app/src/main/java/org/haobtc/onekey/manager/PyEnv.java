@@ -28,6 +28,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.orhanobut.logger.Logger;
 import dr.android.utils.LogUtil;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -76,6 +78,7 @@ import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.utils.Daemon;
 import org.haobtc.onekey.utils.Global;
 import org.jetbrains.annotations.NotNull;
+import org.web3j.utils.Convert;
 
 /** @author liyan */
 public final class PyEnv {
@@ -1897,15 +1900,19 @@ public final class PyEnv {
     }
 
     public static PyResponse<CurrentFeeDetails> getDefFeeInfo(
-            @NonNull Vm.CoinType coinType, String receiver, String amount, String data) {
+            @NonNull Vm.CoinType coinType, String receiver, BigInteger amount, String data) {
         PyResponse<CurrentFeeDetails> response = new PyResponse<>();
         try {
             String info;
             if (!Strings.isNullOrEmpty(receiver)) {
                 Map<String, String> map = new HashMap<>();
                 map.put("to_address", receiver);
-                if (!Strings.isNullOrEmpty(amount)) {
-                    map.put("value", amount);
+                if (amount != null && amount.compareTo(BigInteger.ZERO) != 0) {
+                    map.put(
+                            "value",
+                            Convert.fromWei(new BigDecimal(amount), Convert.Unit.ETHER)
+                                    .stripTrailingZeros()
+                                    .toPlainString());
                 }
                 if (!Strings.isNullOrEmpty(data)) {
                     map.put("data", data);
