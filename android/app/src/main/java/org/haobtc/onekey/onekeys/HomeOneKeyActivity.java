@@ -10,14 +10,17 @@ import org.haobtc.onekey.bean.TabEntity;
 import org.haobtc.onekey.business.update.AutoCheckUpdate;
 import org.haobtc.onekey.manager.HardwareCallbackHandler;
 import org.haobtc.onekey.manager.PyEnv;
+import org.haobtc.onekey.onekeys.homepage.OnBackPressedCallback;
+import org.haobtc.onekey.onekeys.homepage.SetOnBackCallback;
 import org.haobtc.onekey.ui.base.BaseActivity;
 import org.haobtc.onekey.ui.widget.NoScrollViewPager;
 import org.haobtc.onekey.ui.widget.tablayout.CommonTabLayout;
 import org.haobtc.onekey.ui.widget.tablayout.CustomTabEntity;
 import org.haobtc.onekey.ui.widget.tablayout.OnTabSelectListener;
+import org.jetbrains.annotations.NotNull;
 
 /** @author liyan */
-public class HomeOneKeyActivity extends BaseActivity {
+public class HomeOneKeyActivity extends BaseActivity implements SetOnBackCallback {
 
     public static final String EXT_RESTART = "ext_restart";
 
@@ -39,6 +42,8 @@ public class HomeOneKeyActivity extends BaseActivity {
     private FragmentMainAdapter fragmentMainAdapter;
     private ArrayList<CustomTabEntity> mTabEntities;
     private AutoCheckUpdate mAutoCheckUpdate;
+
+    private OnBackPressedCallback mOnBackPressedCallback;
 
     /**
      * * init layout
@@ -94,6 +99,11 @@ public class HomeOneKeyActivity extends BaseActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (scrollViewPager != null && scrollViewPager.getCurrentItem() == 1) {
+            if (mOnBackPressedCallback != null && mOnBackPressedCallback.onBackPressed()) {
+                return true;
+            }
+        }
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN) {
             long secondTime = System.currentTimeMillis();
             if (secondTime - firstTime > 2000) {
@@ -119,5 +129,10 @@ public class HomeOneKeyActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         mAutoCheckUpdate.onDestroy();
+    }
+
+    @Override
+    public void setOnBackPressed(@NotNull OnBackPressedCallback onBackPressed) {
+        mOnBackPressedCallback = onBackPressed;
     }
 }

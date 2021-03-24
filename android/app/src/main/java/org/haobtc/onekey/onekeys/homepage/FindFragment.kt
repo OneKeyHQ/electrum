@@ -1,5 +1,6 @@
 package org.haobtc.onekey.onekeys.homepage
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,8 +24,10 @@ import org.haobtc.onekey.onekeys.dappbrowser.ui.DappBrowserActivity.Companion.st
 import org.haobtc.onekey.ui.base.BaseFragment
 import org.haobtc.onekey.ui.dialog.SelectAccountBottomSheetDialog
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
-class FindFragment : BaseFragment() {
+class FindFragment : BaseFragment(), OnBackPressedCallback {
 
   private lateinit var mBinding: FragmentTabFindBinding
   private val mDappManager = DappManager()
@@ -38,6 +41,13 @@ class FindFragment : BaseFragment() {
   override fun getLayoutView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
     mBinding = FragmentTabFindBinding.inflate(inflater, container, false)
     return mBinding.root
+  }
+
+  override fun onAttach(context: Context) {
+    super.onAttach(context)
+    if (context is SetOnBackCallback) {
+      context.setOnBackPressed(this)
+    }
   }
 
   override fun init(view: View) {}
@@ -179,9 +189,31 @@ class FindFragment : BaseFragment() {
         }
         .isDisposed
   }
+
+  override fun onBackPressed(): Boolean {
+    val countDownLatch = CountDownLatch(1)
+    var result = false;
+    val toJson = mGson.toJson(JsBridgeRequestBean("handleBackPressed", "handleBack", ""))
+    mBinding.webviewBridge.callHandler("callJavaScriptMethod", toJson) {
+      val fromJson = mGson.fromJson(it, JsBridgeResponseBean::class.java)
+      result = fromJson.result.equals("true", true)
+      countDownLatch.countDown()
+    }
+    // 只等待 300ms 如果网页不反应，按不拦截处理。
+    countDownLatch.await(300, TimeUnit.MILLISECONDS)
+    return result
+  }
 }
 
 abstract class ResultCallback(val requestId: String) {
   abstract fun onSuccess()
   abstract fun onError()
+}
+
+interface SetOnBackCallback {
+  fun setOnBackPressed(onBackPressed: OnBackPressedCallback)
+}
+
+interface OnBackPressedCallback {
+  fun onBackPressed(): Boolean
 }
