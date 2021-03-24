@@ -100,6 +100,12 @@
     return isMatch;
 }
 
+- (BOOL)isIPAddress {
+    NSString *regex = @"^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$";
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+    BOOL isMatch = [pred evaluateWithObject:self];
+    return isMatch;
+}
 - (BOOL)containsChinese { // 包含中文
     BOOL contains = NO;
     for(NSInteger i = 0; i < [self length]; i++) {

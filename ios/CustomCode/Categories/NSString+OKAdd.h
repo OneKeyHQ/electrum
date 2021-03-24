@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)addressFormatted;
 - (NSString *)numStrPrecition:(NSUInteger)scale;
 - (NSString *)keccak256;
-
+- (BOOL)isIPAddress;
 @end
 
 NS_ASSUME_NONNULL_END

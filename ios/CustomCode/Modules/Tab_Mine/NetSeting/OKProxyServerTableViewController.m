@@ -40,7 +40,7 @@
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
- 
+
     self.title = MyLocalizedString(@"Proxy server", nil);
     self.serverLLabel.text = MyLocalizedString(@"Using a proxy server", nil);
     self.nodeTypeLabel.text = MyLocalizedString(@"The node type", nil);
@@ -49,7 +49,7 @@
     self.pwdLLabel.text = MyLocalizedString(@"password", nil);
     self.NodeTypeRLabel.text = @"";
     [self.confirmBtn setLayerRadius:20];
-    
+
     OKProxyServerModel *model = [OKProxyServerModel mj_objectWithKeyValues:[kUserSettingManager.currentProxyDict mj_JSONObject]];
     self.currentModel = model;
     self.serverSwitch.on = self.currentModel.proxyOn;
@@ -67,7 +67,7 @@
         self.portRTextField.userInteractionEnabled = YES;
         self.userNameTextField.userInteractionEnabled = YES;
         self.pwdTextField.userInteractionEnabled = YES;
-        
+
         self.NodeTypeRLabel.text = self.currentModel.type;
         self.ipaddressTextField.text = self.currentModel.ipAddress;
         self.portRTextField.text = self.currentModel.port;
@@ -80,7 +80,7 @@
         self.portRTextField.userInteractionEnabled = NO;
         self.userNameTextField.userInteractionEnabled = NO;
         self.pwdTextField.userInteractionEnabled = NO;
-        
+
         self.NodeTypeRLabel.text = @"";
         self.ipaddressTextField.text = @"";
         self.portRTextField.text = @"";
@@ -93,8 +93,13 @@
     [self checkBtn];
 }
 - (IBAction)confirmBtnClick:(UIButton *)sender {
+
     OKProxyServerModel *model = [OKProxyServerModel new];
     if (self.serverSwitch.isOn) {
+        if (![self.ipaddressTextField.text isIPAddress]) {
+            [kTools tipMessage:MyLocalizedString(@"Please enter the correct IP address", nil)];
+            return;
+        }
         model.proxyOn = self.serverSwitch.isOn;
         model.type = self.NodeTypeRLabel.text;
         model.ipAddress = self.ipaddressTextField.text;
@@ -109,7 +114,7 @@
         model.userName = @"";
         model.pwd = @"";
     }
-    id result = [kPyCommandsManager callInterface:kInterfaceset_proxy parameter:@{@"proxy_mode":model.type,@"proxy_host":model.ipAddress,@"proxy_port":model.port,@"proxy_user":model.userName,@"proxy_password":model.pwd}];
+    id result = [kPyCommandsManager callInterface:kInterfaceset_proxy parameter:@{@"proxy_mode":[model.type uppercaseString],@"proxy_host":model.ipAddress,@"proxy_port":model.port,@"proxy_user":model.userName,@"proxy_password":model.pwd}];
     if (result != nil) {
         [kTools tipMessage:MyLocalizedString(@"Set up the success", nil)];
         [kUserSettingManager setCurrentProxyDict:[model mj_JSONString]];
@@ -127,7 +132,7 @@
         [self.confirmBtn checkBtnStatus:YES];
         return;
     }
-    if (self.NodeTypeRLabel.text.length > 0 && self.ipaddressTextField.text.length > 0 && self.portRTextField.text.length > 0 && self.userNameTextField.text.length > 0) {
+    if (self.NodeTypeRLabel.text.length > 0 && self.ipaddressTextField.text.length > 0 && self.portRTextField.text.length > 0) {
         [self.confirmBtn checkBtnStatus:YES];
     }else{
         [self.confirmBtn checkBtnStatus:NO];

@@ -589,5 +589,5 @@
 "Current DApp only supports %@ account" = "当前 DApp 只支持 %@  账户";
 "Stay tuned" = "敬请期待";
 "Sorry, access failed, please try again or check the network" = "抱歉，访问失败，请重试或检查网络";
-
+"Please enter the correct IP address" = "请输入正确的ip地址";
 // Discover Associated - end
