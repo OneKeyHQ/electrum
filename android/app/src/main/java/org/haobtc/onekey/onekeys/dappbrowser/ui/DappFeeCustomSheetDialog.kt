@@ -340,11 +340,9 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
   private fun fillCustomFeeView(
       view: CustomFeeSelectionView
   ) {
-    mViewModel.feeDetails.value.let {
-      val customFeeBean = getCustomFeeBean(it?.normal, mViewModel.gasLimitNumber, mViewModel.gasPriceNumber)
+    val customFeeBean = getCustomFeeBean(mViewModel.feeDetails.value?.normal, mViewModel.gasLimitNumber, mViewModel.gasPriceNumber)
 
-      fillCustomFeeView(view, it, customFeeBean)
-    }
+    fillCustomFeeView(view, mViewModel.feeDetails.value, customFeeBean)
   }
 
   /**
