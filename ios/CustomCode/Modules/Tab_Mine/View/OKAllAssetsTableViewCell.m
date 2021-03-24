@@ -38,8 +38,16 @@
         NSString *iconImageName = @"icon_ph";
         if ([model.coin.lowercaseString isEqualToString:@"btc"]) {
             iconImageName = @"token_btc";
+            self.cointypeLabel.text = @"BTC";
         } else if ([model.coin.lowercaseString isEqualToString:@"eth"]) {
             iconImageName = @"token_eth";
+            self.cointypeLabel.text = @"ETH";
+        } else if ([model.coin.lowercaseString isEqualToString:@"bsc"]) {
+            iconImageName = @"token_bsc";
+            self.cointypeLabel.text = @"BSC";
+        } else if ([model.coin.lowercaseString isEqualToString:@"heco"]) {
+            iconImageName = @"token_heco";
+            self.cointypeLabel.text = @"HECO";
         }
         self.iconImageView.image = [UIImage imageNamed:iconImageName];
     }

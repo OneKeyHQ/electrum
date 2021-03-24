@@ -32,7 +32,10 @@
         return;
     }
     _type = type;
-    if ([type ignoreCaseCointain:@"eth"]) {
+    if ([type hasPrefix:@"eth"] ||
+        [type hasPrefix:@"bsc"] ||
+        [type hasPrefix:@"heco"]
+        ) {
         self.chainType = OKWalletChainTypeETHLike;
     } else {
         self.chainType = OKWalletChainTypeBTC;

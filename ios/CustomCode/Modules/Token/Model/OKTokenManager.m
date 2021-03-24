@@ -30,6 +30,7 @@ static dispatch_once_t once;
 - (void)walletChanged {
     self.needUpdateCcustomTokens = YES;
     self.needUpdateCurrentAddress = YES;
+    [self updateTokenList];
 }
 
 - (void)addToken:(OKToken *)token {

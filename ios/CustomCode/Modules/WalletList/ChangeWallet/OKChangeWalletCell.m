@@ -23,7 +23,7 @@
     [super awakeFromNib];
     [self.bgView setLayerRadius:13];
     [self.badge setLayerRadius:9];
-    self.bgView.backgroundColor = HexColor(0xF7931B);
+    self.bgView.backgroundColor = UIColor.CG_BTC;
 }
 
 - (void)setModel:(OKWalletInfoModel *)model {
@@ -40,10 +40,17 @@
     }
     self.selectImageView.hidden = ![model.name isEqualToString:kWalletManager.currentWalletInfo.name];
     NSInteger precision = [kWalletManager getPrecision:@"btc"];
+
     if (model.chainType == OKWalletChainTypeETHLike) {
         precision = [kWalletManager getPrecision:@"eth"];
-        self.bgView.backgroundColor = HexColor(0x3E5BF2);
+        self.bgView.backgroundColor = UIColor.CG_ETH;
+        if (model.walletCoinType == OKWalletCoinTypeBSC) {
+            self.bgView.backgroundColor = UIColor.CG_BSC;
+        } else if (model.walletCoinType == OKWalletCoinTypeHECO) {
+            self.bgView.backgroundColor = UIColor.CG_HECO;
+        }
     }
+
     NSString *balance = [model.additionalData objectForKey:@"balance"];
     balance = [balance numStrPrecition:precision];
     self.balanceLabel.text = balance ?: @"0";
