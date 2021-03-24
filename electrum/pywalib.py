@@ -17,7 +17,7 @@ from eth_utils import add_0x_prefix, remove_0x_prefix
 from web3 import HTTPProvider, Web3
 
 from electrum.util import make_aiohttp_session
-from electrum_gui.common.provider.data import Token, TransactionStatus
+from electrum_gui.common.provider.data import Token, TransactionStatus, Address
 from electrum_gui.common.provider.interfaces import ProviderInterface
 from electrum_gui.common.provider.manager import get_provider_by_chain
 
@@ -601,6 +601,10 @@ class PyWalib:
             output_txs.append(output_tx)
 
         return output_txs
+
+    @classmethod
+    def get_address(cls, address) -> Address:
+        return cls.get_provider().get_address(address)
 
     @classmethod
     def get_all_txid(cls, address) -> List[str]:

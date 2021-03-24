@@ -41,13 +41,15 @@ class Geth(ProviderInterface):
         )
 
     def get_address(self, address: str) -> Address:
-        balance, nonce = self.rpc.batch_call(
+        _balance, _nonce = self.rpc.batch_call(
             [
                 ("eth_getBalance", [address, self.__LAST_BLOCK__]),
                 ("eth_getTransactionCount", [address, self.__LAST_BLOCK__]),
             ]
         )  # Maybe __LAST_BLOCK__ refers to a different blocks in some case
-        return Address(address=address, balance=_hex2int(balance), nonce=_hex2int(nonce))
+        balance = _hex2int(_balance)
+        nonce = _hex2int(_nonce)
+        return Address(address=address, balance=balance, nonce=nonce, existing=(bool(balance) or bool(nonce)))
 
     def get_balance(self, address: str, token: Token = None) -> int:
         if not token:

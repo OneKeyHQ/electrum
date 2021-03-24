@@ -82,7 +82,7 @@ class TxPaginate(DataClassMixin):
 class Address(DataClassMixin):
     address: str
     balance: int
-    existing: bool = True
+    existing: bool
     nonce: int = 0
     payload: dict = field(default_factory=dict)
 

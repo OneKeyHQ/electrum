@@ -53,7 +53,7 @@ class BlockBook(ProviderInterface):
             address=address,
             balance=int(resp["balance"]),
             nonce=int(resp["nonce"]),
-            existing=True,
+            existing=bool(resp["txs"]),
         )
 
     def _get_raw_address_info(self, address: str, details: str, **kwargs) -> dict:

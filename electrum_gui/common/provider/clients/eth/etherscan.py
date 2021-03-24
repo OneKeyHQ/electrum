@@ -52,7 +52,7 @@ class Etherscan(ProviderInterface):
 
         resp = self._call_action("proxy", "eth_getTransactionCount", address=address)
         nonce = int(resp["result"], base=16)
-        return Address(address=address, balance=balance, nonce=nonce)
+        return Address(address=address, balance=balance, nonce=nonce, existing=(bool(balance) or bool(nonce)))
 
     def get_balance(self, address: str, token: Token = None) -> int:
         if not token:

@@ -2947,14 +2947,17 @@ class AndroidCommands(commands.Commands):
                     with self.pywalib.override_server(self.coins[coin]):
                         address = wallet.get_addresses()[0]
                         try:
-                            txids = self.pywalib.get_all_txid(address)
+                            address_info = self.pywalib.get_address(address)
                         except Exception:
-                            txids = None
+                            address_info = None
 
-                        if txids:
-                            balance_info = wallet.get_all_balance(address, self.coins[coin]["symbol"])
-                            if not balance_info:
-                                continue
+                        if address_info and address_info.existing:
+                            balance_info = {
+                                coin: {
+                                    'address': '',
+                                    'balance': Decimal(self.pywalib.web3.fromWei(address_info.balance, "ether")),
+                                }
+                            }
 
                             balance_info = self._fill_balance_info_with_fiat(wallet.coin, balance_info)
                             balance_info = balance_info.get(coin)
