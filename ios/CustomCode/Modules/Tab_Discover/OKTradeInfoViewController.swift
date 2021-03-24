@@ -11,7 +11,7 @@ import Reusable
 import PanModal
 
 class OKTradeInfoViewController: PanModalViewController {
-    
+
     @IBOutlet weak var navView: OKModalNavView!
     @IBOutlet weak var tokenImageView: UIImageView!
     @IBOutlet weak var tokenCountLabel: UILabel!
@@ -32,10 +32,10 @@ class OKTradeInfoViewController: PanModalViewController {
     private var selectGasType: OKTradeFeeSelect = .medium
 
     private var feeViewController: OKTradeFeeViewController?
-    
+
     var cancelAction: (()->Void)?
     var finishWithPassword: ((String, OKSendFeeModel?)->Void)?
-    
+
     @objc class func instance(transaction: DAppTransaction) -> OKTradeInfoViewController {
         let page = OKTradeInfoViewController.instantiate()
         page.transaction = transaction;
@@ -99,6 +99,9 @@ class OKTradeInfoViewController: PanModalViewController {
     }
 
     @IBAction func changeGasNumAction(_ sender: Any) {
+        if feeInfoModel == nil {
+            return
+        }
         let page = OKTradeFeeViewController.instantiate()
         page.model = feeInfoModel
         page.selectGasType = selectGasType

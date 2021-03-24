@@ -342,4 +342,16 @@
 "Current DApp only supports %@ account" = "Current DApp only supports %@ account";
 "Stay tuned" = "Stay tuned";
 "Sorry, access failed, please try again or check the network" = "Sorry, access failed, please try again or check the network";
+"Switch account" = "Switch account";
+"Favorites" = "Favorites";
+"Onekey key" = "Onekey key";
+"Floating window" = "Floating window";
+"Refresh" = "Refresh";
+"Share" = "Share";
+"Copy URL" = "Copy URL";
+"Browser opens" = "Browser opens";
+"GasPrice is less than the minimum limit" = "GasPrice is less than the minimum limit";
+"GasPrice exceeds the maximum limit" = "GasPrice is less than the minimum limit";
+"GasLimit is less than the minimum limit" = "GasPrice is less than the minimum limit";
+"GasLimit exceeds the maximum limit" = "GasPrice is less than the minimum limit";
 // Discover Associated - end

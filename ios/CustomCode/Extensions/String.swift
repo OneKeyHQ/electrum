@@ -12,9 +12,9 @@ extension String {
 
     var coinImage: UIImage? {
         guard !self.isEmpty else { return nil }
-        return UIImage(named: "token_" + self)
+        return UIImage(named: "token_" + self.lowercased())
     }
-    
+
     func divEthereumUnit(type: EthereumUnit = .ether) -> NSDecimalNumber {
         guard !self.isEmpty else { return NSDecimalNumber(value: 0) }
         guard self != "0" else { return NSDecimalNumber(value: 0) }
@@ -31,16 +31,23 @@ extension String {
         let result = value.dividing(by: ratio, withBehavior: behavior)
         return result
     }
-    
+
    var localized: String {
        guard !isEmpty else { return "" }
        return (self as NSString).localized()
    }
-   
+
    var has0xPrefix: Bool {
        return hasPrefix("0x")
    }
-   
+
+    var addHttps: String {
+        if !self.lowercased().contains("https") {
+            return "https:" + self
+        }
+        return self
+    }
+
    var drop0x: String {
        if count > 2 && substring(with: 0..<2) == "0x" {
            return String(dropFirst(2))
@@ -55,24 +62,36 @@ extension String {
            return "0x" + self
        }
    }
-   
+
    var hextToDec: Int {
        return 0
    }
-   
+
     var hexToDecimal: Int {
         guard !isEmpty else { return 0 }
         return Int(self.drop0x, radix: 16) ?? 0
     }
-    
+
     var keccak256: String {
         return (self as NSString).keccak256()
     }
-    
+
     var toInt: Int {
         return Int(self) ?? 0
     }
-    
+
+    var toURL: URL? {
+        return URL.init(string: self)
+    }
+
+
+    var addressName: String {
+        if count <= 4 {
+            return self
+        }
+        return substring(from: count - 4).uppercased()
+    }
+
 }
 
 extension String {

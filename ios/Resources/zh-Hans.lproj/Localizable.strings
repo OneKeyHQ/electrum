@@ -590,4 +590,16 @@
 "Stay tuned" = "敬请期待";
 "Sorry, access failed, please try again or check the network" = "抱歉，访问失败，请重试或检查网络";
 "Please enter the correct IP address" = "请输入正确的ip地址";
+"Switch account" = "切换账号";
+"Favorites" = "收藏";
+"Onekey key" = "Onekey 口令";
+"Floating window" = "浮窗";
+"Refresh" = "刷新";
+"Share" = "分享";
+"Copy URL" = "复制URL";
+"Browser opens" = "浏览器打开";
+"GasPrice is less than the minimum limit" = "GasPrice不足最小限额";
+"GasPrice exceeds the maximum limit" = "GasPrice超过最大限额";
+"GasLimit is less than the minimum limit" = "GasLimit不足最小限额";
+"GasLimit exceeds the maximum limit" = "GasLimit超过最大限额";
 // Discover Associated - end

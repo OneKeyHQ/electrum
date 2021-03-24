@@ -18,7 +18,7 @@ enum OKTradeFeeSelect {
 }
 
 class OKTradeFeeViewController: PanModalViewController {
-    
+
     @IBOutlet weak var navView: OKModalNavView!
 
     @IBOutlet weak var slowFeeView: UIView!
@@ -27,7 +27,7 @@ class OKTradeFeeViewController: PanModalViewController {
     @IBOutlet weak var slowFeeCoinValue: UILabel!
     @IBOutlet weak var slowFeeRmbValue: UILabel!
     @IBOutlet weak var slowFeeTimeValue: UILabel!
-    
+
     @IBOutlet weak var mediumFeeView: UIView!
     @IBOutlet weak var mediumFeeSpeed: UILabel!
     @IBOutlet weak var mediumFeeSelected: UIImageView!
@@ -53,7 +53,7 @@ class OKTradeFeeViewController: PanModalViewController {
     @IBOutlet weak var custunFeeGasPriceTextFiled: UITextField!
     @IBOutlet weak var custumFeeFoldView: UIView!
     @IBOutlet weak var custumFeeFoldTitle: UILabel!
-    
+
     var model: OKDefaultFeeInfoModel?
     var selectGasType: OKTradeFeeSelect = .medium
     var feeModel: OKSendFeeModel?
@@ -85,13 +85,15 @@ class OKTradeFeeViewController: PanModalViewController {
         custunFeeGasTextFiled.addTarget(self, action: #selector(didChangeText), for: .editingChanged)
         custunFeeGasPriceTextFiled.addTarget(self, action: #selector(didChangeText), for: .editingChanged)
 
-        
+
         navView.setNavPop { [weak self] in
             guard let self = self else { return }
-            self.callBackFee?(self.selectGasType, self.feeModel)
+            if (self.model != nil) {
+                self.callBackFee?(self.selectGasType, self.feeModel)
+            }
             self.navigationController?.popViewController(animated: true)
         }
-        
+
         slowFeeView.addTapGestureRecognizer { [weak self] in
             guard let self = self else { return }
             self.updateSelectedUI(type: .slow)
@@ -106,7 +108,7 @@ class OKTradeFeeViewController: PanModalViewController {
             guard let self = self else { return }
             self.updateSelectedUI(type: .fast)
         }
-        
+
         custumFeeFoldView.addTapGestureRecognizer { [weak self] in
             guard let self = self else { return }
             self.selectGasType = .custum
@@ -115,16 +117,15 @@ class OKTradeFeeViewController: PanModalViewController {
 
         custunFeeGasTextFiled.delegate = self
         custunFeeGasPriceTextFiled.delegate = self
-        
+
         if let model = model {
             updateDefaultFeeInfo(model: model)
         }
-        
+
         updateSelectedUI(type: selectGasType)
     }
 
     private func setDefaultValue() {
-        defaultFeeModel = model
         slowFeeCoinValue.text = "--"
         slowFeeRmbValue.text = "--"
         slowFeeTimeValue.text = "--"
@@ -139,14 +140,14 @@ class OKTradeFeeViewController: PanModalViewController {
         custunFeeGasTextFiled.text = "0"
         custunFeeGasPriceTextFiled.text = "0"
     }
-    
+
     func updateDefaultFeeInfo(model: OKDefaultFeeInfoModel) {
         defaultFeeModel = model
-        
+
         slowFeeCoinValue.text = model.slow.fee + " " + "ETH"
         slowFeeRmbValue.text = model.slow.fiat
         slowFeeTimeValue.text = "About 0 minutes".localized.replacingOccurrences(of: "0", with: " \(model.slow.time) ")
-        
+
         mediumFeeCoinValue.text = model.normal.fee + " " + "ETH"
         mediumFeeRmbValue.text = model.normal.fiat
         mediumFeeTimeValue.text = "About 0 minutes".localized.replacingOccurrences(of: "0", with: " \(model.normal.time) ")
@@ -210,7 +211,7 @@ class OKTradeFeeViewController: PanModalViewController {
         custumFeeFoldView.isHidden = isSelectedCustum
     }
 
-    
+
     // MARK: - Pan Modal Presentable
 
     override var shortFormHeight: PanModalHeight {
@@ -233,12 +234,34 @@ class OKTradeFeeViewController: PanModalViewController {
         func rest() {
             custumFeeValue.text = "--"
             custumFeeTime.text = "--"
+            selectGasType = .medium
         }
         rest()
-        if let gasPrice = custunFeeGasPriceTextFiled.text, !gasPrice.isEmpty, gasPrice != "0",
-           let gas = custunFeeGasTextFiled.text, !gas.isEmpty, gas != "0",
+
+        guard let model = model else { return  }
+
+        if let gasPrice = custunFeeGasPriceTextFiled.text, !gasPrice.isEmpty,
+           let gas = custunFeeGasTextFiled.text, !gas.isEmpty,
            let allValue = allValue, let perTime = perTime, let perRmb = perRmb,  let perFee = perFee
         {
+            let gasLimitDecimalNumber = NSDecimalNumber(string:gas)
+            let gasPriceDecimalNumber = NSDecimalNumber(string: gasPrice)
+            if gasPriceDecimalNumber.floatValue < 1 {
+                OKTools.sharedInstance().tipMessage("GasPrice is less than the minimum limit".localized)
+                return
+            }
+            if gasPriceDecimalNumber.floatValue > (Float(model.fast.gas_price) ?? 0) * 10 {
+                OKTools.sharedInstance().tipMessage("GasPrice exceeds the maximum limit".localized)
+                return
+            }
+            if gasLimitDecimalNumber.floatValue < (Float(model.normal.gas_limit) ?? 0) {
+                OKTools.sharedInstance().tipMessage("GasLimit is less than the minimum limit".localized)
+                return
+            }
+            if gasLimitDecimalNumber.floatValue > (Float(model.normal.gas_limit) ?? 0) * 10 {
+                OKTools.sharedInstance().tipMessage("GasLimit exceeds the maximum limit".localized)
+                return
+            }
             func behavior(scale: Int16) -> NSDecimalNumberHandler {
                 return NSDecimalNumberHandler(
                     roundingMode: .down,
@@ -249,8 +272,6 @@ class OKTradeFeeViewController: PanModalViewController {
                     raiseOnDivideByZero: true
                 )
             }
-            let gasLimitDecimalNumber = NSDecimalNumber(string:gas)
-            let gasPriceDecimalNumber = NSDecimalNumber(string: gasPrice)
             let ratio = gasLimitDecimalNumber.multiplying(by: gasPriceDecimalNumber).dividing(by: allValue)
             let time =  NSDecimalNumber(string:"1").dividing(by: ratio).multiplying(by: perTime, withBehavior: behavior(scale: 0)).intValue
             let rmb = ratio.multiplying(by: perRmb, withBehavior: behavior(scale: 2)).stringValue
@@ -263,6 +284,7 @@ class OKTradeFeeViewController: PanModalViewController {
             model.gas_price = gasPrice
             model.gas_limit = gas
             model.time = String(time)
+            selectGasType = .custum
             self.feeModel = model
         }
     }

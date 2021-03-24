@@ -18,10 +18,17 @@ final class OKDAppWebViewController: UIViewController {
 
     private  var requestAccountsId: Int64 = 0
     var webViewObserver: WKWebViewObserver!
+    private var dappModel: OKWebJSModel?
 
-    @objc class func instance(homepage: String) -> OKDAppWebViewController {
+    static func instance(homepage: String) -> OKDAppWebViewController {
         let page = OKDAppWebViewController.instantiate()
         page.homepage = homepage
+        return page
+    }
+
+    static func instanceWithModel(dappModel: OKWebJSModel) -> OKDAppWebViewController {
+        let page = OKDAppWebViewController.instantiate()
+        page.dappModel = dappModel
         return page
     }
 
@@ -46,10 +53,20 @@ final class OKDAppWebViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        webView.stopLoading()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpWebView()
-        setupSubviews()
+        setUpSubviews()
+        if let model = dappModel {
+            homepage = model.jsParams()?.url ?? ""
+            navTitle.text = model.jsParams()?.name ?? homepage
+            tokenImage.image = model.jsParams()?.chain?.coinImage
+        }
         configurationContent()
 //        homepage = "https://app.uniswap.org/#/swap"
 //        homepage = "https://zksync.io/"
@@ -72,7 +89,7 @@ final class OKDAppWebViewController: UIViewController {
         webView.navigationDelegate = self
     }
 
-    private func setupSubviews() {
+    private func setUpSubviews() {
         view.addSubview(webView)
         view.addSubview(progressView)
         webView.anchor(
@@ -94,15 +111,16 @@ final class OKDAppWebViewController: UIViewController {
             parentView: webView,
             handler: { [weak self] in
                 guard let self = self else { return }
-                self.webView.reload()
+                self.reloadWebView()
         })
 
     }
 
     private func configurationContent() {
-        let wallet = OKWalletManager.sharedInstance().currentWalletInfo
-        accountName.text = wallet?.label ?? ""
-        tokenImage.image = (wallet?.coinType ?? "").coinImage
+        if let wallet = OKWalletManager.sharedInstance().currentWalletInfo {
+            accountName.text = wallet.addr.addressName
+            tokenImage.image = wallet.coinType.coinImage
+        }
 
         updateWebViewCanGoBack(flag: false)
 
@@ -153,7 +171,51 @@ final class OKDAppWebViewController: UIViewController {
     }
 
     @IBAction func tapMenuButton(_ sender: Any) {
-
+        if let model = dappModel {
+            OKDAppMenuSheetController.show(model: model) { [weak self] type in
+                guard let self = self else { return }
+                switch type {
+                case .switchAccount:
+                    self.selectAccount(self)
+                    break
+                case .collect:
+                    break
+                case .collected:
+                    break
+                case .onekeyKeys:
+                    break
+                case .floatingWindow:
+                    break
+                case .refresh:
+                    self.reloadWebView()
+                    break
+                case .share:
+                    if let model = self.dappModel?.jsParams() {
+                        var activityItems: [Any] = []
+                        activityItems.append(model.name ?? "DApp")
+                        if let url = model.url {
+                            activityItems.append(url)
+                        }
+                        OKSystemShareView.show(
+                            withActivityItems: activityItems,
+                            parentVc: self) {
+                        }
+                        shareCompletionBlock: {
+                        }
+                    }
+                    break
+                case .copyURL:
+                    guard let url = self.dappModel?.jsParams()?.url, !url.isEmpty else { return }
+                    UIPasteboard.general.string = url
+                    OKTools.sharedInstance().tipMessage("Copied".localized)
+                    break
+                case .openInSafari:
+                    guard let url = self.dappModel?.jsParams()?.url?.toURL else { return }
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    break
+                }
+            }
+        }
     }
 
     @IBAction func tapCloseButton(_ sender: Any) {
@@ -178,6 +240,10 @@ final class OKDAppWebViewController: UIViewController {
     private func updateRPCInfo() {
         guard let scriptConfig = DAppWebManage.fetchScriptConfig() else { return }
         webView.configuration.userContentController.addUserScript(scriptConfig.injectedScript)
+    }
+
+    private func reloadWebView() {
+        webView.reload()
     }
 
 }
@@ -241,7 +307,11 @@ extension OKDAppWebViewController: WKScriptMessageHandler {
     }
 
     private func handleRequestAccounts() {
-        webView.sendResults([address], to: requestAccountsId)
+        if address.isEmpty {
+            selectAccount(self)
+        } else {
+            webView.sendResults([address], to: requestAccountsId)
+        }
     }
 
     private func handleSignMessage(id: Int64, data: Data, personal: Bool) {

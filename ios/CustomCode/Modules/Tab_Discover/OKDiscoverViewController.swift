@@ -12,18 +12,18 @@ import PanModal
 import WKWebViewJavascriptBridge
 
 final class OKDiscoverViewController: UIViewController {
-    
+
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var activity: UIActivityIndicatorView!
-    
+
    private  var networkErrorView: NetworkErrorView?
-    
+
     var bridge: WKWebViewJavascriptBridge!
 
     @objc class func instance() -> OKDiscoverViewController {
         return OKDiscoverViewController.instantiate()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
@@ -46,17 +46,16 @@ final class OKDiscoverViewController: UIViewController {
         bridge.isLogEnable = isDebug
         bridge.register(handlerName: "callNativeMethod") { (paramters, callback) in
             print("testiOSCallback called: \(String(describing: paramters))")
-            callback?("sucess")
             let model = OKWebJSModel(paramters: paramters)
             switch model.jsAction() {
             case .openDapp:
+                callback?(["id":  model.id, "result" : "success"])
                 DAppWebManage.handleOpenDApp(model: model)
                 break
             case .unknow:
                 break
             }
         }
-
 
         webView.scrollView.keyboardDismissMode = .onDrag
         webView.scrollView.showsVerticalScrollIndicator = false
@@ -96,7 +95,7 @@ final class OKDiscoverViewController: UIViewController {
 }
 
 extension OKDiscoverViewController: WKNavigationDelegate {
-    
+
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         decisionHandler(WKNavigationActionPolicy.allow)
     }
@@ -104,7 +103,7 @@ extension OKDiscoverViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         print("webViewDidStartLoad")
     }
-    
+
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         print("webViewDidFinishLoad")
         if activity.isAnimating {

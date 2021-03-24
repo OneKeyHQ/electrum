@@ -54,9 +54,23 @@ extension DAppSignMessageError {
 
 class DAppWebManage {
 
+    static func transformChainType(_ type: String) -> OKChangeWalletChainType {
+        let chain = type.uppercased()
+        if chain == "ETH" {
+            return .ETH
+        } else if chain == "BTC" {
+            return .BTC
+        } else if chain == "BSC" {
+            return .BSC
+        } else if chain == "HECO" {
+            return .HECO
+        }
+        return .ALL
+    }
+
     static func fetchScriptConfig() -> WKUserScriptConfig? {
-        guard let wallet = OKWalletManager.sharedInstance().currentWalletInfo else { return nil }
-        let address = wallet.addr
+        let wallet = OKWalletManager.sharedInstance().currentWalletInfo
+        let address = wallet?.addr ?? ""
 //        return WKUserScriptConfig(
 //            address: address,
 ////            chainId: 1,
@@ -145,6 +159,18 @@ class DAppWebManage {
         guard let chain = data.chain else { return }
         guard let url = data.url, !url.isEmpty else { return }
 
+
+        func goDAppBroswer() {
+            let page = OKDAppWebViewController.instanceWithModel(dappModel: model)
+            UIApplication.shared.keyWindow?.rootViewController?.presentPanModal(page)
+        }
+
+
+        guard let wallet = OKWalletManager.sharedInstance().currentWalletInfo else {
+            goDAppBroswer()
+            return
+        }
+
         let dappCoinType = chain.uppercased()
 
         if !DAppWebManage.supportDAppCoinTypes().contains(dappCoinType) {
@@ -160,8 +186,6 @@ class DAppWebManage {
             return
         }
 
-        guard let wallet = OKWalletManager.sharedInstance().currentWalletInfo else { return }
-
         if wallet.coinType.uppercased() != dappCoinType || wallet.walletType == .observe {
             PanBottomAlertViewController.show(
                 icon: nil,
@@ -170,18 +194,15 @@ class DAppWebManage {
                 leftAction: .init(normalTitle: "cancel".localized, onTap: nil),
                 rightAction: .init(highlightTitle: "determine".localized, onTap: {
                     let page = OKChangeWalletController.withStoryboard()
-                    page.chianType = [.ETH]
-                    page.walletChangedCallback = { _ in }
+                    page.chianType = [DAppWebManage.transformChainType(dappCoinType)]
+                    page.walletChangedCallback = { _ in
+                        self.handleOpenDApp(model: model)
+                    }
                     page.modalPresentationStyle = .overCurrentContext
                     OKTools.ok_TopViewController().present(page, animated: false, completion: nil)
                 })
             )
             return
-        }
-
-        func goDAppBroswer() {
-            let page = OKDAppWebViewController.instance(homepage: url)
-            UIApplication.shared.keyWindow?.rootViewController?.presentPanModal(page)
         }
 
         let key = "OneKey-DApp:" + url

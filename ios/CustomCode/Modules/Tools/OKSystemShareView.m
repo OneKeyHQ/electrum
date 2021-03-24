@@ -13,8 +13,10 @@
 +(UIActivityViewController *)showSystemShareViewWithActivityItems:(NSArray *)items parentVc:(UIViewController *)vc cancelBlock:(cancelBlock)cancelBlock shareCompletionBlock:(shareCompletionBlock)shareCompletion;
 {
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
+    OKWeakSelf(activityVC);
     UIActivityViewControllerCompletionWithItemsHandler itemsBlock = ^(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError){
-        [vc dismissViewControllerAnimated:YES completion:nil];
+        OKStrongSelf(activityVC);
+        [activityVC dismissViewControllerAnimated:YES completion:nil];
         if (completed) {
             if (shareCompletion) {
                 shareCompletion();

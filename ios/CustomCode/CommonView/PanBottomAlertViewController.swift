@@ -17,20 +17,20 @@ class PanBottomAlertViewController: PanModalViewController {
     @IBOutlet weak var leftButton: UIButton!
     @IBOutlet weak var rightButton: UIButton!
     @IBOutlet weak var buttonSplitView: UIView!
-    
+
     @IBOutlet weak var iconImageViewWidth: NSLayoutConstraint!
     @IBOutlet weak var iconImageViewTop: NSLayoutConstraint!
     @IBOutlet weak var leftButtonTrailing: NSLayoutConstraint!
     @IBOutlet weak var titleLabelTop: NSLayoutConstraint!
     @IBOutlet weak var contentLabelTop: NSLayoutConstraint!
     @IBOutlet weak var alertBottom: NSLayoutConstraint!
-    
+
     private var icon: OKBottomAlertViewIcon?
     private var alertTitle: String = ""
     private var alertContent: String = ""
     private var leftAction: OKBottomAlertViewAction?
     private var rightAction: OKBottomAlertViewAction?
-    
+
     @discardableResult
     @objc static func show(
         icon: OKBottomAlertViewIcon?,
@@ -49,7 +49,7 @@ class PanBottomAlertViewController: PanModalViewController {
         OKTools.ok_TopViewController().presentPanModal(alertView)
         return alertView
     }
-    
+
     init(
         icon: OKBottomAlertViewIcon?,
         title: String,
@@ -64,11 +64,11 @@ class PanBottomAlertViewController: PanModalViewController {
         self.leftAction = leftAction
         self.rightAction = rightAction
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         configIcon(icon: icon)
@@ -83,12 +83,9 @@ class PanBottomAlertViewController: PanModalViewController {
             case .local:
                 iconImageView.image = UIImage(named: icon.string)
             case .remote:
-                guard let url = URL.init(string: icon.string) else { return }
-                iconImageView.sd_setImage(
-                    with: url,
-                    placeholderImage: UIImage(named: "logo_square"),
-                    options: [],
-                    context: nil
+                iconImageView.setNetImage(
+                    url: icon.string.addHttps,
+                    placeholder: "logo_square"
                 )
             case .loding:
                 iconImageView.image = UIImage(named: icon.string)
@@ -99,7 +96,7 @@ class PanBottomAlertViewController: PanModalViewController {
             titleLabelTop.constant = 0
         }
     }
-    
+
     private func configTitleLabel(string: String) {
         titleLabel.setText(string, lineSpacing: 1.2)
     }
@@ -175,7 +172,7 @@ class PanBottomAlertViewController: PanModalViewController {
         self.type = .loding
         self.string = lodingImage ?? "quanquan"
     }
-    
+
 }
 
 @objc final class OKBottomAlertViewAction: NSObject {
@@ -188,19 +185,19 @@ class PanBottomAlertViewController: PanModalViewController {
     var title: String
     var color: UIColor
     var onTap:(()->Void)?
-    
+
     @objc init(normalTitle: String, onTap: (()->Void)?) {
         self.title = normalTitle
         self.color = .fg_B02()
         self.onTap = onTap
     }
-    
+
     @objc init(highlightTitle: String, onTap: (()->Void)?) {
         self.title = highlightTitle
         self.color = .tintBrand()
         self.onTap = onTap
     }
-    
+
     @objc init(warningTitle: String, onTap: (()->Void)?) {
         self.title = warningTitle
         self.color = .tintRed()
