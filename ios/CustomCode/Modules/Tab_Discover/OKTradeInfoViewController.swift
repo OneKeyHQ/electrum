@@ -72,7 +72,7 @@ class OKTradeInfoViewController: PanModalViewController {
     }
 
     private func configWithDAppTransaction(transaction: DAppTransaction) {
-        let tokenName = transaction.coinType.uppercased()
+        let tokenName = transaction.coinType.uppercased().chainNameToTokenName()
         operateContentLabel.text = tokenName.uppercased() + "transfer".localized
         payAccountContentLabel.text = transaction.from
         receiveAccountContentLabel.text = transaction.to

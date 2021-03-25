@@ -49,9 +49,14 @@ final class OKDiscoverViewController: UIViewController {
             let model = OKWebJSModel(paramters: paramters)
             switch model.jsAction() {
             case .openDapp:
-                callback?(["id":  model.id, "result" : "success"])
-                DAppWebManage.handleOpenDApp(model: model)
+                DAppWebManage.handleOpenDApp(model: model) {
+                    callback?(["id":  model.id ?? "", "result" : "success"])
+                }
                 break
+            case .openURL:
+                DAppWebManage.handleOpenDApp(url: model.params ?? "") {
+                    callback?(["id":  model.id ?? "", "result" : "success"])
+                }
             case .unknow:
                 break
             }

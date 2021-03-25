@@ -12,9 +12,9 @@ import PanModal
 
 final class OKDAppMenuSheetController: PanModalViewController {
 
-    private var model: OKWebJSModel?
+    private var model: OKWebJSParams?
 
-    static func show(model: OKWebJSModel, tapAction: @escaping ((OKDAppMenuType) -> Void)) {
+    static func show(model: OKWebJSParams?, tapAction: @escaping ((OKDAppMenuType) -> Void)) {
         let page = OKDAppMenuSheetController.instantiate()
         page.model = model
         page.tapAction = tapAction
@@ -45,11 +45,13 @@ final class OKDAppMenuSheetController: PanModalViewController {
             self.dismiss(animated: true, completion: nil)
         }
 
-        if let model = model?.jsParams() {
+        if let model = model {
             dappTitle.text = model.name ?? "DApp"
             let des =  model.description ?? ""
             dappDes.text = des.isEmpty ? (model.subtitle ?? "") : des
-            dappIcon.setNetImage(url: (model.img ?? "").addHttps)
+            if let img = model.img, !img.isEmpty {
+                dappIcon.setNetImage(url: img.addPreHttps)
+            }
         }
 
         let layout = UICollectionViewFlowLayout()
@@ -91,7 +93,7 @@ extension OKDAppMenuSheetController: UICollectionViewDelegate, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: OKDAppMenuSheetCollectionCell.self)
         let m = dataSource[indexPath.row]
-        cell.setModel(type: m, coinType: model?.jsParams()?.chain ?? "token_eth")
+        cell.setModel(type: m, coinType: model?.chain ?? "")
         return cell
     }
 

@@ -151,16 +151,17 @@ class OKTradeFeeViewController: PanModalViewController {
 
     func updateDefaultFeeInfo(model: OKDefaultFeeInfoModel) {
         defaultFeeModel = model
+        let token = tokenName()
 
-        slowFeeCoinValue.text = model.slow.fee + " " + "ETH"
+        slowFeeCoinValue.text = model.slow.fee + " " + token
         slowFeeRmbValue.text = model.slow.fiat
         slowFeeTimeValue.text = "About 0 minutes".localized.replacingOccurrences(of: "0", with: " \(model.slow.time) ")
 
-        mediumFeeCoinValue.text = model.normal.fee + " " + "ETH"
+        mediumFeeCoinValue.text = model.normal.fee + " " + token
         mediumFeeRmbValue.text = model.normal.fiat
         mediumFeeTimeValue.text = "About 0 minutes".localized.replacingOccurrences(of: "0", with: " \(model.normal.time) ")
 
-        fastFeeCoinValue.text = model.fast.fee + " " + "ETH"
+        fastFeeCoinValue.text = model.fast.fee + " " + token
         fastFeeRmbValue.text = model.fast.fiat
         fastFeeTimeValue.text = "About 0 minutes".localized.replacingOccurrences(of: "0", with: " \(model.fast.time) ")
 
@@ -183,6 +184,7 @@ class OKTradeFeeViewController: PanModalViewController {
 
     private func updateSelectedUI(type: OKTradeFeeSelect) {
         selectGasType = type
+        custumFeeTipLabel.text = ""
         let feeViews = [slowFeeView, mediumFeeView, fastFeeView]
         let selectedViews = [slowFeeSelected, mediumFeeSelected, fastFeeSelected]
         var highlightView: UIView!
@@ -318,7 +320,7 @@ class OKTradeFeeViewController: PanModalViewController {
             let rmb = ratio.multiplying(by: perRmb, withBehavior: behavior(scale: 2)).stringValue
             let fee = ratio.multiplying(by: perFee, withBehavior: behavior(scale: 9)).stringValue
             custumFeeTime.text =  "About 0 minutes".localized.replacingOccurrences(of: "0", with: " \(time) ")
-            custumFeeValue.text = fee + " ETH" + " ≈ ¥" + rmb
+            custumFeeValue.text = fee + " \(tokenName())" + " ≈ ¥" + rmb
             let model = OKSendFeeModel()
             model.fee = fee
             model.fiat = rmb
@@ -330,6 +332,9 @@ class OKTradeFeeViewController: PanModalViewController {
         }
     }
 
+    private func tokenName() -> String {
+        return OKWalletManager.sharedInstance().currentWalletInfo?.coinType.chainNameToTokenName() ?? ""
+    }
 }
 
 extension OKTradeFeeViewController: UITextFieldDelegate {

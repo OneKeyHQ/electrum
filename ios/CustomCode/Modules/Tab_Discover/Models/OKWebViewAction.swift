@@ -10,6 +10,7 @@ import Foundation
 
 enum OKWebJSAction: String, Decodable, CaseIterable {
     case openDapp
+    case openURL
     case unknow
 }
 
@@ -18,7 +19,7 @@ struct OKWebJSModel {
     let method: String?
     let params: String?
     let id: String?
-    
+
      init(paramters: [String : Any]?) {
         method = paramters?["method"] as? String
         params = paramters?["params"] as? String

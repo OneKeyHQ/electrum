@@ -12,12 +12,12 @@ extension UIImageView {
 
     func setNetImage(url: String, placeholder: String = "") {
         if let url = URL.init(string: url) {
-//            sd_setImage(
-//                with: url,
-//                placeholderImage: UIImage(named: placeholder),
-//                options: [],
-//                context: nil
-//            )
+            sd_setImage(
+                with: url,
+                placeholderImage: UIImage(named: placeholder),
+                options: [],
+                context: nil
+            )
         } else {
             image = UIImage(named: placeholder)
         }

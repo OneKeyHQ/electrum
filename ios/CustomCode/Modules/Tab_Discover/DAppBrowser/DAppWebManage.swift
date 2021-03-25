@@ -153,18 +153,29 @@ class DAppWebManage {
 
     // MARK: - UI Action
 
-    static func handleOpenDApp(model: OKWebJSModel) {
+    static func handleOpenDApp(url: String, callBackClick: @escaping (() -> ())) {
+        guard !url.isEmpty else { return }
+        let homepage = url.addPreHttps
+        if homepage.isValidURL() {
+            let page = OKDAppWebViewController.instance(homepage: homepage)
+            UIApplication.shared.keyWindow?.rootViewController?.presentPanModal(page)
+            callBackClick()
+        } else {
+            OKTools.sharedInstance().tipMessage("Incorrect link format".localized)
+        }
+    }
+
+    static func handleOpenDApp(model: OKWebJSModel, callBackClick: @escaping (() -> ())) {
 
         guard let data = model.jsParams() else { return }
         guard let chain = data.chain else { return }
         guard let url = data.url, !url.isEmpty else { return }
 
-
         func goDAppBroswer() {
             let page = OKDAppWebViewController.instanceWithModel(dappModel: model)
             UIApplication.shared.keyWindow?.rootViewController?.presentPanModal(page)
+            callBackClick()
         }
-
 
         guard let wallet = OKWalletManager.sharedInstance().currentWalletInfo else {
             goDAppBroswer()
@@ -196,7 +207,7 @@ class DAppWebManage {
                     let page = OKChangeWalletController.withStoryboard()
                     page.chianType = [DAppWebManage.transformChainType(dappCoinType)]
                     page.walletChangedCallback = { _ in
-                        self.handleOpenDApp(model: model)
+                        self.handleOpenDApp(model: model, callBackClick: callBackClick)
                     }
                     page.modalPresentationStyle = .overCurrentContext
                     OKTools.ok_TopViewController().present(page, animated: false, completion: nil)

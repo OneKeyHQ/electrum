@@ -359,4 +359,5 @@
 "Too little Gas Price will cause the transaction to fail. Do you want to continue?" = "Too little Gas Price will cause the transaction to fail. Do you want to continue?";
 "Gas Price is too much, do you want to continue?" = "Gas Price is too much, do you want to continue?";
 "Continue" = "Continue";
+"Incorrect link format" = "Incorrect link format";
 // Discover Associated - end

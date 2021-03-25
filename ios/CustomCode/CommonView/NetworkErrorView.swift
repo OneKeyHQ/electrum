@@ -15,7 +15,7 @@ class NetworkErrorView: UIView, NibLoadable {
     @IBOutlet weak var netTipLabel: UILabel!
 
     private weak var gesture: UITapGestureRecognizer?
-    
+
     @discardableResult
     static func addParentView(
         parentView: UIView,
@@ -27,6 +27,7 @@ class NetworkErrorView: UIView, NibLoadable {
         networkView.updateTipTitle(title: tipTitle)
         networkView.gesture = networkView.addTapGestureRecognizer(action: { [weak networkView] in
             networkView?.updateVisible(visible: false)
+            handler()
         })
         return networkView
     }

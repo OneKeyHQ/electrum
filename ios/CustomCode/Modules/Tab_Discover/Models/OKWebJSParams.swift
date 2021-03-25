@@ -10,15 +10,15 @@ import Foundation
 
 struct OKWebJSParams : Codable {
 
-    let chain : String?
-    let code : String?
-    let description : String?
-    let favicon : String?
-    let img : String?
-    let layout : String?
-    let name : String?
-    let status : String?
-    let subtitle : String?
-    let url : String?
+    var chain : String?
+    var code : String?
+    var description : String?
+    var favicon : String?
+    var img : String?
+    var layout : String?
+    var name : String?
+    var status : String?
+    var subtitle : String?
+    var url : String?
 
 }

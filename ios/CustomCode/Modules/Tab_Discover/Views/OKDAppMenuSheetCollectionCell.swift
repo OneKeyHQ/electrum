@@ -39,7 +39,8 @@ final class OKDAppMenuSheetCollectionCell: UICollectionViewCell {
                 iconWidth.constant = 24
                 iconTop.constant = 5
             } else {
-                iconTop.constant = 11
+                itemIcon.image = UIImage(named: "logo_square")
+                iconTop.constant = -10
             }
         }
     }

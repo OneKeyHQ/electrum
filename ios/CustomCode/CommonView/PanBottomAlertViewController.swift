@@ -84,7 +84,7 @@ class PanBottomAlertViewController: PanModalViewController {
                 iconImageView.image = UIImage(named: icon.string)
             case .remote:
                 iconImageView.setNetImage(
-                    url: icon.string.addHttps,
+                    url: icon.string.addPreHttps,
                     placeholder: "logo_square"
                 )
             case .loding:

@@ -41,11 +41,14 @@ extension String {
        return hasPrefix("0x")
    }
 
-    var addHttps: String {
-        if !self.lowercased().contains("https") {
+    var addPreHttps: String {
+        if hasPrefix("https") {
+            return self
+        } else if hasPrefix("//") {
             return "https:" + self
+        } else {
+            return "https://" + self
         }
-        return self
     }
 
    var drop0x: String {
@@ -92,6 +95,23 @@ extension String {
         return substring(from: count - 4).uppercased()
     }
 
+     func isValidURL() -> Bool {
+        if let url = NSURL(string: self) {
+            return UIApplication.shared.canOpenURL(url as URL)
+        }
+        return false
+    }
+
+    func chainNameToTokenName() -> String {
+        switch self.uppercased() {
+        case "BSC":
+            return "BNB"
+        case "HECO":
+            return "HT"
+        default:
+            return self.uppercased()
+        }
+    }
 }
 
 extension String {

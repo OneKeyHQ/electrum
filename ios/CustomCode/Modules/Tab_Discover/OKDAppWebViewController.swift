@@ -159,11 +159,11 @@ final class OKDAppWebViewController: UIViewController {
 
     @IBAction func selectAccount(_ sender: Any) {
         let page = OKChangeWalletController.withStoryboard()
-        page.chianType = [.ETH]
+        page.chianType = DAppWebManage.transformChainType(dappModel?.jsParams()?.chain ?? "")
         page.walletChangedCallback = { [weak self] value in
             if value.addr != self?.address {
                 self?.updateAccount()
-                self?.webView.reload()
+                self?.reloadWebView()
             }
         }
         page.modalPresentationStyle = .overCurrentContext
@@ -171,49 +171,56 @@ final class OKDAppWebViewController: UIViewController {
     }
 
     @IBAction func tapMenuButton(_ sender: Any) {
-        if let model = dappModel {
-            OKDAppMenuSheetController.show(model: model) { [weak self] type in
-                guard let self = self else { return }
-                switch type {
-                case .switchAccount:
-                    self.selectAccount(self)
-                    break
-                case .collect:
-                    break
-                case .collected:
-                    break
-                case .onekeyKeys:
-                    break
-                case .floatingWindow:
-                    break
-                case .refresh:
-                    self.reloadWebView()
-                    break
-                case .share:
-                    if let model = self.dappModel?.jsParams() {
-                        var activityItems: [Any] = []
-                        activityItems.append(model.name ?? "DApp")
-                        if let url = model.url {
-                            activityItems.append(url)
-                        }
-                        OKSystemShareView.show(
-                            withActivityItems: activityItems,
-                            parentVc: self) {
-                        }
-                        shareCompletionBlock: {
-                        }
+        var jsParams = dappModel?.jsParams()
+        if jsParams == nil {
+            jsParams = OKWebJSParams(
+                chain: OKWalletManager.sharedInstance().currentWalletInfo?.coinType,
+                description: homepage,
+                name: webView.title,
+                url: homepage
+            )
+        }
+        OKDAppMenuSheetController.show(model: jsParams) { [weak self] type in
+            guard let self = self else { return }
+            switch type {
+            case .switchAccount:
+                self.selectAccount(self)
+                break
+            case .collect:
+                break
+            case .collected:
+                break
+            case .onekeyKeys:
+                break
+            case .floatingWindow:
+                break
+            case .refresh:
+                self.reloadWebView()
+                break
+            case .share:
+                if let model = jsParams {
+                    var activityItems: [Any] = []
+                    activityItems.append(model.name ?? "DApp")
+                    if let url = jsParams?.url?.toURL {
+                        activityItems.append(url)
                     }
-                    break
-                case .copyURL:
-                    guard let url = self.dappModel?.jsParams()?.url, !url.isEmpty else { return }
-                    UIPasteboard.general.string = url
-                    OKTools.sharedInstance().tipMessage("Copied".localized)
-                    break
-                case .openInSafari:
-                    guard let url = self.dappModel?.jsParams()?.url?.toURL else { return }
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                    break
+                    OKSystemShareView.show(
+                        withActivityItems: activityItems,
+                        parentVc: self) {
+                    }
+                    shareCompletionBlock: {
+                    }
                 }
+                break
+            case .copyURL:
+                guard let url = jsParams?.url, !url.isEmpty else { return }
+                UIPasteboard.general.string = url
+                OKTools.sharedInstance().tipMessage("Copied".localized)
+                break
+            case .openInSafari:
+                guard let url = jsParams?.url?.toURL else { return }
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                break
             }
         }
     }
