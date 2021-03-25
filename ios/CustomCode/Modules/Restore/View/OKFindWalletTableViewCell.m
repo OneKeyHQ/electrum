@@ -31,12 +31,13 @@
 {
     _model = model;
     [self.cellBgView setLayerRadius:20];
-    NSString *iconName =  [NSString stringWithFormat:@"token_%@",[model.coin lowercaseString]];
+    NSString *cointype = model.coin == nil ? model.coin_type : model.coin;
+    NSString *iconName =  [NSString stringWithFormat:@"token_%@",[cointype lowercaseString]];
     self.iconImageView.image = [UIImage imageNamed:iconName];
     self.checkBtn.selected = model.isSelected;
     self.walletNameLabel.text = model.label;
     self.balanceLabel.text = model.blance;
-    
+
     if (model.exist) {
         self.checkBtn.hidden = YES;
         self.checkBtn.userInteractionEnabled = NO;

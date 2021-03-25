@@ -26,4 +26,8 @@
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key {
     [kTools debugTipMessage:[NSString stringWithFormat:@"OKDeviceInfoModel setValue:forUndefinedKey: %@ = %@",key,value]];
 }
+
+- (NSString *)device_id {
+  return self.serial_num ?: _device_id;
+}
 @end

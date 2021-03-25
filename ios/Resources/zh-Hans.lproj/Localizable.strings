@@ -608,3 +608,4 @@
 "Gas Price is too much, do you want to continue?" = "Gas Price 太多，是否继续？";
 "Continue" = "继续";
 // Discover Associated - end
+"No account with transaction history was found. You can choose to create a new account" = "没有找到有交易记录的账户，您可以选择创建新账户";

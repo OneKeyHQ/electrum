@@ -14,7 +14,7 @@
 
 +(NSDictionary *)mj_objectClassInArray
 {
-    return @{@"wallet_info":[OKCreateResultWalletInfoModel class],@"derived_info":[OKFindWalletTableViewCellModel class]};
+    return @{@"wallet_info":[OKFindWalletTableViewCellModel class],@"derived_info":[OKFindWalletTableViewCellModel class]};
 }
 
 @end

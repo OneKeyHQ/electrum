@@ -70,6 +70,7 @@
         }
         NSArray *array = @[@[xpub,kOKBlueManager.currentDeviceID]];
         NSString *xpubs = [array mj_JSONString];
+        //这里的hd 标识是否是硬件钱包 hd = 1是硬件 = 0是软件
         create = [kPyCommandsManager callInterface:kInterfaceimport_create_hw_wallet parameter:@{@"name":@"",@"m":@"1",@"n":@"1",@"xpubs":xpubs,@"hd":@"1"}];
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakself createComplete:create];
@@ -89,6 +90,9 @@
             _type = OKRestoreRefreshUIHaveWallet;
             [weakself refreshUI];
         }else{
+            weakself.walletList =  createResultModel.wallet_info;
+            [weakself changeConfirmBtn];
+            [weakself.tableView reloadData];
             _type = OKRestoreRefreshUIZeroWallet;
             [weakself refreshUI];
         }
@@ -125,8 +129,8 @@
             self.quanquanView.transform = CGAffineTransformIdentity;
             self.bottomBgViewCons.constant = 200;
             self.restoreBtn.hidden = NO;
-            self.descLabel.text = MyLocalizedString(@"No wallet", nil);
-            [self.restoreBtn setTitle:MyLocalizedString(@"return", nil) forState:UIControlStateNormal];
+            self.descLabel.text = MyLocalizedString(@"No account with transaction history was found. You can choose to create a new account", nil);
+            [self.restoreBtn setTitle:MyLocalizedString(@"restore", nil) forState:UIControlStateNormal];
             [self.view layoutIfNeeded];
         }
             break;
@@ -219,7 +223,7 @@
 {
     NSInteger count = 0;
     for (OKFindWalletTableViewCellModel *model in self.walletList) {
-        if (model.isSelected || model.exist) {
+        if (model.exist || model.isSelected) {
             count ++;
         }
     }
@@ -228,34 +232,21 @@
 
 
 - (IBAction)restoreBtnClick:(UIButton *)sender {
-    switch (_type) {
-        case OKRestoreRefreshUIHaveWallet:
-        {
-            NSMutableArray *arrayM = [NSMutableArray array];
-            for (OKFindWalletTableViewCellModel *model in self.walletList) {
-                if (model.isSelected) {
-                    [arrayM addObject:model.name];
-                }
-            }
-            id result = [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":arrayM,@"hw":@"1"}];
-            if (result != nil) {
-                NSString *selectName = [arrayM firstObject];
-                OKWalletInfoModel *infoModel = [kWalletManager getCurrentWalletAddress:selectName];
-                [kWalletManager setCurrentWalletInfo:infoModel];
-                [kTools tipMessage:MyLocalizedString(@"Restore success", nil)];
-                [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
-                    [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"backupshow":@"0",@"takecareshow":@"0"}];
-                }];
-            }
+    NSMutableArray *arrayM = [NSMutableArray array];
+    for (OKFindWalletTableViewCellModel *model in self.walletList) {
+        if (model.isSelected) {
+            [arrayM addObject:model.name];
         }
-            break;
-        case OKRestoreRefreshUIZeroWallet:
-        {
-            [self.navigationController popViewControllerAnimated:YES];
-        }
-            break;
-        default:
-            break;
+    }
+    id result = [kPyCommandsManager callInterface:kInterfacerecovery_confirmed parameter:@{@"name_list":arrayM,@"hw":@"1"}];
+    if (result != nil) {
+        NSString *selectName = [arrayM firstObject];
+        OKWalletInfoModel *infoModel = [kWalletManager getCurrentWalletAddress:selectName];
+        [kWalletManager setCurrentWalletInfo:infoModel];
+        [kTools tipMessage:MyLocalizedString(@"Restore success", nil)];
+        [self.OK_TopViewController dismissToViewControllerWithClassName:@"OKWalletViewController" animated:YES complete:^{
+            [[NSNotificationCenter defaultCenter]postNotificationName:kNotiWalletCreateComplete object:@{@"backupshow":@"0",@"takecareshow":@"0"}];
+        }];
     }
 }
 
