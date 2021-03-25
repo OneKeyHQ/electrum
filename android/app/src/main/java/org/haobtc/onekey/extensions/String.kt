@@ -31,3 +31,10 @@ fun String.cutTheLast(digits: Int = 4): String {
     return this
   }
 }
+
+fun String.catLastChar(char: Char): String {
+  if (this.last() == char) {
+    return this.substring(0, this.length - 1)
+  }
+  return this
+}

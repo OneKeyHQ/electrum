@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.haobtc.onekey.ui.widget.SlideItemView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/slide_item"
+    android:layout_width="match_parent"
+    android:layout_height="90dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_item"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:paddingStart="16dp">
+
+            <ImageView
+                android:id="@+id/iv_dapp_logo"
+                android:layout_width="@dimen/dp_60"
+                android:layout_height="@dimen/dp_60"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@color/text_color2" />
+
+            <TextView
+                android:id="@+id/tv_dapp_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/dp_12"
+                android:layout_marginEnd="8dp"
+                android:includeFontPadding="false"
+                android:textColor="@color/black_0"
+                android:textSize="@dimen/sp_15"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tv_dapp_content"
+                app:layout_constraintEnd_toStartOf="@+id/iv_more"
+                app:layout_constraintStart_toEndOf="@+id/iv_dapp_logo"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="Furucombo" />
+
+            <TextView
+                android:id="@+id/tv_dapp_content"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:ellipsize="end"
+                android:gravity="bottom"
+                android:maxLines="1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/iv_more"
+                app:layout_constraintStart_toStartOf="@+id/tv_dapp_name"
+                app:layout_constraintTop_toBottomOf="@+id/tv_dapp_name"
+                tools:text="sdfsdfsdfsdfsdfsdf" />
+
+            <ImageView
+                android:id="@+id/iv_more"
+                android:layout_width="24dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/right_arrow_small"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0.5dp"
+                android:background="@color/color_select_wallet_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/tv_dapp_name" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="80dp"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_delete"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@color/color_FF0000"
+                android:gravity="center"
+                android:text="@string/delete"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/tv_confirm_delete"
+                android:layout_width="160dp"
+                android:layout_height="match_parent"
+                android:background="@color/color_FF0000"
+                android:gravity="center"
+                android:text="@string/action_confirm_delete"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0.5dp"
+                android:background="@color/color_select_wallet_divider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
+
+</org.haobtc.onekey.ui.widget.SlideItemView>

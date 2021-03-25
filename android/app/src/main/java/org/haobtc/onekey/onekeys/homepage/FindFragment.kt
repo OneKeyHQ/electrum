@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.SslErrorHandler
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.lifecycle.ViewModelProvider
 import com.github.lzyzsd.jsbridge.BridgeWebViewClient
 import com.github.lzyzsd.jsbridge.CallBackFunction
@@ -27,9 +26,11 @@ import org.haobtc.onekey.constant.Vm.CoinType
 import org.haobtc.onekey.databinding.FragmentTabFindBinding
 import org.haobtc.onekey.onekeys.dappbrowser.ui.BaseAlertBottomDialog
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappBrowserActivity.Companion.start
+import org.haobtc.onekey.onekeys.dappbrowser.ui.DappCollectionSheetDialog
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappResultAlertDialog
 import org.haobtc.onekey.ui.base.BaseFragment
 import org.haobtc.onekey.ui.dialog.SelectAccountBottomSheetDialog
+import org.haobtc.onekey.utils.URLUtils
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -126,6 +127,11 @@ class FindFragment : BaseFragment(), OnBackPressedCallback {
           start(requireContext(), params)
           function.onCallBack(mGson.toJson(JsBridgeResponseBean(id, "success")))
         }
+        "openFavorite" -> {
+          DappCollectionSheetDialog()
+              .show(parentFragmentManager, "collection")
+          function.onCallBack(mGson.toJson(JsBridgeResponseBean(id, "success")))
+        }
         else -> function.onCallBack(
             mGson.toJson(JsBridgeResponseBean(id, "error")))
       }
@@ -134,13 +140,6 @@ class FindFragment : BaseFragment(), OnBackPressedCallback {
 
   private fun checkAccount(data: String, callback: ResultCallback) {
     Single.fromCallable { mGson.fromJson(data, DAppBrowserBean::class.java) }
-        .map { dAppBrowserBean: DAppBrowserBean ->
-          if (dAppBrowserBean.url != null && dAppBrowserBean.url.contains(":")) {
-            val substring = dAppBrowserBean.url.substring(0, dAppBrowserBean.url.indexOf(":"))
-            dAppBrowserBean.protocol = substring
-          }
-          dAppBrowserBean
-        }
         .observeOn(AndroidSchedulers.mainThread())
         .subscribeOn(Schedulers.io())
         .subscribe(
@@ -167,7 +166,7 @@ class FindFragment : BaseFragment(), OnBackPressedCallback {
                   != coinType) {
                 val dialog = BaseAlertBottomDialog(requireContext())
                 dialog.show()
-                dialog.setIcon(dAppBrowserBean.getLogoImage())
+                dialog.setIcon(dAppBrowserBean.img ?: URLUtils.getWebFavicon(dAppBrowserBean.url))
                 dialog.setTitle(
                     getString(
                         R.string.title_account_unavailable,
@@ -199,10 +198,11 @@ class FindFragment : BaseFragment(), OnBackPressedCallback {
   }
 
   private fun openDapp(bean: DAppBrowserBean, callback: ResultCallback) {
-    Single.fromCallable {
-      bean.firstUse = mDappManager.firstUse(bean.name)
-      bean
-    }
+    Single
+        .fromCallable {
+          bean.firstUse = mDappManager.firstUse(bean.name)
+          bean
+        }
         .map { dAppBrowserBean: DAppBrowserBean ->
           if (!dAppBrowserBean.firstUse) {
             callback.onSuccess()
@@ -216,7 +216,7 @@ class FindFragment : BaseFragment(), OnBackPressedCallback {
           if (dAppBrowserBean.firstUse) {
             val dialog = BaseAlertBottomDialog(requireContext())
             dialog.show()
-            dialog.setIcon(dAppBrowserBean.getLogoImage())
+            dialog.setIcon(dAppBrowserBean.img ?: URLUtils.getWebFavicon(dAppBrowserBean.url))
             dialog.setTitle(
                 getString(
                     R.string.title_frist_use_dapp,

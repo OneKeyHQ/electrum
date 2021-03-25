@@ -1319,4 +1319,10 @@
     <string name="hint_gas_limit_too_little">Gas Limit 太少将会导致交易失败，是否继续？</string>
     <string name="service">客服</string>
     <string name="hint_https_error">HTTPS 证书有问题，是否继续？</string>
+    <string name="title_collection">我的收藏</string>
+    <string name="title_collection_is_full">收藏已满，请管理后再试</string>
+    <string name="hint_content_collection_is_full">Onekey 最多同时支持收藏 30 个 dapp，请删除部分收藏后再进行尝试</string>
+    <string name="hint_content_collection_success">已收藏，可在我的收藏内查看</string>
+    <string name="hint_content_cancel_collection_success">取消收藏成功</string>
+    <string name="action_confirm_delete">确认删除</string>
 </resources>

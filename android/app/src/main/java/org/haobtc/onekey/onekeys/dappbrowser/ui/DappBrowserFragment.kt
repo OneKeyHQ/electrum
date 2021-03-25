@@ -52,10 +52,14 @@ import org.haobtc.onekey.onekeys.dappbrowser.listener.OnSignPersonalMessageListe
 import org.haobtc.onekey.onekeys.dappbrowser.listener.OnSignTransactionListener
 import org.haobtc.onekey.onekeys.dappbrowser.listener.OnSignTypedMessageListener
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_BROWSER
+import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_COLLECTION
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_COPY_URL
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_REFRESH
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_SHARE
 import org.haobtc.onekey.onekeys.dappbrowser.ui.DappSettingSheetDialog.ClickType.Companion.CLICK_SWITCH_ACCOUNT
+import org.haobtc.onekey.repository.DataRepository
+import org.haobtc.onekey.repository.database.entity.DappCollectionDO
+import org.haobtc.onekey.repository.database.entity.DappCollectionType
 import org.haobtc.onekey.ui.activity.HardwarePinDialog
 import org.haobtc.onekey.ui.activity.HardwarePinFragment
 import org.haobtc.onekey.ui.activity.InputPinOnHardware
@@ -114,9 +118,6 @@ class DappBrowserFragment : BaseFragment(),
     @JvmStatic
     val DAPP_PREFIX_WALLETCONNECT = "wc"
 
-    private const val GOOGLE_SEARCH_PREFIX = "https://www.google.com/search?q="
-    private const val HTTPS_PREFIX = "https://"
-
     private const val UPLOAD_FILE = 1
     private const val REQUEST_FILE_ACCESS = 31
     private const val REQUEST_FINE_LOCATION = 110
@@ -124,6 +125,10 @@ class DappBrowserFragment : BaseFragment(),
     private const val EXT_CURRENT_URL = "current_url"
     private const val EXT_URL = "url"
     private const val EXT_DAPP_BEAN = "data"
+
+    private const val ACTION_COLLECTION_SUCCESS = 1
+    private const val ACTION_CANCEL_COLLECTION_SUCCESS = 2
+    private const val ACTION_COLLECTION_ERROR = 3
 
     @JvmStatic
     fun start(url: String, dAppBrowserBean: DAppBrowserBean?): Fragment {
@@ -133,6 +138,13 @@ class DappBrowserFragment : BaseFragment(),
         putParcelable(EXT_DAPP_BEAN, dAppBrowserBean)
       }
       return dappBrowserFragment
+    }
+
+    fun generateDappUuid(str: String): String {
+      if (URLUtils.isValidUrl(str)) {
+        return URLUtils.removeQuery(str)
+      }
+      return str
     }
   }
 
@@ -178,6 +190,9 @@ class DappBrowserFragment : BaseFragment(),
   }
   private val mDAppBean by lazy {
     arguments?.getParcelable(EXT_DAPP_BEAN) as DAppBrowserBean?
+  }
+  private val mDappCollectionDao by lazy {
+    DataRepository.getDappCollectionDao()
   }
 
   override fun needEvents() = true
@@ -241,7 +256,7 @@ class DappBrowserFragment : BaseFragment(),
   }
 
   private fun setupViewModule() {
-    if(mAppWalletViewModel.currentWalletAccountInfo.value == null){
+    if (mAppWalletViewModel.currentWalletAccountInfo.value == null) {
       val drawable = ResourcesCompat.getDrawable(resources, AssetsLogo.getLogoResources(null), null)
       mBinding.ivTokenLogo.setImageDrawable(drawable)
       mBinding.tvWalletName.text = getString(R.string.title_select_account)
@@ -263,10 +278,11 @@ class DappBrowserFragment : BaseFragment(),
     mBinding.ivClose.setOnClickListener { mOnFinishOrBackCallback?.finish() }
     mBinding.layoutChangeAccount.setOnClickListener { showChangeAccountDialog() }
     mBinding.ivShare.setOnClickListener {
+      val dappUuid = mDAppBean?.uuid ?: web3.url
       val dappName = mDAppBean?.name ?: getString(R.string.app_name)
       val content = mDAppBean?.subtitle ?: ""
-      val imageLogo = mDAppBean?.getLogoImage() ?: URLUtils.getWebFavicon(web3.url)
-      DappSettingSheetDialog.newInstance(dappName, content, imageLogo)
+      val imageLogo = mDAppBean?.img ?: URLUtils.getWebFavicon(web3.url)
+      DappSettingSheetDialog.newInstance(generateDappUuid(dappUuid), dappName, content, imageLogo)
           .setOnSettingHandleClickCallback {
             when (it) {
               CLICK_SWITCH_ACCOUNT -> {
@@ -282,6 +298,9 @@ class DappBrowserFragment : BaseFragment(),
                 // copy text
                 ClipboardUtils.copyText(requireContext(), web3.url)
               }
+              CLICK_COLLECTION -> {
+                collectionDapp()
+              }
               CLICK_SHARE -> {
                 val shareIntent = Intent(Intent.ACTION_SEND).also { intent ->
                   intent.type = "text/*"
@@ -295,6 +314,62 @@ class DappBrowserFragment : BaseFragment(),
           }
           .show(childFragmentManager, "Setting")
     }
+  }
+
+  private fun collectionDapp() {
+    val webUrl = web3.url
+    Single
+        .fromCallable {
+          val uuid = generateDappUuid(mDAppBean?.uuid ?: webUrl)
+          val type = if (mDAppBean == null) {
+            DappCollectionType.URL
+          } else {
+            DappCollectionType.DAPP
+          }
+          DappCollectionDO(
+              uuid = uuid,
+              type = type,
+              name = mDAppBean?.name ?: URLUtils.removeHTTPProtocol(webUrl),
+              img = mDAppBean?.img ?: URLUtils.getWebFavicon(webUrl),
+              url = mDAppBean?.url ?: URLUtils.removeQuery(webUrl),
+              chain = mDAppBean?.chain,
+              subtitle = mDAppBean?.subtitle,
+              description = mDAppBean?.description,
+          )
+        }
+        .map {
+          if (mDappCollectionDao.existsUuid(it.uuid).isEmpty()) {
+            if (mDappCollectionDao.insertOnes(it)) {
+              ACTION_COLLECTION_SUCCESS
+            } else {
+              ACTION_COLLECTION_ERROR
+            }
+          } else {
+            mDappCollectionDao.deleteAtUuid(it.uuid)
+            ACTION_CANCEL_COLLECTION_SUCCESS
+          }
+        }
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe({
+          when (it) {
+            ACTION_COLLECTION_SUCCESS -> {
+              showToast(R.string.hint_content_collection_success)
+            }
+            ACTION_COLLECTION_ERROR -> {
+              val dialog = BaseAlertBottomDialog(requireContext())
+              dialog.show()
+              dialog.setTitle(R.string.title_collection_is_full)
+              dialog.setMessage(R.string.hint_content_collection_is_full)
+              dialog.setPrimaryButtonText(R.string.i_know_)
+            }
+            ACTION_CANCEL_COLLECTION_SUCCESS -> {
+              showToast(R.string.hint_content_cancel_collection_success)
+            }
+          }
+        }, {
+
+        })
   }
 
   /**

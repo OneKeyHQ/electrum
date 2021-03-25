@@ -114,10 +114,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
-                    android:layout_marginEnd="2dp"
-                    android:gravity="center"
                     android:layout_marginTop="4dp"
+                    android:layout_marginEnd="2dp"
                     android:ellipsize="end"
+                    android:gravity="center"
                     android:includeFontPadding="false"
                     android:maxLines="1"
                     android:paddingStart="8dp"
@@ -149,14 +149,17 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
+                android:id="@+id/iv_collect"
                 android:layout_width="@dimen/dp_60"
-                android:layout_height="@dimen/dp_60" />
+                android:layout_height="@dimen/dp_60"
+                android:src="@drawable/vector_dapp_setting_button_un_collection" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:includeFontPadding="false"
+                android:text="@string/action_dapp_setting_collect"
                 android:textColor="@color/text_two"
                 android:textSize="14sp" />
         </LinearLayout>

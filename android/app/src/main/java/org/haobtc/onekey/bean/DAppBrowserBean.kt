@@ -24,19 +24,20 @@ data class DAppBrowserBean(
     @SerializedName("chain")
     val chain: String?,
     @SerializedName("description")
-    val description: String,
+    val description: String?,
     @SerializedName("favicon")
-    val favicon: String,
+    val favicon: String?,
     @SerializedName("img")
-    val img: String,
+    val img: String?,
+    @SerializedName("code")
+    val uuid: String,
     @SerializedName("name")
     val name: String,
     @SerializedName("subtitle")
-    val subtitle: String,
+    val subtitle: String?,
     @SerializedName("url")
     val url: String?,
     var firstUse: Boolean = false,
-    var protocol: String = "https"
 ) : Parcelable {
   constructor(parcel: Parcel) : this(
       parcel.readString() ?: "",
@@ -45,11 +46,9 @@ data class DAppBrowserBean(
       parcel.readString() ?: "",
       parcel.readString() ?: "",
       parcel.readString() ?: "",
-      parcel.readString() ?: "") {
-  }
-
-  fun getLogoImage(): String {
-    return "$protocol:$img"
+      parcel.readString() ?: "",
+      parcel.readString() ?: "",
+      parcel.readByte().toInt() == 1) {
   }
 
   override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -57,11 +56,11 @@ data class DAppBrowserBean(
     parcel.writeString(description)
     parcel.writeString(favicon)
     parcel.writeString(img)
+    parcel.writeString(uuid)
     parcel.writeString(name)
     parcel.writeString(subtitle)
     parcel.writeString(url)
     parcel.writeByte(if (firstUse) 1 else 0)
-    parcel.writeString(protocol)
   }
 
   override fun describeContents(): Int {

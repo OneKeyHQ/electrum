@@ -2,7 +2,7 @@ package org.haobtc.onekey.utils
 
 import android.util.Patterns
 import android.webkit.URLUtil
-import com.orhanobut.logger.Logger
+import org.haobtc.onekey.extensions.catLastChar
 import java.net.URI
 import java.util.*
 
@@ -26,9 +26,9 @@ object URLUtils {
 
   fun removeHTTPProtocol(url: String?): String {
     return if (url != null && URLUtil.isHttpsUrl(url)) {
-      url.replace(HTTPS_PREFIX, "")
+      url.replace(HTTPS_PREFIX, "").catLastChar('/')
     } else if (url != null && URLUtil.isHttpUrl(url)) {
-      url.replace(HTTP_PREFIX, "")
+      url.replace(HTTP_PREFIX, "").catLastChar('/')
     } else {
       url ?: ""
     }
@@ -49,6 +49,20 @@ object URLUtils {
     try {
       val uri = URI(formatUrl)
       return "${uri.scheme}://${uri.host}"
+    } catch (e: Exception) {
+      return url ?: "$GOOGLE_SEARCH_PREFIX$url"
+    }
+  }
+
+  fun removeQuery(url: String?): String {
+    val formatUrl = formatUrl(url)
+    try {
+      val uri = URI(formatUrl)
+      if (uri.path.isNotEmpty()) {
+        return "${uri.scheme}://${uri.host}"
+      } else {
+        return "${uri.scheme}://${uri.host}/${uri.path}"
+      }
     } catch (e: Exception) {
       return url ?: "$GOOGLE_SEARCH_PREFIX$url"
     }
