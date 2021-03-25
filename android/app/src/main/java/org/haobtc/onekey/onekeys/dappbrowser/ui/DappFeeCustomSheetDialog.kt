@@ -8,8 +8,8 @@ import android.view.View
 import androidx.annotation.IntDef
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -72,6 +72,13 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
   private lateinit var mToAddress: String
   private var mData: String? = null
   private var mValue: BigInteger = BigInteger.ZERO
+
+  private var mCustomFeeGasPrice: BigDecimal = BigDecimal.ZERO
+  private var mCustomFeeGasLimit: BigInteger = BigInteger.ZERO
+
+  private var mCustomGasPriceLegal = true
+  private var mCustomGasLimitLegal = true
+
   private val mSystemConfigManager by lazy {
     SystemConfigManager(MyApplication.getInstance())
   }
@@ -134,25 +141,13 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
     }
 
     mBinding.viewFeeCustom.getEditGasLimit().addTextChangedListener {
-      if (mBinding.viewFeeCustom.getGasLimitNumber() < BigInteger("21000")) {
-        if (mBinding.viewFeeCustom.getGasLimitNumber() < BigInteger("1")) {
-          mBinding.viewFeeCustom.getEditGasLimit().setText("1")
-          mBinding.viewFeeCustom.getEditGasLimit().setSelection(1)
-        }
-        mDialog?.setCancelable(false)
-      } else {
-        mDialog?.setCancelable(true)
-      }
+      checkCustomGasLimit()
       if (it.toString() != mViewModel.gasLimit.value) {
         mViewModel.gasLimit.value = it.toString()
       }
     }
     mBinding.viewFeeCustom.getEditGasPrice().addTextChangedListener {
-      if (mBinding.viewFeeCustom.getGasPriceNumber() < BigDecimal("1")) {
-        mBinding.viewFeeCustom.getEditGasPrice().setText("1")
-        mBinding.viewFeeCustom.getEditGasPrice().setSelection(1)
-        return@addTextChangedListener
-      }
+      checkCustomGasPrice()
       if (it.toString() != mViewModel.gasPrice.value) {
         mViewModel.gasPrice.value = it.toString()
       }
@@ -200,14 +195,17 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
       val feeBean = when (feeType) {
         FeeType.SLOW -> {
           mBinding.viewFeeSlow.isChecked = true
+          setFeeCustomHint()
           getFeeBean(mViewModel.feeDetails.value?.slow)
         }
         FeeType.NORMAL -> {
           mBinding.viewFeeRecommend.isChecked = true
+          setFeeCustomHint()
           getFeeBean(mViewModel.feeDetails.value?.normal)
         }
         FeeType.FAST -> {
           mBinding.viewFeeFast.isChecked = true
+          setFeeCustomHint()
           getFeeBean(mViewModel.feeDetails.value?.fast)
         }
         FeeType.CUSTOM -> {
@@ -221,6 +219,143 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
         mOnSelectFeeCallback?.onSelectFee(feeType, feeBean.getGasPrice().toBigInteger(), feeBean.getGasLimit())
       }
     }
+  }
+
+  private fun checkCustomGasPrice() {
+    Single
+        .fromCallable {
+          judgeGasPrice()
+        }
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe({
+          if (it.result == 0) {
+            mBinding.viewFeeCustom.getEditGasPrice().setTextColor(ContextCompat.getColor(requireContext(), R.color.text_color2))
+            mCustomGasPriceLegal = true
+          } else {
+            mBinding.viewFeeCustom.getEditGasPrice().setTextColor(ContextCompat.getColor(requireContext(), R.color.text_red))
+            mCustomGasPriceLegal = false
+            if (mBinding.viewFeeCustom.getGasPriceNumber() < BigDecimal.ONE) {
+              mBinding.viewFeeCustom.getEditGasPrice().setText("1")
+              mBinding.viewFeeCustom.getEditGasPrice().setSelection(1)
+            }
+          }
+          setFeeCustomHint(it.hints)
+          mDialog?.setCancelable(mCustomGasPriceLegal && mCustomGasLimitLegal)
+        }, {
+
+        })
+  }
+
+  private fun checkCustomGasLimit() {
+    Single
+        .fromCallable {
+          judgeGasLimit()
+        }
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe({
+          if (it.result == 0) {
+            mBinding.viewFeeCustom.getEditGasLimit().setTextColor(ContextCompat.getColor(requireContext(), R.color.text_color2))
+            mCustomGasLimitLegal = true
+          } else {
+            mBinding.viewFeeCustom.getEditGasLimit().setTextColor(ContextCompat.getColor(requireContext(), R.color.text_red))
+            mCustomGasLimitLegal = false
+            if (mBinding.viewFeeCustom.getGasLimitNumber() < BigInteger.ONE) {
+              mBinding.viewFeeCustom.getEditGasLimit().setText("1")
+              mBinding.viewFeeCustom.getEditGasLimit().setSelection(1)
+            }
+          }
+          setFeeCustomHint(it.hints)
+          mDialog?.setCancelable(mCustomGasPriceLegal && mCustomGasLimitLegal)
+        }, {
+
+        })
+  }
+
+  private fun setFeeCustomHint(message: String? = null) {
+    if (mViewModel.currentFee.value == FeeType.CUSTOM) {
+      mBinding.hintCustomFee.text = message ?: ""
+    } else {
+      mBinding.hintCustomFee.text = ""
+    }
+  }
+
+  /**
+   * 判断 GasPrice 是否不合法
+   * @return -1:太小  0:正常  1:太大
+   */
+  private fun judgeGasPrice(): Judgment {
+    val estimateGasPrice = Convert.toWei(BigDecimal(mViewModel.feeDetails.value?.fast?.gasPrice?.toString()
+        ?: "1"), Convert.Unit.GWEI)
+
+    var hints = ""
+
+    val customLegal = mCustomFeeGasPrice != BigDecimal.ZERO && mBinding.viewFeeCustom.getGasPriceNumber() >= mCustomFeeGasPrice.divide(BigDecimal.TEN, 8, RoundingMode.DOWN)
+    val estimateLegal = mViewModel.feeDetails.value?.fast != null && mBinding.viewFeeCustom.getGasPriceNumber() >= estimateGasPrice.divide(BigDecimal.TEN, 8, RoundingMode.DOWN)
+
+
+    if (!customLegal) hints = getString(R.string.hint_custom_fee_gasprice_too_small)
+        .format(
+            Convert.fromWei(mCustomFeeGasPrice.divide(BigDecimal.TEN, 8, RoundingMode.DOWN), Convert.Unit.GWEI)
+                .stripTrailingZeros().toPlainString())
+    if (!estimateLegal) hints = getString(R.string.hint_custom_fee_gasprice_too_small)
+        .format(
+            Convert.fromWei(estimateGasPrice.divide(BigDecimal.TEN, 8, RoundingMode.DOWN), Convert.Unit.GWEI)
+                .stripTrailingZeros().toPlainString())
+
+    if (!(customLegal || estimateLegal)) {
+      return Judgment(-1, hints)
+    }
+
+    val customLegalBig = mCustomFeeGasPrice != BigInteger.ZERO && mBinding.viewFeeCustom.getGasPriceNumber() < mCustomFeeGasPrice.multiply(BigDecimal.TEN)
+    val estimateLegalBig = mViewModel.feeDetails.value?.fast != null && mBinding.viewFeeCustom.getGasPriceNumber() < estimateGasPrice.multiply(BigDecimal.TEN)
+
+    if (!customLegalBig) hints = getString(R.string.hint_custom_fee_gasprice_too_big)
+        .format(
+            Convert.fromWei(estimateGasPrice.multiply(BigDecimal.TEN), Convert.Unit.GWEI)
+                .stripTrailingZeros().toPlainString())
+    if (!estimateLegalBig) hints = getString(R.string.hint_custom_fee_gasprice_too_big)
+        .format(
+            Convert.fromWei(estimateGasPrice.multiply(BigDecimal.TEN), Convert.Unit.GWEI)
+                .stripTrailingZeros().toPlainString())
+
+    if (!(customLegalBig || estimateLegalBig)) {
+      return Judgment(1, hints)
+    }
+    return Judgment(0)
+  }
+
+  /**
+   * 判断 GasLimit 是否不合法
+   * @return -1:太小  0:正常  1:太大
+   */
+  private fun judgeGasLimit(): Judgment {
+    val estimateGasLimit = mViewModel.feeDetails.value?.normal?.gasLimit?.toBigInteger()
+        ?: BigInteger("53000")
+
+    var hints = ""
+
+    val customLegal = mCustomFeeGasLimit != BigInteger.ZERO && mBinding.viewFeeCustom.getGasLimitNumber() >= mCustomFeeGasLimit
+    val estimateLegal = mViewModel.feeDetails.value?.normal != null && mBinding.viewFeeCustom.getGasLimitNumber() >= estimateGasLimit
+
+    if (!customLegal) hints = getString(R.string.hint_custom_fee_gaslimit_too_small).format(mCustomFeeGasLimit)
+    if (!estimateLegal) hints = getString(R.string.hint_custom_fee_gaslimit_too_small).format(estimateGasLimit)
+
+    if (!(customLegal || estimateLegal)) {
+      return Judgment(-1, hints)
+    }
+
+    val customLegalBig = mCustomFeeGasLimit != BigInteger.ZERO && mBinding.viewFeeCustom.getGasLimitNumber() < mCustomFeeGasLimit.multiply(BigInteger.TEN)
+    val estimateLegalBig = mViewModel.feeDetails.value?.normal != null && mBinding.viewFeeCustom.getGasLimitNumber() < estimateGasLimit.multiply(BigInteger.TEN)
+
+    if (!customLegalBig) hints = getString(R.string.hint_custom_fee_gaslimit_too_big).format(mCustomFeeGasLimit.multiply(BigInteger.TEN))
+    if (!estimateLegalBig) hints = getString(R.string.hint_custom_fee_gaslimit_too_big).format(estimateGasLimit.multiply(BigInteger.TEN))
+
+    if (!(customLegalBig || estimateLegalBig)) {
+      return Judgment(1, hints)
+    }
+    return Judgment(0)
   }
 
   private fun calculationCustomData() {
@@ -288,7 +423,8 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
       defGasLimit: BigInteger = BigInteger.ZERO,
       defGasPrice: BigDecimal = BigDecimal.ZERO,
   ) {
-
+    mCustomFeeGasPrice = defGasPrice
+    mCustomFeeGasLimit = defGasLimit
     mBinding.viewFeeCustom.setGasLimit(defGasLimit)
     mBinding.viewFeeCustom.setGasPrice(defGasPrice)
 
@@ -304,6 +440,9 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
   }
 
   private fun setFeeDetails(currentFeeDetails: CurrentFeeDetails) {
+    checkCustomGasPrice()
+    checkCustomGasLimit()
+
     fillFeeData(currentFeeDetails)
 
     // 如果有某一项为 0,在重新填写一下
@@ -431,25 +570,52 @@ class DappFeeCustomSheetDialog private constructor() : BottomSheetDialogFragment
 
   private fun checkParameterAndDismiss() {
     if (mViewModel.currentFee.value == FeeType.CUSTOM) {
-      if (mBinding.viewFeeCustom.getGasLimitNumber() < BigInteger("21000")) {
-        DappResultAlertDialog(requireContext()).apply {
-          setIcon(DappResultAlertDialog.WARNING)
-          setTitle(R.string.title_warning)
-          setMessage(R.string.hint_gas_limit_too_little)
-          setSecondaryButtonText(R.string.action_continue)
-          setButtonListener {
-            dismiss()
+      Single
+          .fromCallable {
+            val judgeGasLimit = judgeGasLimit()
+            val judgeGasPrice = judgeGasPrice()
+            Pair(judgeGasLimit, judgeGasPrice)
           }
-          setButtonText(R.string.cancel)
-          setSecondaryButtonListener {
-            dismiss()
-            this@DappFeeCustomSheetDialog.dismiss()
-          }
-          show()
-        }
-      } else {
-        dismiss()
-      }
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe({
+            if (it.second.result == 0 && it.first.result == 0) {
+              dismiss()
+            } else {
+              val builder = StringBuilder()
+              if (it.first.result > 0) {
+                builder.append(getString(R.string.hint_warning_custom_fee_gaslimit_too_big)).append("，")
+              }
+              if (it.first.result < 0) {
+                builder.append(getString(R.string.hint_warning_custom_fee_gaslimit_too_small)).append("，")
+              }
+              if (it.second.result > 0) {
+                builder.append(getString(R.string.hint_warning_custom_fee_gasprice_too_big)).append("，")
+              }
+              if (it.second.result < 0) {
+                builder.append(getString(R.string.hint_warning_custom_fee_gasprice_too_small)).append("，")
+              }
+              builder.append(getString(R.string.hint_warning_whether_continue))
+
+              DappResultAlertDialog(requireContext()).apply {
+                setIcon(DappResultAlertDialog.WARNING)
+                setTitle(R.string.title_warning)
+                setMessage(builder.toString())
+                setSecondaryButtonText(R.string.action_continue)
+                setButtonListener {
+                  dismiss()
+                }
+                setButtonText(R.string.cancel)
+                setSecondaryButtonListener {
+                  dismiss()
+                  this@DappFeeCustomSheetDialog.dismiss()
+                }
+                show()
+              }
+            }
+          }, {
+            ToastUtils.toast(getString(R.string.hint_unknown_error))
+          })
     } else {
       dismiss()
     }
@@ -552,3 +718,5 @@ class CustomFeeViewModel : ViewModel() {
       }
     }
 }
+
+data class Judgment(val result: Int, val hints: String? = null)
