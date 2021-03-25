@@ -6,9 +6,7 @@ import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.view.WindowManager
 import android.widget.TextView
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -34,7 +32,6 @@ import org.haobtc.onekey.business.assetsLogo.AssetsLogo
 import org.haobtc.onekey.business.wallet.BalanceManager
 import org.haobtc.onekey.business.wallet.DeviceManager
 import org.haobtc.onekey.constant.Vm
-import org.haobtc.onekey.extensions.setCustomNavigationBar
 import org.haobtc.onekey.manager.PyEnv
 import org.haobtc.onekey.viewmodel.AppWalletViewModel
 
@@ -42,6 +39,22 @@ import org.haobtc.onekey.viewmodel.AppWalletViewModel
 class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
   companion object {
     private const val EXT_DATA = "data"
+    private const val EXT_DATA_SELECT = "selector"
+
+    @JvmStatic
+    fun newInstance(chainType: String? = null, data: Vm.CoinType): SelectAccountBottomSheetDialog {
+      // 临时方案
+      val coinList = if (chainType.equals(Vm.CoinType.ETH.coinName, true)
+          || chainType.equals(Vm.CoinType.BTC.coinName, true)) {
+        Vm.CoinType.values()
+            .filter { it.enable }
+            .filter { chainType.equals(it.chainType, true) }
+            .toList()
+      } else {
+        Vm.CoinType.values().filter { it.enable }.toList()
+      }
+      return newInstance(coinList, data)
+    }
 
     @JvmStatic
     fun newInstance(data: Vm.CoinType): SelectAccountBottomSheetDialog {
@@ -49,10 +62,14 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
     }
 
     @JvmStatic
-    fun newInstance(data: List<Vm.CoinType>): SelectAccountBottomSheetDialog {
+    @JvmOverloads
+    fun newInstance(data: List<Vm.CoinType>, selector: Vm.CoinType? = data.getOrNull(0)): SelectAccountBottomSheetDialog {
       val selectAccountBottomSheetDialog = SelectAccountBottomSheetDialog()
       val bundle = Bundle()
       bundle.putStringArray(EXT_DATA, data.map { it.callFlag }.toTypedArray())
+      selector?.let {
+        bundle.putString(EXT_DATA_SELECT, it.callFlag)
+      }
       selectAccountBottomSheetDialog.arguments = bundle
       return selectAccountBottomSheetDialog
     }
@@ -119,6 +136,19 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
 
   private fun initData() {
     val coinList = arguments?.getStringArray(EXT_DATA)?.map { Vm.CoinType.convertByCallFlag(it) }
+    val selectCoin = arguments?.getString(EXT_DATA_SELECT)
+
+    val index = if (selectCoin == null) {
+      0
+    } else {
+      val indexOf = coinList?.indexOf(Vm.CoinType.convertByCallFlag(selectCoin)) ?: 0
+      if (indexOf == -1) {
+        0
+      } else {
+        indexOf
+      }
+    }
+
     mCoinsAdapter.setNewData(coinList)
 
     mCoinsAdapter.setOnItemClickListener { _, _, position ->
@@ -129,7 +159,8 @@ class SelectAccountBottomSheetDialog : BottomSheetDialogFragment() {
     }
     mCoinRecyclerView.adapter = mCoinsAdapter
 
-    coinList?.getOrNull(0)?.let {
+    mCoinsAdapter.selectIndex(index)
+    coinList?.getOrNull(index)?.let {
       switchWalletList(it)
     }
   }

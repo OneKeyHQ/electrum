@@ -107,7 +107,7 @@ class OnekeyScanQrActivity : CaptureActivity() {
    */
   private fun showAccountSelect(dataBean: MainSweepcodeBean.DataBean, rawResult: String?) {
     SelectAccountBottomSheetDialog
-        .newInstance(dataBean.coin)
+        .newInstance(dataBean.coin.chainType, dataBean.coin)
         .setOnDismissListener {
           handler.restartPreviewAndDecodeDelayed(500)
         }
@@ -162,9 +162,9 @@ class OnekeyScanQrActivity : CaptureActivity() {
   private fun toSend(dataBean: MainSweepcodeBean.DataBean, rawResult: String?) {
     val address: String = dataBean.address
     NavUtils.afterScanGotoTransferActivity(
-      this, intent.getStringExtra(EXT_WALLET_NAME),
-      address,
-      dataBean.amount, dataBean.coin
+        this, intent.getStringExtra(EXT_WALLET_NAME),
+        address,
+        dataBean.amount, dataBean.coin
     )
     finish()
   }
