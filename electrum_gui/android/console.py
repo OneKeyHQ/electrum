@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import asyncio
 import copy
+import itertools
 import json
 import logging
 import os
@@ -10,7 +11,6 @@ import string
 import threading
 import urllib.parse
 from code import InteractiveConsole
-from collections import OrderedDict
 from decimal import Decimal
 from os.path import exists, join
 
@@ -256,7 +256,7 @@ class AndroidCommands(commands.Commands):
         self.rbf_tx = ""
         self.m = 0
         self.n = 0
-        self.token_list_by_chain = OrderedDict()
+        self._tokens_dict_of_chain = {}
         self.config.set_key("auto_connect", True, True)
         global ticker
         ticker = Ticker(5.0, self.update_status)
@@ -2108,27 +2108,58 @@ class AndroidCommands(commands.Commands):
         token_info = PyWalib.get_token_info("", contract_address)
         return json.dumps(token_info)
 
-    def get_all_token_info(self):
+    def get_all_token_info(self, coin=None):
         """
         Get all token information
         :return:
         """
-        chain_code = PyWalib.get_chain_code()
-        token_info = self.token_list_by_chain.get(chain_code)
-        if token_info is None:
-            token_info = {
-                token["address"].lower(): token
-                for token in read_json(f"{chain_code}_token_list.json", {}).get("tokens", ())
+        if coin is None:
+            coin = self.wallet.coin if self.wallet is not None else "eth"
+
+        chain_code = self._coin_to_chain_code(coin)
+        return json.dumps(list(self._load_tokens_dict(chain_code).values()))
+
+    def _load_tokens_dict(self, chain_code: str) -> dict:
+        tokens_dict = self._tokens_dict_of_chain.get(chain_code)
+
+        if tokens_dict is None:
+            tokens_dict = {
+                i["address"].lower(): i for i in read_json(f"{chain_code}_token_list.json", {}).get("tokens", ())
             }
-            self.token_list_by_chain[chain_code] = token_info
+            self._tokens_dict_of_chain[chain_code] = tokens_dict
 
-        return json.dumps(list(self.token_list_by_chain.get(chain_code).values()))
+        return tokens_dict
 
-    def get_all_customer_token_info(self):
-        chain_code = PyWalib.get_chain_code()
-        return json.dumps(self.wallet_context.get_customer_token_info(chain_code))
+    def get_all_customer_token_info(self, coin=None):
+        if coin is None:
+            coin = self.wallet.coin if self.wallet is not None else "eth"
 
-    def add_token(self, symbol, contract_addr):
+        chain_code = self._coin_to_chain_code(coin)
+        chain_info = coin_manager.get_chain_info(chain_code)
+        chain_id = int(chain_info.chain_id)
+
+        token_dict = self._load_tokens_dict(chain_code)
+        top_50_tokens = set(itertools.islice(token_dict.keys(), 50))
+        db_token_coins = coin_manager.get_coins_by_chain(chain_code)
+        custom_token_coins = (
+            i for i in db_token_coins if i.token_address and i.token_address.lower() not in top_50_tokens
+        )
+        custom_token_info_list = [
+            {
+                "chain_id": chain_id,
+                "decimals": i.decimals,
+                "address": i.token_address.lower(),
+                "symbol": i.symbol,
+                "name": i.name,
+                "logoURI": i.icon or "",
+                "rank": 0,
+            }
+            for i in custom_token_coins
+        ]
+
+        return json.dumps(custom_token_info_list, cls=DecimalEncoder)
+
+    def add_token(self, symbol, contract_addr, coin=None):
         """
         Add token to eth, for eth/bsc only
         :param symbol: coin symbol
@@ -2138,10 +2169,13 @@ class AndroidCommands(commands.Commands):
         if not contract_addr:
             raise BaseException("Contract address cannot be empty")
 
-        chain_code = PyWalib.get_chain_code()
-        contract_addr = contract_addr.lower()
+        if coin is None:
+            coin = self.wallet.coin if self.wallet is not None else "eth"
 
-        token_info = self.token_list_by_chain.get(chain_code, {}).get(contract_addr) or PyWalib.get_token_info(
+        chain_code = self._coin_to_chain_code(coin)
+
+        contract_addr = contract_addr.lower()
+        token_info = self._load_tokens_dict(chain_code).get(contract_addr) or PyWalib.get_token_info(
             symbol, contract_addr
         )
 
@@ -2154,9 +2188,6 @@ class AndroidCommands(commands.Commands):
                 token_info.get("name"),
                 token_info.get("logoURI"),
             )
-
-            if contract_addr not in list(self.token_list_by_chain.get(chain_code, {}).keys())[:50]:
-                self.wallet_context.add_customer_token_info(token_info, chain_code)
 
             contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
             self.wallet.add_contract_token(symbol, contract_addr)
