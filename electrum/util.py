@@ -113,6 +113,9 @@ class MultipleSpendMaxTxOutputs(Exception):
     def __str__(self):
         return BaseException(_('At most one output can be set to spend max'))
 
+class UnavailableXpub(Exception):
+    def __init__(self, *args):
+        super(UnavailableXpub, self).__init__(_("Unavailable xpub"), *args)
 
 class ReplaceWatchonlyWallet(Exception):
     message = ""

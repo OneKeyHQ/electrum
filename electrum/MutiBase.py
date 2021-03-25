@@ -81,20 +81,11 @@ class MutiBase(Logger):
             self.m = m
         self.path = path
 
-    def restore_from_xpub(self, xpub, device_id, account_id=0, type=84, coin='btc', coinid=None):
+    def restore_from_xpub(self, xpub, device_id, derivation):
         from .keystore import hardware_keystore
         is_valid = keystore.is_bip32_key(xpub)
         if is_valid:
             try:
-                if self.wallet_type == 'multisig':
-                    derivation = purpose48_derivation(0, xtype='p2wsh')
-                    #derivation = bip44_derivation(0, bip43_purpose=48)
-                else:
-                    if 'btc' == coin:
-                        derivation = bip44_derivation(account_id, bip43_purpose=type)
-                    else:
-                        derivation = bip44_eth_derivation(0, bip43_purpose=type, cointype=coinid)
-                        derivation = get_keystore_path(derivation)
                 d = {
                     'type': 'hardware',
                     'hw_type': 'trezor',

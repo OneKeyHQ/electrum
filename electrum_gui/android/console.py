@@ -547,16 +547,27 @@ class AndroidCommands(commands.Commands):
         self.m = m
         self.n = n
 
-    def add_xpub(self, xpub, device_id=None, account_id=0, type=84, coin="btc"):
+    def _get_hw_derivation(self, account_id=0, type=84, coin="btc"):
+        if self.wizard.wallet_type == 'multisig':
+            return purpose48_derivation(0, xtype='p2wsh')
+            # derivation = bip44_derivation(0, bip43_purpose=48)
+        else:
+            if 'btc' == coin:
+                derivation = bip44_derivation(account_id, bip43_purpose=type)
+            else:
+                derivation = bip44_eth_derivation(
+                    0, bip43_purpose=type, cointype=self.coins[coin]["coinId"] if coin in self.coins else 60
+                )
+                derivation = util.get_keystore_path(derivation)
+            return derivation
+
+    def add_xpub(self, xpub, device_id=None, derivation=None):
         try:
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
             if BIP32Node.from_xkey(xpub).xtype != "p2wsh" and self.n >= 2:
                 xpub = BIP32Node.get_p2wsh_from_other(xpub)
-            coinid = None
-            if coin in self.coins:
-                coinid = self.coins[coin]["coinId"]
-            self.wizard.restore_from_xpub(xpub, device_id, account_id, type=type, coin=coin, coinid=coinid)
+            self.wizard.restore_from_xpub(xpub, device_id, derivation)
         except Exception as e:
             raise BaseException(e)
 
@@ -614,7 +625,56 @@ class AndroidCommands(commands.Commands):
             raise BaseException(e)
         return self.wizard.get_cosigner_num()
 
-    def create_multi_wallet(self, name, hd=False, hide_type=False, coin="btc", index=0) -> str:
+    def _base_create_wallet(self, name, wallet_obj, coin, wallet_type):
+        wallet_obj.coin = coin
+        wallet_storage_path = self._wallet_path(wallet_obj.identity)
+        if self.daemon.get_wallet(wallet_storage_path) is not None:
+            raise BaseException(FileAlreadyExist())
+
+        wallet_obj.ensure_storage(self._wallet_path(wallet_obj.identity))
+        wallet_obj.set_name(name)
+        wallet_obj.storage.set_path(wallet_storage_path)
+        wallet_obj.save_db()
+        self.daemon.add_wallet(wallet_obj)
+        wallet_obj.update_password(old_pw=None, new_pw=None, str_pw=self.android_id, encrypt_storage=True)
+        if "btc" == coin:
+            wallet_obj.start_network(self.daemon.network)
+        self.wallet_context.set_wallet_type(wallet_obj.identity, wallet_type)
+        self.wallet = wallet_obj
+        self.wallet_name = wallet_obj.basename()
+        self.wizard = None
+        wallet_info = CreateWalletInfo.create_wallet_info(coin_type="btc", name=self.wallet_name)
+        out = self.get_create_info_by_json(wallet_info=wallet_info)
+        return json.dumps(out)
+
+    def _create_customer_wallet(self, name, xpubs, coin="btc") -> str:
+        try:
+            self._assert_daemon_running()
+        except Exception as e:
+            raise BaseException(e)
+
+        if "btc" == coin:
+            wallet = Imported_Wallet.from_xpub(
+                coin,
+                self.config,
+                xpubs[0][0],
+                PURPOSE_TO_ADDRESS_TYPE.get(
+                    int(helpers.get_path_info(self.hw_info["bip39_derivation"], PURPOSE_POS)) or "p2wpkh-p2sh"
+                ),
+                self.hw_info["bip39_derivation"],
+                xpubs[0][1],
+                hw=True,
+            )
+            wallet_type = "%s-hw-derived-customer-%s-%s" % ("btc", self.m, self.n)
+        elif coin in self.coins:
+            wallet = Imported_Eth_Wallet.from_xpub(
+                coin, self.config, xpubs[0][0], self.hw_info["bip39_derivation"], xpubs[0][1], hw=True
+            )
+            wallet_type = "%s-hw-derived-customer" % coin
+
+        return self._base_create_wallet(name, wallet, coin, wallet_type), wallet
+
+    def _create_multi_wallet(self, name, hd=False, hide_type=False, coin="btc", index=0):
         try:
             self._assert_daemon_running()
             self._assert_wizard_isvalid()
@@ -628,8 +688,10 @@ class AndroidCommands(commands.Commands):
             if "btc" == coin:
                 wallet = Wallet(db, storage, config=self.config)
                 wallet.set_derived_master_xpub(self.hw_info["xpub"])
+                wallet_type = "%s-hw-derived-%s-%s" % ("btc", self.m, self.n)
             else:
                 wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=index)
+                wallet_type = "%s-hw-derived" % coin
             wallet.coin = coin
             wallet_storage_path = self._wallet_path(wallet.identity)
             if self.daemon.get_wallet(wallet_storage_path) is not None:
@@ -643,10 +705,6 @@ class AndroidCommands(commands.Commands):
             wallet.update_password(old_pw=None, new_pw=None, str_pw=self.android_id, encrypt_storage=True)
             if "btc" == coin:
                 wallet.start_network(self.daemon.network)
-            # if hd:
-            #     wallet_type = "btc-hd-hw-%s-%s" % (self.m, self.n)
-            # else:
-            wallet_type = "%s-hw-derived-%s-%s" % (coin, self.m, self.n)
 
             if not hide_type:
                 self.wallet_context.set_wallet_type(wallet.identity, wallet_type)
@@ -663,7 +721,7 @@ class AndroidCommands(commands.Commands):
         self.wizard = None
         wallet_info = CreateWalletInfo.create_wallet_info(coin_type="btc", name=self.wallet_name)
         out = self.get_create_info_by_json(wallet_info=wallet_info)
-        return json.dumps(out)
+        return json.dumps(out), wallet
 
     def pull_tx_infos(self):
         """
@@ -728,26 +786,31 @@ class AndroidCommands(commands.Commands):
                 return self._recovery_hd_derived_wallet(xpub=self.hw_info["xpub"], hw=True, path=path)
             self.set_multi_wallet_info(name, m, n)
             xpubs_list = json.loads(xpubs)
-            for xpub_info in xpubs_list:
-                if len(xpub_info) == 2:
-                    self.add_xpub(
-                        xpub_info[0],
-                        xpub_info[1],
-                        account_id=self.hw_info["account_id"],
-                        type=self.hw_info["type"],
-                        coin=coin,
-                    )
-                else:
-                    self.add_xpub(
-                        xpub_info, account_id=self.hw_info["account_id"], type=self.hw_info["type"], coin=coin
-                    )
-            wallet_name = self.create_multi_wallet(
-                name, hd=hd, hide_type=hide_type, coin=coin, index=self.hw_info["account_id"]
-            )
-            if len(self.hw_info) != 0:
-                bip39_path = self.get_coin_derived_path(self.hw_info["account_id"], coin=coin)
+            if self.hw_info.get("bip39_derivation"):
+                path = self.hw_info.get("bip39_derivation")
+                wallet_info, wallet = self._create_customer_wallet(name, xpubs_list, coin=coin)
+            else:
+                self.set_multi_wallet_info(name, m, n)
+                derivation = self._get_hw_derivation(
+                    account_id=self.hw_info["account_id"], type=self.hw_info["type"], coin=coin
+                )
+
+                for xpub_info in xpubs_list:
+                    if len(xpub_info) == 2:
+                        self.add_xpub(xpub_info[0], xpub_info[1], derivation)
+                    else:
+                        self.add_xpub(xpub_info, derivation=derivation)
+                wallet_info, wallet = self._create_multi_wallet(
+                    name, hd=hd, hide_type=hide_type, coin=coin, index=self.hw_info["account_id"]
+                )
+            derivation_path = wallet.get_derivation_path(wallet.get_addresses()[0])
+            customer_path = derivation_path[0 : derivation_path.rindex('/')]
+            default_path = helpers.get_default_path(coin, int(helpers.get_path_info(derivation_path, pos=PURPOSE_POS)))
+            if len(self.hw_info) != 0 and customer_path == default_path:
+                bip39_path = self.get_coin_derived_path(int(self.get_account_id(derivation_path, coin)), coin=coin)
                 self.update_devired_wallet_info(bip39_path, self.hw_info["xpub"] + coin.lower(), name, coin)
-            return wallet_name
+
+            return wallet_info
         except BaseException as e:
             raise e
 
@@ -2398,7 +2461,7 @@ class AndroidCommands(commands.Commands):
         self.wallet.storage.is_encrypted_with_hw_device()
 
     def get_xpub_from_hw(
-        self, path="android_usb", _type="p2wpkh", is_creating=True, account_id=None, coin="btc", from_recovery=False
+        self, path="android_usb", _type="p2wpkh", is_creating=True, account_id=None, coin="btc", from_recovery=False, bip39_derivation=None
     ):
         """
         Get extended public key from hardware, used by hardware
@@ -2408,38 +2471,48 @@ class AndroidCommands(commands.Commands):
         :return: xpub string
         """
         self.hw_info["device_id"] = self.trezor_manager.get_device_id(path, from_recovery=from_recovery)
-        if account_id is None:
-            account_id = 0
-        if coin == "btc":
-            self.hw_info["type"] = _type
-            if _type == "p2wsh":
-                derivation = purpose48_derivation(account_id, xtype="p2wsh")
-                self.hw_info["type"] = 48
-                # derivation = bip44_derivation(account_id, bip43_purpose=48)
-            elif _type == "p2wpkh":
-                derivation = bip44_derivation(account_id, bip43_purpose=84)
-                self.hw_info["type"] = 84
-            elif _type == "p2pkh":
-                derivation = bip44_derivation(account_id, bip43_purpose=44)
-                self.hw_info["type"] = 44
-            elif _type == "p2wpkh-p2sh":
-                derivation = bip44_derivation(account_id, bip43_purpose=49)
-                self.hw_info["type"] = 49
+        if bip39_derivation is None:
+            if account_id is None:
+                account_id = 0
+            if coin == "btc":
+                self.hw_info["type"] = _type
+                if _type == "p2wsh":
+                    derivation = purpose48_derivation(account_id, xtype="p2wsh")
+                    self.hw_info["type"] = 48
+                    # derivation = bip44_derivation(account_id, bip43_purpose=48)
+                elif _type == "p2wpkh":
+                    derivation = bip44_derivation(account_id, bip43_purpose=84)
+                    self.hw_info["type"] = 84
+                elif _type == "p2pkh":
+                    derivation = bip44_derivation(account_id, bip43_purpose=44)
+                    self.hw_info["type"] = 44
+                elif _type == "p2wpkh-p2sh":
+                    derivation = bip44_derivation(account_id, bip43_purpose=49)
+                    self.hw_info["type"] = 49
+                else:
+                    derivation = bip44_derivation(account_id, bip43_purpose=84)
+                    self.hw_info["type"] = 84
+                xpub = self.trezor_manager.get_xpub(path, derivation, _type, is_creating)
             else:
-                derivation = bip44_derivation(account_id, bip43_purpose=84)
-                self.hw_info["type"] = 84
-            xpub = self.trezor_manager.get_xpub(path, derivation, _type, is_creating, from_recovery=from_recovery)
+                self.hw_info["type"] = self.coins[coin]["addressType"]
+                derivation = bip44_eth_derivation(
+                    account_id, bip43_purpose=self.coins[coin]["addressType"], cointype=self.coins[coin]["coinId"]
+                )
+
+                derivation = util.get_keystore_path(derivation)
+                xpub = self.trezor_manager.get_eth_xpub(path, derivation)
         else:
-            self.hw_info["type"] = self.coins[coin]["addressType"]
-            derivation = bip44_eth_derivation(
-                account_id, bip43_purpose=self.coins[coin]["addressType"], cointype=self.coins[coin]["coinId"]
-            )
-            derivation = util.get_keystore_path(derivation)
-            xpub = self.trezor_manager.get_eth_xpub(path, derivation, from_recovery=from_recovery)
+            self.hw_info["bip39_derivation"] = bip39_derivation
+            if coin == "btc":
+                xpub = self.trezor_manager.get_xpub(path, bip39_derivation, _type, is_creating)
+            else:
+                xpub = self.trezor_manager.get_eth_xpub(path, bip39_derivation)
 
         return xpub
 
-    def create_hw_derived_wallet(self, path="android_usb", _type="p2wpkh", is_creating=True, coin="btc"):
+    def create_hw_derived_wallet(
+        self, path="android_usb", _type="p2wpkh", is_creating=True, coin="btc", bip39_derivation=None
+    ):
         """
         Create derived wallet by hardware, used by hardware
         :param path: NFC/android_usb/bluetooth as string
@@ -2448,16 +2521,21 @@ class AndroidCommands(commands.Commands):
         :return: xpub as string
         """
         xpub = self.get_xpub_from_hw(path=path, _type="p2wpkh", coin=coin)
-        list_info = self.get_derived_list(xpub + coin.lower())
         self.hw_info["xpub"] = xpub
-        if list_info is None:
-            self.hw_info["account_id"] = 0
-            dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=0, coin=coin)
-            return dervied_xpub
-        if len(list_info) == 0:
-            raise BaseException(DerivedWalletLimit())
-        dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=list_info[0], coin=coin)
-        self.hw_info["account_id"] = list_info[0]
+        if bip39_derivation is None:
+            list_info = self.get_derived_list(xpub + coin.lower())
+            if list_info is None:
+                self.hw_info["account_id"] = 0
+                dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=0, coin=coin)
+                return dervied_xpub
+            if len(list_info) == 0:
+                raise BaseException(DerivedWalletLimit())
+            dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=list_info[0], coin=coin)
+            self.hw_info["account_id"] = list_info[0]
+        else:
+            dervied_xpub = self.get_xpub_from_hw(
+                path=path, _type=_type, account_id=0, coin=coin, bip39_derivation=bip39_derivation
+            )
         return dervied_xpub
 
     def export_keystore(self, password):

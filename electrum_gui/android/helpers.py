@@ -1,6 +1,8 @@
 import random
 import string
 
+from electrum.keystore import bip44_derivation, bip44_eth_derivation
+
 
 def get_best_block_by_feerate(feerate, fee_info_list):
     if feerate < fee_info_list[20]:
@@ -23,6 +25,15 @@ def get_best_block_by_feerate(feerate, fee_info_list):
 
 def get_show_addr(addr):
     return f"{addr[0:6]}...{addr[-6:]}"
+
+
+def get_default_path(coin, purpose):
+    if coin == 'btc':
+        default_path = bip44_derivation(0, bip43_purpose=purpose)
+        return default_path[0 : default_path.rindex('/')]
+    elif coin in ['eth', 'bsc', 'heco']:
+        default_path = bip44_eth_derivation(0)
+        return default_path[0 : default_path.rindex('/')]
 
 
 def get_temp_file():

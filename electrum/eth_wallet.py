@@ -862,6 +862,28 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         return wallet
 
     @classmethod
+    def from_xpub(cls, coin: str, config: SimpleConfig, xpub: str, derivation: str, device_id: str,
+                  hw=False):
+        if hw:
+            is_valid = keystore.is_bip32_key(xpub)
+            if not is_valid:
+                raise util.UnavailableXpub()
+            ks = keystore.hardware_keystore(
+                {
+                    'type': 'hardware',
+                    'hw_type': 'trezor',
+                    'derivation': derivation,
+                    'xpub': xpub,
+                    'label': 'device_info.label',
+                    'device_id': device_id,
+                }
+            )
+        else:
+            ks = keystore.from_master_key(xpub)
+
+        return cls._create_customer_wallet(ks, config, coin)
+
+    @classmethod
     def from_seed(cls, coin: str, config: SimpleConfig, seed: str, passphrase: str, derivation: str):
         ks = keystore.from_seed_or_bip39(seed, passphrase, derivation)
         return cls._create_customer_wallet(ks, config, coin)
