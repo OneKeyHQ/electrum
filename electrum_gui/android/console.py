@@ -2952,17 +2952,10 @@ class AndroidCommands(commands.Commands):
                             address_info = None
 
                         if address_info and address_info.existing:
-                            balance_info = {
-                                coin: {
-                                    'address': '',
-                                    'balance': Decimal(self.pywalib.web3.fromWei(address_info.balance, "ether")),
-                                }
-                            }
-
-                            balance_info = self._fill_balance_info_with_fiat(wallet.coin, balance_info)
-                            balance_info = balance_info.get(coin)
-                            fiat_str = self.daemon.fx.ccy_amount_str(balance_info.get("fiat") or 0, True)
-                            balance = f"{balance_info.get('balance', '0')} ({fiat_str} {self.ccy})"
+                            main_coin_balance = Decimal(self.pywalib.web3.fromWei(address_info.balance, "ether"))
+                            fiat_price = price_manager.get_last_price(coin, self.ccy)
+                            fiat_str = self.daemon.fx.ccy_amount_str(main_coin_balance * fiat_price, True)
+                            balance = f"{main_coin_balance} ({fiat_str} {self.ccy})"
                             self.update_recover_list(recovery_list, balance, wallet, wallet.get_name(), coin)
                             continue
                 else:
