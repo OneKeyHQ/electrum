@@ -565,7 +565,7 @@ class PyWalib:
         for action in actions:
             block_header = action["block_header"]
             amount = Decimal(action["value"]) / decimal_multiply
-            fee = Decimal(cls.web3.fromWei(action["fee"].usage * action["fee"].price_per_unit, "ether"))
+            fee = Decimal(cls.web3.fromWei(action["fee"].used * action["fee"].price_per_unit, "ether"))
 
             tx_status = _("Unconfirmed")
             show_status = [1, _("Unconfirmed")]
