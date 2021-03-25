@@ -66,16 +66,18 @@
 @property (weak, nonatomic) IBOutlet UILabel *footerTitleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *footerDescLabel;
 - (IBAction)addWalletClick:(UIButton *)sender;
-
+@property (nonatomic,copy)OKDismisVcComplete block;
 @property (nonatomic,assign)BOOL haveHD;
 
 @end
 
 @implementation OKWalletListViewController
 
-+ (instancetype)walletListViewController
++ (instancetype)walletListViewController:(OKDismisVcComplete)block
 {
-    return [[UIStoryboard storyboardWithName:@"WalletList" bundle:nil]instantiateViewControllerWithIdentifier:@"OKWalletListViewController"];
+    OKWalletListViewController *walletVc = [[UIStoryboard storyboardWithName:@"WalletList" bundle:nil]instantiateViewControllerWithIdentifier:@"OKWalletListViewController"];
+    walletVc.block = block;
+    return walletVc;
 }
 
 - (void)viewDidLoad {
@@ -86,6 +88,9 @@
 
 - (void)dealloc
 {
+    if (self.block) {
+        self.block();
+    }
     [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 

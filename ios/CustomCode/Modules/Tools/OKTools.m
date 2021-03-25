@@ -299,4 +299,24 @@
           res=10*res+[iStr characterAtIndex:j]-'0';
       return res;
 }
+
+- (void)tipHwMessage:(NSString *)msg
+{
+    UIView *view = [[UIApplication sharedApplication].delegate window];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    hud.userInteractionEnabled = NO;
+    hud.mode = MBProgressHUDModeText;
+    hud.label.text = msg;
+    hud.label.textColor = [UIColor whiteColor];
+    hud.backgroundColor = RGBA(0, 0, 0, 0.16);
+    hud.margin = 10.f;
+    hud.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+    hud.bezelView.backgroundColor = RGBA(0, 0, 0, 0.7);
+    hud.removeFromSuperViewOnHide = YES;
+}
+- (void)hideHwMessage
+{
+    UIView *view = [[UIApplication sharedApplication].delegate window];
+    [MBProgressHUD hideHUDForView:view animated:YES];
+}
 @end

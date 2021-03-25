@@ -609,3 +609,4 @@
 "Continue" = "继续";
 // Discover Associated - end
 "No account with transaction history was found. You can choose to create a new account" = "没有找到有交易记录的账户，您可以选择创建新账户";
+"In the connection..." = "连接中...";

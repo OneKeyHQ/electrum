@@ -162,7 +162,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [kTools tipHwMessage:@"In the connection...".localized];
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         // Do something...
         OKPeripheralInfo *peripheralInfo = self.dataSource[indexPath.row];
@@ -220,7 +220,7 @@
 
 #pragma mark OKBabyBluetoothManageDelegate
 - (void)systemBluetoothClose {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [kTools hideHwMessage];
     // 系统蓝牙被关闭、提示用户去开启蓝牙
     [kTools tipMessage:MyLocalizedString(@"Bluetooth of the system has been turned off. Please turn it on", nil)];
 }
@@ -232,7 +232,7 @@
 
 - (void)disconnectPeripheral:(CBPeripheral *)peripheral
 {
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [kTools hideHwMessage];
     [kTools tipMessage:[NSString stringWithFormat:@"%@%@",peripheral.name,MyLocalizedString(@"connection is broken", nil)]];
 }
 
@@ -264,7 +264,7 @@
 }
 - (void)connectFailed {
     // 连接失败、做连接失败的处理
-    [MBProgressHUD hideHUDForView:self.view animated:YES];
+    [kTools hideHwMessage];
     [kTools tipMessage:MyLocalizedString(@"Bluetooth connection failed, please try again", nil)];
 }
 - (void)subscribeComplete:(NSDictionary *)jsonDict characteristic:(nonnull CBCharacteristic *)ch
@@ -274,12 +274,12 @@
     if ([chUUID isEqualToString:kDEVICEINFOCHARACTERISTIC]) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             if ([kOKBlueManager isConnectedCurrentDevice]) {
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                [kTools hideHwMessage];
                 OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
                 vc.mode = OKDeviceFirmwareInstallModeBLEDFU;
                 [weakself.navigationController pushViewController:vc animated:YES];
             }else{
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                [kTools hideHwMessage];
                 [kTools tipMessage:MyLocalizedString(@"The Bluetooth connection is abnormal. Please try again", nil)];
             }
          });
@@ -288,7 +288,7 @@
     if (jsonDict == nil) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [kTools tipMessage:MyLocalizedString(@"The Bluetooth connection is abnormal. Please try again", nil)];
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [kTools hideHwMessage];
             [kOKBlueManager disconnectAllPeripherals];
             [weakself.navigationController popViewControllerAnimated:YES];
         });
@@ -300,7 +300,7 @@
 
     if (deviceModel.bootloaderMode) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [kTools hideHwMessage];
             OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
             vc.mode = OKDeviceFirmwareInstallModeBootloader;
             vc.forbidInteractivePopGestureRecognizer = YES;
@@ -311,7 +311,7 @@
     BOOL isFirmwareH = [OKTools compareVersion:kIOSFirmwareSysVersin version2:deviceModel.deviceInfo.deviceSysVersion] == 1?YES:NO;
     if (isFirmwareH) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            [kTools hideHwMessage];
             OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
             vc.mode = OKDeviceFirmwareInstallModeNormal;
             vc.deviceId = deviceModel.deviceInfo.device_id;
@@ -325,7 +325,7 @@
             kOKBlueManager.currentReadDataStr = @"";
                 if (jsonDict != nil) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [MBProgressHUD hideHUDForView:self.view animated:YES];
+                        [kTools hideHwMessage];
                         if (deviceModel.bootloaderMode) {
                             OKDeviceUpdateViewController *vc = [OKDeviceUpdateViewController controllerWithStoryboard];
                             vc.mode = OKDeviceFirmwareInstallModeBootloader;
@@ -372,10 +372,10 @@
                 if (deviceModel.deviceInfo.initialized) {
                     [kTools tipMessage:MyLocalizedString(@"Backup to inactive devices only", nil)];
                     [kOKBlueManager disconnectAllPeripherals];
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    [kTools hideHwMessage];
                     return;
                 }
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                [kTools hideHwMessage];
                 OKSetDeviceNameViewController *setDeviceNameVc = [OKSetDeviceNameViewController setDeviceNameViewController];
                 setDeviceNameVc.type = OKMatchingTypeBackup2Hw;
                 setDeviceNameVc.words = self.words;
@@ -387,7 +387,7 @@
         {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (deviceModel.deviceInfo.initialized && !deviceModel.deviceInfo.backup_only) {
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    [kTools hideHwMessage];
                     OKSendCoinViewController *sendCoinVc = [OKSendCoinViewController sendCoinViewController];
                     sendCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
                     sendCoinVc.address = self.addressForTransfer;
@@ -396,7 +396,7 @@
                 }else{
                     [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
                     [kOKBlueManager disconnectAllPeripherals];
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    [kTools hideHwMessage];
                     [weakself.navigationController popViewControllerAnimated:YES];
                 }
             });
@@ -406,7 +406,7 @@
         {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (deviceModel.deviceInfo.initialized && !deviceModel.deviceInfo.backup_only) {
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    [kTools hideHwMessage];
                     OKReceiveCoinViewController *receiveCoinVc = [OKReceiveCoinViewController receiveCoinViewController];
                     receiveCoinVc.coinType = kWalletManager.currentWalletInfo.coinType;
                     receiveCoinVc.walletType = [kWalletManager getWalletDetailType];
@@ -416,7 +416,7 @@
                 }else{
                     [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
                     [kOKBlueManager disconnectAllPeripherals];
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    [kTools hideHwMessage];
                     [weakself.navigationController popViewControllerAnimated:YES];
                     return;
                 }
@@ -427,13 +427,13 @@
         {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (deviceModel.deviceInfo.initialized && !deviceModel.deviceInfo.backup_only) {
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    [kTools hideHwMessage];
                     OKSignatureViewController *signatureVc = [OKSignatureViewController signatureViewController];
                     [self.navigationController pushViewController:signatureVc animated:YES];
                 }else{
                     [kTools tipMessage:MyLocalizedString(@"This operation is not supported if the current device is not active, or if the special device is backed up", nil)];
                     [kOKBlueManager disconnectAllPeripherals];
-                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    [kTools hideHwMessage];
                     [weakself.navigationController popViewControllerAnimated:YES];
                     return;
                 }

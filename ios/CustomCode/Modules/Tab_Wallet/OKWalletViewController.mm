@@ -121,6 +121,9 @@
 
 - (void)switchWallet
 {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.balance.text = @"--";
+    });
     NSString *name = kWalletManager.currentWalletInfo.name;
     if ((name == nil || name.length == 0) && self.listWallets.count > 0 ) {
         NSDictionary *dict = [self.listWallets lastObject];
@@ -227,9 +230,9 @@
             [arrayM addObject:tokenModel];
         }
     }
-    self.allAssetData = arrayM;
     OKWeakSelf(self)
     dispatch_async(dispatch_get_main_queue(), ^{
+        self.allAssetData = arrayM;
         [MBProgressHUD hideHUDForView:weakself.view animated:YES];
        // UI更新代码
         NSString *fiatStr = [kWalletManager isETHClassification:kWalletManager.currentWalletInfo.coinType ]?self.notiAssetModel.sum_fiat:self.notiAssetModel.fiat;
@@ -414,7 +417,10 @@
 #pragma mark - 切换钱包
 - (void)tapGestureClick
 {
-    OKWalletListViewController *walletListVc = [OKWalletListViewController walletListViewController];
+    OKWeakSelf(self)
+    OKWalletListViewController *walletListVc = [OKWalletListViewController walletListViewController:^{
+        [weakself loadData];
+    }];
     BaseNavigationController *baseVc = [[BaseNavigationController alloc]initWithRootViewController:walletListVc];
     [self.OK_TopViewController presentViewController:baseVc animated:YES completion:nil];
 }
@@ -776,6 +782,7 @@
         self.navigationController.interactivePopGestureRecognizer.delegate = nil;
     }
 }
+
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {

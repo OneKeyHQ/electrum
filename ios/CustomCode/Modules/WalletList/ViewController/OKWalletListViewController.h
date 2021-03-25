@@ -7,11 +7,11 @@
 //
 
 #import "BaseViewController.h"
-
+typedef void(^OKDismisVcComplete)();
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OKWalletListViewController : BaseViewController
-+ (instancetype)walletListViewController;
++ (instancetype)walletListViewController:(OKDismisVcComplete)block;
 @end
 
 NS_ASSUME_NONNULL_END

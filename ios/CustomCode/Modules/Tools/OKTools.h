@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideIndicatorView;
 - (void)pasteboardCopyString:(NSString *)string msg:(NSString *)msg;
 - (void)tipMessage:(NSString *)msg;
+- (void)tipHwMessage:(NSString *)msg;
+- (void)hideHwMessage;
 - (void)debugTipMessage:(NSString *)msg;
 - (BOOL)okJumpOpenURL:(NSString *)urlStr;
 - (NSString *)getAppVersionString;
