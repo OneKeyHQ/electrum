@@ -7,12 +7,3 @@
 [submodule "electrum/www"]
 	path = electrum/www
 	url = https://github.com/spesmilo/electrum-http.git
-[submodule "trezor/python-trezor"]
-	path = trezor/python-trezor
-	url = https://github.com/OneKeyHQ/python-trezor.git
-[submodule "ios"]
-	path = ios
-	url = https://github.com/OneKeyHQ/ios.git
-[submodule "android"]
-	path = android
-	url = https://github.com/OneKeyHQ/android.git
