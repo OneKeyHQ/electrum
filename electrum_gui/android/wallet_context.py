@@ -6,7 +6,6 @@ import time
 from typing import Generator, List, Optional, Set, Tuple
 
 from electrum import simple_config, util
-from electrum_gui.android import derived_info
 
 _COIN_PRIORITY = {
     "btc": 3,
@@ -223,8 +222,6 @@ class WalletContext(object):
     def add_derived_wallet(self, xpub: str, name: str, account_id: str) -> None:
         if xpub not in self._derived_info:
             self._derived_info[xpub] = []
-        elif self.get_derived_num(xpub) > derived_info.RECOVERY_DERIVAT_NUM:  # too many wallets
-            return
         elif account_id in (w['account_id'] for w in self.iter_derived_wallets(xpub)):  # already present
             return
 

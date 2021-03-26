@@ -2426,11 +2426,9 @@ class AndroidCommands(commands.Commands):
             # self.update_local_info(tx.txid(), self.wallet.get_addresses()[0], tx, msg)
             raise BaseException(e)
 
-    def get_derived_list(self, xpub):
+    def get_derived_list(self, xpub, hw=False):
         try:
-            derived_info = DerivedInfo(self.config)
-            derived_info.init_recovery_num()
-
+            derived_info = DerivedInfo(self.config, hw)
             for derived_wallet in self.wallet_context.iter_derived_wallets(xpub):
                 derived_info.update_recovery_info(derived_wallet['account_id'])
 
@@ -2468,6 +2466,7 @@ class AndroidCommands(commands.Commands):
         :param path: NFC/android_usb/bluetooth as str
         :param _type: p2wsh/p2pkh/p2wpkh-p2sh as string
         :coin: btc/eth as string
+        :bip39_derivation: user defined path as string
         :return: xpub string
         """
         self.hw_info["device_id"] = self.trezor_manager.get_device_id(path, from_recovery=from_recovery)
@@ -2523,7 +2522,7 @@ class AndroidCommands(commands.Commands):
         xpub = self.get_xpub_from_hw(path=path, _type="p2wpkh", coin=coin)
         self.hw_info["xpub"] = xpub
         if bip39_derivation is None:
-            list_info = self.get_derived_list(xpub + coin.lower())
+            list_info = self.get_derived_list(xpub + coin.lower(), hw=True)
             if list_info is None:
                 self.hw_info["account_id"] = 0
                 dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=0, coin=coin)
