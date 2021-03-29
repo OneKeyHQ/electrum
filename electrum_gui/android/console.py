@@ -3003,7 +3003,10 @@ class AndroidCommands(commands.Commands):
                 derivation = util.get_keystore_path(bip39_derivation)
                 index = int(helpers.get_path_info(bip39_derivation, INDEX_POS))
                 wallet = Standard_Eth_Wallet.from_seed_or_bip39(coin, index, self.config, seed, passphrase, derivation)
-        elif bip39_derivation is not None and seed is not None and customized_path:
+        elif bip39_derivation is not None and customized_path:
+            if seed is None:
+                seed = Mnemonic("english").generate(strength=strength)
+                new_seed = True
             wallet_type = f"{coin}-customer-standard"
             if coin == "btc":
                 wallet = Imported_Wallet.from_seed(
