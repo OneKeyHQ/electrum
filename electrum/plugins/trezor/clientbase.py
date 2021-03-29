@@ -140,7 +140,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
     def i4b(self, x):
         return pack('>I', x)
 
-    def get_xpub(self, bip32_path, xtype, creating=False):
+    def get_xpub(self, bip32_path=None, xtype=None, creating=False):
         address_n = parse_path(bip32_path)
         with self.run_flow(creating_wallet=creating):
             if xtype == "standard":
@@ -153,7 +153,7 @@ class TrezorClientBase(HardwareClientBase, Logger):
                          fingerprint=self.i4b(node.fingerprint),
                          child_number=self.i4b(node.child_num)).to_xpub()
 
-    def get_eth_xpub(self, bip32_path):
+    def get_eth_xpub(self, bip32_path=None):
         address_n = parse_path(bip32_path)
         with self.run_flow(''):
             node = trezorlib.ethereum.get_public_node(self.client, address_n).node

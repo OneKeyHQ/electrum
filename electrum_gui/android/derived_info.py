@@ -1,8 +1,7 @@
-from threading import Timer
-
 RECOVERY_DERIVAT_NUM = 20
 
-class DerivedInfo():
+
+class DerivedInfo:
     def __init__(self, config):
         self.config = config
         self.derived_account_id = self.init_list()
@@ -32,5 +31,5 @@ class DerivedInfo():
         self.clear_recovery_info()
 
     def update_list(self, account_id):
-        if self.derived_account_id.__contains__(int(account_id)):
+        if int(account_id) in self.derived_account_id:
             self.derived_account_id.remove(int(account_id))

@@ -75,12 +75,14 @@ class TrezorManager(object):
         # when no longer needed.
         self.lock = threading.RLock()
 
-    def _get_client(self, path: str) -> trezor_clientbase.TrezorClientBase:
+    def _get_client(self, path: str, from_recovery=False) -> trezor_clientbase.TrezorClientBase:
         # The meaning of 'path' is obsecure, it is used in the plugin to
         # select a device.
         # dict.setdefault() is not short-circuiting.
         client = self.clients.get(path)
-        if client:
+        # In order to awake hardware device from some unnormal state
+        # but not be suitable in recovery process so use `from_recovery` keywords args to protect
+        if client and not from_recovery:
             client.client.init_device()
         client = client or self.clients.setdefault(
             path,
@@ -92,14 +94,14 @@ class TrezorManager(object):
         )
         return client
 
-    def _bridge(self, path: str, method: str, *args, **kwargs) -> Any:
+    def _bridge(self, path: str, method: str, *args, from_recovery=False, **kwargs) -> Any:
         # Bridge calls to the trezor client.
         # TODO: this bridge method is only used for raising the BaseException
         # because the caller might still expect a BaseException. Once we catch
         # the excetpions in the upper call itself (and raise generic
         # exceptions there), this should be removed.
         try:
-            return getattr(self._get_client(path), method)(*args, **kwargs)
+            return getattr(self._get_client(path, from_recovery=from_recovery), method)(*args, **kwargs)
         except Exception as e:
             raise BaseException(e)
 
@@ -111,15 +113,17 @@ class TrezorManager(object):
     def ensure_client(self, path: str) -> None:
         self._get_client(path)
 
-    def get_device_id(self, path: str) -> str:
-        client = self._get_client(path)
+    def get_device_id(self, path: str, from_recovery=False) -> str:
+        client = self._get_client(path, from_recovery=from_recovery)
         return client.features.serial_num
 
-    def get_xpub(self, path: str, derivation: str, _type: str, creating: bool) -> str:
-        return self._bridge(path, 'get_xpub', derivation, _type, creating=creating)
+    def get_xpub(self, path: str, derivation: str, _type: str, creating: bool, from_recovery=False) -> str:
+        return self._bridge(
+            path, 'get_xpub', from_recovery=from_recovery, bip32_path=derivation, xtype=_type, creating=creating
+        )
 
-    def get_eth_xpub(self, path: str, derivation: str) -> str:
-        return self._bridge(path, 'get_eth_xpub', derivation)
+    def get_eth_xpub(self, path: str, derivation: str, from_recovery=False) -> str:
+        return self._bridge(path, 'get_eth_xpub', from_recovery=from_recovery, bip32_path=derivation)
 
     # === End helper methods used in console.AndroidCommands ===
 
@@ -175,12 +179,14 @@ class TrezorManager(object):
         path: str = "android_usb",
         mnemonics: Optional[str] = None,
         language: str = "en-US",
-        label: str = "BIXIN KEY",
+        label: str = "OneKey",
     ) -> str:
         """
         Import seed, used by hardware
-        :param mnemonics: as string
         :param path: NFC/android_usb/bluetooth as str
+        :param mnemonics: as string
+        :param language: used to set hardware language
+        :param label:  used to set hardware label
         :return: raise except if error
         """
         return self._bridge(path, 'bixin_load_device', mnemonics=mnemonics, language=language, label=label)
@@ -307,17 +313,17 @@ class TrezorManager(object):
             minor_version: int = None,  次版本号
             patch_version: int = None
                 修订号，即硬件的软件版本(俗称固件，在2.0.1 之前使用)
-            bootloader_mode: bool = None,  设备当时是不是在bootloader模式
+            bootloader_mode: bool = None,  设备当前是不是在bootloader模式
             device_id: str = None,  设备唯一标识，设备恢复出厂设置这个值会变
             pin_protection: bool = None, 是否开启了PIN码保护，
             passphrase_protection: bool = None
                 是否开启了passphrase功能，这个用来支持创建隐藏钱包
-            language: str = None,
-            label: str = None,  激活钱包时，使用的名字
-            initialized: bool = None, 当时设备是否激活
+            language: str = None, 设备当前使用的语言类型
+            label: str = None,  激活钱包时，使用的名字,会显示在硬件主屏幕上
+            initialized: bool = None, 当前设备是否激活
             revision: bytes = None,
             bootloader_hash: bytes = None,
-            imported: bool = None,
+            imported: bool = None, 标识硬件是否是通过导入助记词激活的
             unlocked: bool = None,
             firmware_present: bool = None,
             needs_backup: bool = None,
@@ -342,15 +348,17 @@ class TrezorManager(object):
             display_rotation: int = None,
             experimental_features: bool = None,
             offset: int = None,  升级时断点续传使用的字段
-            ble_name: str = None,
-            ble_ver: str = None,  蓝牙固件版本
-            ble_enable: bool = None,
-            se_enable: bool = None,
-            se_ver: str = None,  se的版本
+            ble_name: str = None, 当前设备的蓝牙名字
+            ble_ver: str = None,  当前设备的蓝牙固件版本
+            ble_enable: bool = None, 当前设备蓝牙是否开启
+            se_enable: bool = None, 当前设备的se芯片是否被使能
+            se_ver: str = None,  当前设备的se的版本
             backup_only: bool = None
-                是否是特殊设备，只用来备份，没有额外功能支持
+                当前设备是否是特殊设备，只用来备份，没有额外功能支持
             onekey_version: str = None
-                硬件的软件版本（俗称固件），仅供APP使用（从2.0.1开始加入）}
+                设备的软件版本（俗称固件），仅供APP使用（从2.0.1开始加入）
+            serial_num: str = None 硬件序列号  (从2.0.7开始加入，用来取代`device_id`作为硬件唯一标识)
+            }
         """
         with self.lock:
             # TODO: why is this lock needed

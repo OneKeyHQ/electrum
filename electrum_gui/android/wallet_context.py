@@ -3,7 +3,7 @@ import itertools
 import os
 import re
 import time
-from typing import Generator, List, Optional, Tuple
+from typing import Generator, List, Optional, Set, Tuple
 
 from electrum import simple_config, util
 from electrum_gui.android import derived_info
@@ -35,7 +35,7 @@ def _get_wallet_priority_by_type(wallet_type: str) -> int:
         return 4
 
 
-def _type_info_basic_filter_func(wallet_id: str, stored_wallets: List[str]) -> bool:
+def _type_info_basic_filter_func(wallet_id: str, stored_wallets: Set[str]) -> bool:
     return wallet_id in stored_wallets and ".tmp." not in wallet_id and ".tmptest." not in wallet_id
 
 
