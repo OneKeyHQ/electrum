@@ -2004,6 +2004,15 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
     def may_have_password(cls):
         return True
 
+    def force_change_storage_password(self, new_pw: Optional[str]):
+        """The password generation rules have changed to take care of the original password
+        and are not universal, this is only a temporary remedy and will be deprecated later"""
+        if self.storage and new_pw:
+            self.storage.set_password(new_pw, self.get_available_storage_encryption_version())
+        self.db.set_modified(True)
+        self.save_db()
+        self.storage_pw = new_pw
+
     def check_password(self, password, str_pw=None):
         if self.has_keystore_encryption():
             self.keystore.check_password(password)

@@ -495,6 +495,7 @@ class AndroidCommands(commands.Commands):
             if self.wallet_context.is_hd(name):
                 self.set_hd_wallet(wallet)
             self.daemon.add_wallet(wallet)
+        return wallet
 
     def close_wallet(self, name=None):
         """Close a wallet"""
@@ -2828,7 +2829,12 @@ class AndroidCommands(commands.Commands):
         """
         name_wallets = sorted([name for name in os.listdir(self._wallet_path())])
         for name in name_wallets:
-            self.load_wallet(name, password=self.android_id)
+            try:
+                self.load_wallet(name, password=self.android_id)
+            except InvalidPassword:
+                storage_password = "112233%s" % self.android_id[-8:]
+                wallet = self.load_wallet(name, password=storage_password)
+                wallet.force_change_storage_password(self.android_id)
 
     def update_wallet_password(self, old_password, new_password):
         """
