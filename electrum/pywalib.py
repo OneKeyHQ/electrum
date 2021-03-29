@@ -526,13 +526,13 @@ class PyWalib:
             for tx_input, tx_output in zip(tx.inputs, tx.outputs):
                 action = {
                     **common_params,
-                    "from": tx_input.address,
-                    "to": tx_output.address,
+                    "from": tx_input.address.lower(),
+                    "to": tx_output.address.lower(),
                     "value": tx_output.value,
                 }
 
                 if tx_output.token_address:
-                    action["token_address"] = tx_output.token_address
+                    action["token_address"] = tx_output.token_address.lower()
 
                 actions.append(action)
 
@@ -550,11 +550,12 @@ class PyWalib:
             actions = (i for i in actions if not i.get("token_address"))
 
         if search_type == "send":
-            actions = (i for i in actions if i.get("from") and i["from"].lower() == address)
+            actions = (i for i in actions if i.get("from") and i["from"] == address)
         elif search_type == "receive":
-            actions = (i for i in actions if i.get("to") and i["to"].lower() == address)
+            actions = (i for i in actions if i.get("to") and i["to"] == address)
+        else:
+            actions = (i for i in actions if i.get("from") == address or i.get("to") == address)
 
-        actions = list(actions)
         output_txs = []
 
         if contract:
