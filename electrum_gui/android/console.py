@@ -2876,6 +2876,39 @@ class AndroidCommands(commands.Commands):
                 bip39_derivation, self.get_hd_wallet_encode_seed(seed=seed, coin=wallet.coin), wallet.name, wallet.coin
             )
 
+    def _get_derived_account_id(self, xpub, hw=False):
+        list_info = self.get_derived_list(xpub, hw=hw)
+        if list_info is not None:
+            if not list_info:
+                raise BaseException(DerivedWalletLimit())
+            account_id = list_info[0]
+        else:
+            account_id = 0
+        return account_id
+
+    def get_default_show_path(self, hw=False, coin=None, derived=False, purpose=None, path="android_usb"):
+        """
+        Get the default path for creating a wallet
+        :param hw: if true, it means that you currently need to create a hardware wallet
+        :param coin: btc/eth/bsc/heco as str
+        :param derived: if true, it means that you currently need to create a derived wallet
+        :param purpose: 44/49/84, only btc needs
+        :param path: NFC/android_usb/bluetooth as str
+        :return:
+        """
+        account_id = 0
+        if not hw and derived:
+            derive_key = self.get_hd_wallet_encode_seed(coin=coin)
+            account_id = self._get_derived_account_id(derive_key)
+        elif hw:
+            xpub = self.get_xpub_from_hw(path=path, _type="p2wpkh", coin=coin)
+            account_id = self._get_derived_account_id(xpub + coin.lower(), hw=hw)
+
+        if coin == 'btc':
+            return "%s/0/0" % keystore.bip44_derivation(account_id, bip43_purpose=int(purpose))
+        else:
+            return keystore.bip44_eth_derivation(account_id)
+
     def create(  # noqa
         self,
         name,
@@ -3413,14 +3446,7 @@ class AndroidCommands(commands.Commands):
         coin_type = constants.net.BIP44_COIN_TYPE if coin == "btc" else self.coins[coin]["coinId"]
         purpose = purpose if coin == "btc" else self.coins[coin]["addressType"]
         encode_seed = self.get_hd_wallet_encode_seed(seed=seed, coin=coin)
-        list_info = self.get_derived_list(encode_seed)
-
-        if list_info is not None:
-            if len(list_info) == 0:
-                raise BaseException(DerivedWalletLimit())
-            account_id = list_info[0]
-        else:
-            account_id = 0
+        account_id = self._get_derived_account_id(encode_seed)
 
         if coin in self.coins:
             derivat_path = bip44_eth_derivation(account_id, purpose, cointype=coin_type)
