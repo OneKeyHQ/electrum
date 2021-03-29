@@ -924,7 +924,6 @@ class InvalidAddressURI(Exception):
 def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
     """Raises InvalidBitcoinURI on malformed URI."""
     from . import bitcoin
-    from .bitcoin import COIN
     from .pywalib import PyWalib
 
     if not isinstance(uri, str):
@@ -950,33 +949,9 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
         coin = u.scheme if u.scheme in ("eth", "bsc", "heco") else "eth"
         res["coin"] = coin
 
+    append_values_from_query(res, query)
+
     qs = {k: v[0] for k, v in urllib.parse.parse_qs(query).items() if k and v}
-
-    if 'amount' in qs: # bip-0021
-        try:
-            am = qs['amount']
-            m = re.match(r'([0-9.]+)X([0-9])', am)
-            if m:
-                k = int(m.group(2)) - 8
-                amount = Decimal(m.group(1)) * pow(10, Decimal(k)) / COIN
-            else:
-                amount = Decimal(am)
-
-            res['amount'] = amount
-        except Exception:
-            pass
-
-    if "value" in qs:
-        try:
-            amount = Decimal(qs["value"]) / pow(10, Decimal(qs.get("decimal", 0)))
-            res["amount"] = amount
-        except Exception:
-            pass
-
-    if "message" in qs:
-        res["message"] = res["message"]
-        res["memo"] = qs["message"]
-
     def safe_convert(src: dict, dest: dict, key: str, convert: Callable):
         if key in src:
             try:
@@ -1012,6 +987,34 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
 
     return res
 
+
+def append_values_from_query(res: dict, query: dict):
+    from .bitcoin import COIN
+    qs = {k: v[0] for k, v in urllib.parse.parse_qs(query).items() if k and v}
+    if 'amount' in qs:  # bip-0021
+        try:
+            am = qs['amount']
+            m = re.match(r'([0-9.]+)X([0-9])', am)
+            if m:
+                k = int(m.group(2)) - 8
+                amount = Decimal(m.group(1)) * pow(10, Decimal(k)) / COIN
+            else:
+                amount = Decimal(am)
+
+            res['amount'] = amount
+        except Exception:
+            pass
+
+    if "value" in qs:
+        try:
+            amount = Decimal(qs["value"]) / pow(10, Decimal(qs.get("decimal", 0)))
+            res["amount"] = amount
+        except Exception:
+            pass
+
+    if "message" in qs:
+        res["message"] = res["message"]
+        res["memo"] = qs["message"]
 
 def create_bip21_uri(addr, amount_sat: Optional[int], message: Optional[str],
                      *, extra_query_params: Optional[dict] = None) -> str:
