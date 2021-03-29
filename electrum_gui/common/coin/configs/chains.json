@@ -3,27 +3,33 @@
     "chain_code": "btc",
     "name": "Bitcoin",
     "fee_code": "btc",
-    "chain_model": "utxo"
+    "chain_model": "utxo",
+    "qr_code_prefix": "bitcoin"
   },
   {
     "chain_code": "eth",
     "name": "Ethereum",
     "fee_code": "eth",
     "chain_model": "account",
-    "chain_id": "1"
+    "chain_id": "1",
+    "qr_code_prefix": "ethereum"
   },
   {
     "chain_code": "bsc",
     "name": "Binance Smart Chain",
     "fee_code": "bsc",
     "chain_model": "account",
-    "chain_id": "56"
+    "chain_id": "56",
+    "chain_affinity": "eth",
+    "qr_code_prefix": "bsc"
   },
   {
     "chain_code": "heco",
     "name": "Huobi ECO Chain",
     "fee_code": "heco",
     "chain_model": "account",
-    "chain_id": "128"
+    "chain_id": "128",
+    "chain_affinity": "eth",
+    "qr_code_prefix": "heco"
   }
 ]

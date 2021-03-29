@@ -56,12 +56,16 @@ def query_coins_by_codes(coin_codes: List[str]) -> List[CoinInfo]:
     return coins
 
 
-def get_all_chains() -> List[ChainInfo]:
+def get_all_chains(only_enabled: bool = False) -> List[ChainInfo]:
     """
     Get all chains info
     :return: list of ChainInfo
     """
-    return list(registry.chain_dict.values())
+    chains = registry.chain_dict.values()
+    if only_enabled:
+        chains = (i for i in chains if is_chain_enabled(i.chain_code))
+
+    return list(chains)
 
 
 def get_all_coins() -> List[CoinInfo]:

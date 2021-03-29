@@ -17,7 +17,9 @@ class ChainInfo(DataClassMixin):
     fee_code: str  # which coin is used to provide fee (omni chain uses btc, neo uses neo_gas etc.)
     name: str  # full name of chain
     chain_model: ChainModel  # model of chain (UTXO, Account etc.)
+    qr_code_prefix: str  # QR code prefix of address
     chain_id: Optional[str] = None  # optional, identify multi forked chains by chain_id (use by eth etc.)
+    chain_affinity: Optional[str] = None  # optional, used by testnet or fork chain
 
 
 @dataclass
