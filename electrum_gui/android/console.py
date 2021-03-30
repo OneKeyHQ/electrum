@@ -3693,7 +3693,8 @@ class AndroidCommands(commands.Commands):
 
             info = {"name": name, "label": self.wallet.get_name(), "wallets": contract_info}
         else:
-            self.wallet.set_key_pool_size()
+            if not isinstance(self.wallet, Imported_Wallet):
+                self.wallet.set_key_pool_size()
             c, u, x = self.wallet.get_balance()
             util.trigger_callback("wallet_updated", self.wallet)
 
