@@ -8,7 +8,7 @@ class TransactionNotFound(Exception):
 
 
 class NoAvailableProvider(Exception):
-    def __init__(self, chain_code: str, providers: list, instance_required: Any):
+    def __init__(self, chain_code: str, candidates: list, instance_required: Any):
         super(NoAvailableProvider, self).__init__(
-            f"chain_code: {repr(chain_code)}, providers: {providers}, instance_required: {instance_required}"
+            f"chain_code: {repr(chain_code)}, candidates: {candidates}, instance_required: {instance_required}"
         )

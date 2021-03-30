@@ -12,26 +12,55 @@
     "name": "Ethereum Ropsten Test Network",
     "fee_code": "teth",
     "chain_model": "account",
-    "chain_id": "3",
+    "providers": [
+      {
+        "class": "BlockBook",
+        "url": "https://ropsten1.trezor.io"
+      },
+      {
+        "class": "Etherscan",
+        "url": "https://api-ropsten.etherscan.io",
+        "api_keys": [
+          "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
+        ]
+      },
+      {
+        "class": "Geth",
+        "url": "https://ropsten.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff"
+      }
+    ],
     "chain_affinity": "eth",
-    "qr_code_prefix": "ethereum"
+    "qr_code_prefix": "ethereum",
+    "chain_id": "3"
   },
   {
     "chain_code": "tbsc",
     "name": "Binance Smart Chain Test Network",
     "fee_code": "tbsc",
     "chain_model": "account",
-    "chain_id": "97",
+    "providers": [
+      {
+        "class": "Geth",
+        "url": "https://data-seed-prebsc-2-s1.binance.org:8545"
+      }
+    ],
     "chain_affinity": "eth",
-    "qr_code_prefix": "bsc"
+    "qr_code_prefix": "bsc",
+    "chain_id": "97"
   },
   {
     "chain_code": "theco",
     "name": "Fork Huobi ECO Chain",
     "fee_code": "theco",
     "chain_model": "account",
-    "chain_id": "128",
+    "providers": [
+      {
+        "class": "Geth",
+        "url": "https://testnode.onekey.so/heco"
+      }
+    ],
     "chain_affinity": "eth",
-    "qr_code_prefix": "heco"
+    "qr_code_prefix": "heco",
+    "chain_id": "128"
   }
 ]

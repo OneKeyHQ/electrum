@@ -1,6 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import IntEnum, unique
-from typing import Optional
+from typing import List, Optional
 
 from electrum_gui.common.basic.dataclass.dataclass import DataClassMixin
 
@@ -18,6 +18,7 @@ class ChainInfo(DataClassMixin):
     name: str  # full name of chain
     chain_model: ChainModel  # model of chain (UTXO, Account etc.)
     qr_code_prefix: str  # QR code prefix of address
+    providers: List[dict] = field(default_factory=list)  # config of providers
     chain_id: Optional[str] = None  # optional, identify multi forked chains by chain_id (use by eth etc.)
     chain_affinity: Optional[str] = None  # optional, used by testnet or fork chain
 
