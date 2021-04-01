@@ -4,6 +4,15 @@
     "name": "Bitcoin TestNet3",
     "fee_code": "tbtc",
     "chain_model": "utxo",
+    "coins": [
+      {
+        "code": "tbtc",
+        "symbol": "TBTC",
+        "name": "Bitcoin TestNet3",
+        "decimals": 8,
+        "icon": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+      }
+    ],
     "chain_affinity": "btc",
     "qr_code_prefix": "bitcoin"
   },
@@ -12,6 +21,15 @@
     "name": "Ethereum Ropsten Test Network",
     "fee_code": "teth",
     "chain_model": "account",
+    "coins": [
+      {
+        "code": "teth",
+        "symbol": "TETH",
+        "name": "Ethereum Ropsten Test Network",
+        "decimals": 18,
+        "icon": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880"
+      }
+    ],
     "clients": [
       {
         "class": "BlockBook",
@@ -38,6 +56,15 @@
     "name": "Binance Smart Chain Test Network",
     "fee_code": "tbsc",
     "chain_model": "account",
+    "coins": [
+      {
+        "code": "tbsc",
+        "symbol": "TBNB",
+        "name": "Binance Smart Chain Test Network",
+        "decimals": 18,
+        "icon": "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png?1547034615"
+      }
+    ],
     "clients": [
       {
         "class": "Geth",
@@ -53,6 +80,15 @@
     "name": "Fork Huobi ECO Chain",
     "fee_code": "theco",
     "chain_model": "account",
+    "coins": [
+      {
+        "code": "theco",
+        "symbol": "THT",
+        "name": "Huobi ECO Chain Test Network",
+        "decimals": 18,
+        "icon": "https://assets.coingecko.com/coins/images/2822/large/huobi-token-logo.png?1547036992"
+      }
+    ],
     "clients": [
       {
         "class": "Geth",

@@ -4,6 +4,15 @@
     "name": "Bitcoin",
     "fee_code": "btc",
     "chain_model": "utxo",
+    "coins": [
+      {
+        "code": "btc",
+        "symbol": "BTC",
+        "name": "Bitcoin",
+        "decimals": 8,
+        "icon": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+      }
+    ],
     "chain_affinity": "btc",
     "qr_code_prefix": "bitcoin"
   },
@@ -12,6 +21,15 @@
     "name": "Ethereum",
     "fee_code": "eth",
     "chain_model": "account",
+    "coins": [
+      {
+        "code": "eth",
+        "symbol": "ETH",
+        "name": "Ethereum",
+        "decimals": 18,
+        "icon": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880"
+      }
+    ],
     "clients": [
       {
         "class": "BlockBook",
@@ -49,6 +67,15 @@
     "name": "Binance Smart Chain",
     "fee_code": "bsc",
     "chain_model": "account",
+    "coins": [
+      {
+        "code": "bsc",
+        "symbol": "BNB",
+        "name": "Binance Smart Chain",
+        "decimals": 18,
+        "icon": "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png?1547034615"
+      }
+    ],
     "clients": [
       {
         "class": "BlockBook",
@@ -68,6 +95,15 @@
     "name": "Huobi ECO Chain",
     "fee_code": "heco",
     "chain_model": "account",
+    "coins": [
+      {
+        "code": "heco",
+        "symbol": "HT",
+        "name": "Huobi ECO Chain",
+        "decimals": 18,
+        "icon": "https://assets.coingecko.com/coins/images/2822/large/huobi-token-logo.png?1547036992"
+      }
+    ],
     "clients": [
       {
         "class": "BlockBook",

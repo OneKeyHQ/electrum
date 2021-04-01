@@ -1,7 +1,8 @@
 from typing import List, Optional, Tuple
 
-from electrum_gui.common.coin import daos, exceptions, registry
+from electrum_gui.common.coin import daos, exceptions
 from electrum_gui.common.coin.data import ChainInfo, CoinInfo
+from electrum_gui.common.coin.loader import CHAINS_DICT, COINS_DICT
 from electrum_gui.common.conf import settings
 
 
@@ -12,10 +13,10 @@ def get_chain_info(chain_code: str) -> ChainInfo:
     :return: ChainInfo
     :raise ChainNotFound: if nothing found by chain_code
     """
-    if chain_code not in registry.chain_dict:
+    if chain_code not in CHAINS_DICT:
         raise exceptions.ChainNotFound(chain_code)
 
-    return registry.chain_dict[chain_code]
+    return CHAINS_DICT[chain_code]
 
 
 def is_chain_enabled(chain_code: str) -> bool:
@@ -35,7 +36,7 @@ def get_coin_info(coin_code: str, nullable: bool = False) -> Optional[CoinInfo]:
     :return: CoinInfo
     :raise CoinNotFound: raise if coin not found and no-nullable
     """
-    coin = registry.coin_dict.get(coin_code) or daos.get_coin_info(coin_code)
+    coin = COINS_DICT.get(coin_code) or daos.get_coin_info(coin_code)
     if not coin and not nullable:
         raise exceptions.CoinNotFound(coin_code)
 
@@ -49,7 +50,7 @@ def query_coins_by_codes(coin_codes: List[str]) -> List[CoinInfo]:
     :return: list of CoinInfo found
     """
     coin_codes = set(coin_codes)
-    coins = list(i for i in registry.coin_dict.values() if i.code in coin_codes)
+    coins = list(i for i in COINS_DICT.values() if i.code in coin_codes)
     coins.extend(daos.query_coins_by_codes(coin_codes))
 
     coins = _deduplicate_coins(coins)
@@ -61,7 +62,7 @@ def get_all_chains(only_enabled: bool = False) -> List[ChainInfo]:
     Get all chains info
     :return: list of ChainInfo
     """
-    chains = registry.chain_dict.values()
+    chains = CHAINS_DICT.values()
     if only_enabled:
         chains = (i for i in chains if is_chain_enabled(i.chain_code))
 
@@ -73,7 +74,7 @@ def get_all_coins() -> List[CoinInfo]:
     Get all coins info
     :return: list of CoinInfo
     """
-    coins = list(registry.coin_dict.values())
+    coins = list(COINS_DICT.values())
     coins.extend(daos.get_all_coins())
 
     coins = _deduplicate_coins(coins)
@@ -86,7 +87,7 @@ def get_coins_by_chain(chain_code: str) -> List[CoinInfo]:
     :param chain_code: chain_code
     :return: list of CoinInfo
     """
-    coins = [i for i in registry.coin_dict.values() if i.chain_code == chain_code]
+    coins = [i for i in COINS_DICT.values() if i.chain_code == chain_code]
     coins.extend(daos.get_coins_by_chain(chain_code))
 
     coins = _deduplicate_coins(coins)
@@ -115,7 +116,7 @@ def add_coin(
 ) -> str:
     coin_code = _generate_coin_code(chain_code, token_address, symbol)
 
-    if coin_code in registry.coin_dict:
+    if coin_code in COINS_DICT:
         return coin_code
 
     coin = daos.get_coin_info(coin_code)
