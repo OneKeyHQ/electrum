@@ -23,7 +23,7 @@ class TxBroadcastReceiptCode(IntEnum):
 
 
 @dataclass
-class ProviderInfo(DataClassMixin):
+class ClientInfo(DataClassMixin):
     name: str
     best_block_number: int
     is_ready: bool
@@ -111,3 +111,9 @@ class PricePerUnit(DataClassMixin):
     slow: EstimatedTimeOnPrice
     normal: EstimatedTimeOnPrice
     fast: EstimatedTimeOnPrice
+
+
+@dataclass
+class AddressValidation(DataClassMixin):
+    is_valid: bool
+    format: Optional[str] = None

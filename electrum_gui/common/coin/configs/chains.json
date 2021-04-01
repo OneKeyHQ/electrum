@@ -4,6 +4,7 @@
     "name": "Bitcoin",
     "fee_code": "btc",
     "chain_model": "utxo",
+    "chain_affinity": "btc",
     "qr_code_prefix": "bitcoin"
   },
   {
@@ -11,7 +12,7 @@
     "name": "Ethereum",
     "fee_code": "eth",
     "chain_model": "account",
-    "providers": [
+    "clients": [
       {
         "class": "BlockBook",
         "url": "https://eth1.onekey.so"
@@ -39,6 +40,7 @@
         "url": "https://mainnet.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff"
       }
     ],
+    "chain_affinity": "eth",
     "qr_code_prefix": "ethereum",
     "chain_id": "1"
   },
@@ -47,7 +49,7 @@
     "name": "Binance Smart Chain",
     "fee_code": "bsc",
     "chain_model": "account",
-    "providers": [
+    "clients": [
       {
         "class": "BlockBook",
         "url": "https://bsc1.onekey.so"
@@ -66,7 +68,7 @@
     "name": "Huobi ECO Chain",
     "fee_code": "heco",
     "chain_model": "account",
-    "providers": [
+    "clients": [
       {
         "class": "BlockBook",
         "url": "https://heco1.onekey.so"

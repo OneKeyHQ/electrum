@@ -5,9 +5,9 @@ from electrum_gui.common.basic.request.restful import RestfulRequest
 from electrum_gui.common.provider.data import (
     Address,
     BlockHeader,
+    ClientInfo,
     EstimatedTimeOnPrice,
     PricePerUnit,
-    ProviderInfo,
     Token,
     Transaction,
     TransactionFee,
@@ -18,10 +18,10 @@ from electrum_gui.common.provider.data import (
     TxBroadcastReceiptCode,
     TxPaginate,
 )
-from electrum_gui.common.provider.interfaces import ProviderInterface
+from electrum_gui.common.provider.interfaces import ClientInterface
 
 
-class Etherscan(ProviderInterface):
+class Etherscan(ClientInterface):
     def __init__(self, url: str, api_keys: List[str] = None):
         self.restful = RestfulRequest(url)
         self.api_key = api_keys[0] if api_keys else None
@@ -38,9 +38,9 @@ class Etherscan(ProviderInterface):
         resp = self.restful.post(path, data=data)
         return resp
 
-    def get_info(self) -> ProviderInfo:
+    def get_info(self) -> ClientInfo:
         resp = self._call_action("proxy", "eth_blockNumber")
-        return ProviderInfo(
+        return ClientInfo(
             name="etherscan",
             best_block_number=int(resp["result"], base=16),
             is_ready=True,

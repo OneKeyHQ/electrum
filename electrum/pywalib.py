@@ -18,8 +18,7 @@ from web3 import HTTPProvider, Web3
 
 from electrum.util import make_aiohttp_session
 from electrum_gui.common.provider.data import Token, TransactionStatus, Address
-from electrum_gui.common.provider.interfaces import ProviderInterface
-from electrum_gui.common.provider.manager import get_provider_by_chain
+from electrum_gui.common.provider import provider_manager
 
 from . import util
 from .eth_transaction import Eth_Transaction
@@ -235,7 +234,7 @@ class PyWalib:
 
     def get_gas_price(self, coin) -> dict:
         if coin in ("bsc", "heco"):
-            price_per_unit = self.get_provider().get_price_per_unit_of_fee()
+            price_per_unit = provider_manager.get_price_per_unit_of_fee(self.get_chain_code())
             return {
                 "fast": {
                     "gas_price": int(price_per_unit.fast.price / 1e9),
@@ -415,7 +414,7 @@ class PyWalib:
 
     @classmethod
     def get_nonce(cls, address):
-        return cls.get_provider().get_address(address).nonce
+        return provider_manager.get_address(cls.get_chain_code(), address).nonce
 
     def is_contract(self, address) -> bool:
         return len(self.web3.eth.getCode(self.web3.toChecksumAddress(address))) > 0
@@ -469,7 +468,7 @@ class PyWalib:
 
     @classmethod
     def send_tx(cls, tx_hex: str) -> str:
-        receipt = cls.get_provider().broadcast_transaction(tx_hex)
+        receipt = provider_manager.broadcast_transaction(cls.get_chain_code(), tx_hex)
         if not receipt.is_success:
             raise Exception(f"Transaction send fail. error_message: {receipt.receipt_message}", tx_hex)
         else:
@@ -487,8 +486,8 @@ class PyWalib:
     @classmethod
     def _get_balance_inner(cls, address: str, contract=None):
         try:
-            return cls.get_provider().get_balance(
-                address, token=None if not contract else Token(contract=contract.get_address())
+            return provider_manager.get_balance(
+                cls.get_chain_code(), address, token=None if not contract else Token(contract=contract.get_address())
             )
         except Exception:
             return 0
@@ -503,17 +502,8 @@ class PyWalib:
         return chain_code
 
     @classmethod
-    def get_provider(cls) -> ProviderInterface:
-        chain_code = cls.server_config["id"]  # TODO Confirm that the 'id' field has not been used before?
-
-        if cls.chain_type == "testnet":
-            chain_code = f"t{chain_code}"
-
-        return get_provider_by_chain(chain_code)
-
-    @classmethod
     def _search_tx_actions(cls, address):
-        txs = cls.get_provider().search_txs_by_address(address)
+        txs = provider_manager.search_txs_by_address(cls.get_chain_code(), address)
         actions = []
 
         for tx in txs:
@@ -605,15 +595,15 @@ class PyWalib:
 
     @classmethod
     def get_address(cls, address) -> Address:
-        return cls.get_provider().get_address(address)
+        return provider_manager.get_address(cls.get_chain_code(), address)
 
     @classmethod
     def get_all_txid(cls, address) -> List[str]:
-        return cls.get_provider().search_txids_by_address(address)
+        return provider_manager.search_txids_by_address(cls.get_chain_code(), address)
 
     @classmethod
     def get_transaction_info(cls, txid) -> dict:
-        tx = cls.get_provider().get_transaction_by_txid(txid)
+        tx = provider_manager.get_transaction_by_txid(cls.get_chain_code(), txid)
         amount = Decimal(cls.web3.fromWei(tx.outputs[0].value, "ether"))
         fee = Decimal(cls.web3.fromWei(tx.fee.used * tx.fee.price_per_unit, "ether"))
 

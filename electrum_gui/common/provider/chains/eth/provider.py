@@ -1,10 +1,10 @@
 import eth_utils
 
-from electrum_gui.common.wallet.data import AddressValidation
-from electrum_gui.common.wallet.interfaces import WalletAdapterInterface
+from electrum_gui.common.provider.data import AddressValidation
+from electrum_gui.common.provider.interfaces import ProviderInterface
 
 
-class ETHWalletAdapter(WalletAdapterInterface):
+class ETHProvider(ProviderInterface):
     def verify_address(self, address: str) -> AddressValidation:
         is_valid, address_format = False, None
 

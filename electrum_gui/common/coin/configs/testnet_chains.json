@@ -12,7 +12,7 @@
     "name": "Ethereum Ropsten Test Network",
     "fee_code": "teth",
     "chain_model": "account",
-    "providers": [
+    "clients": [
       {
         "class": "BlockBook",
         "url": "https://ropsten1.trezor.io"
@@ -38,7 +38,7 @@
     "name": "Binance Smart Chain Test Network",
     "fee_code": "tbsc",
     "chain_model": "account",
-    "providers": [
+    "clients": [
       {
         "class": "Geth",
         "url": "https://data-seed-prebsc-2-s1.binance.org:8545"
@@ -53,7 +53,7 @@
     "name": "Fork Huobi ECO Chain",
     "fee_code": "theco",
     "chain_model": "account",
-    "providers": [
+    "clients": [
       {
         "class": "Geth",
         "url": "https://testnode.onekey.so/heco"

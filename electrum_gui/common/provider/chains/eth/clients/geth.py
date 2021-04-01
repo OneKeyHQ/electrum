@@ -8,9 +8,9 @@ from electrum_gui.common.basic.request.json_rpc import JsonRPCRequest
 from electrum_gui.common.provider.data import (
     Address,
     BlockHeader,
+    ClientInfo,
     EstimatedTimeOnPrice,
     PricePerUnit,
-    ProviderInfo,
     Token,
     Transaction,
     TransactionFee,
@@ -21,20 +21,20 @@ from electrum_gui.common.provider.data import (
     TxBroadcastReceiptCode,
 )
 from electrum_gui.common.provider.exceptions import TransactionNotFound
-from electrum_gui.common.provider.interfaces import ProviderInterface
+from electrum_gui.common.provider.interfaces import ClientInterface
 
 _hex2int = partial(int, base=16)
 
 
-class Geth(ProviderInterface):
+class Geth(ClientInterface):
     __LAST_BLOCK__ = "latest"
 
     def __init__(self, url: str):
         self.rpc = JsonRPCRequest(url)
 
-    def get_info(self) -> ProviderInfo:
+    def get_info(self) -> ClientInfo:
         block_number = self.rpc.call("eth_blockNumber", params=[])
-        return ProviderInfo(
+        return ClientInfo(
             "geth",
             best_block_number=_hex2int(block_number),
             is_ready=True,

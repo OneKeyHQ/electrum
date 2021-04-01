@@ -17,10 +17,10 @@ class ChainInfo(DataClassMixin):
     fee_code: str  # which coin is used to provide fee (omni chain uses btc, neo uses neo_gas etc.)
     name: str  # full name of chain
     chain_model: ChainModel  # model of chain (UTXO, Account etc.)
+    chain_affinity: str  # mark chain affinity
     qr_code_prefix: str  # QR code prefix of address
-    providers: List[dict] = field(default_factory=list)  # config of providers
+    clients: List[dict] = field(default_factory=list)  # config of clients
     chain_id: Optional[str] = None  # optional, identify multi forked chains by chain_id (use by eth etc.)
-    chain_affinity: Optional[str] = None  # optional, used by testnet or fork chain
 
 
 @dataclass

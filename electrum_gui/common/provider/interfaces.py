@@ -1,10 +1,12 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import Any, Callable, List, Optional
 
+from electrum_gui.common.coin.data import ChainInfo, CoinInfo
 from electrum_gui.common.provider.data import (
     Address,
+    AddressValidation,
+    ClientInfo,
     PricePerUnit,
-    ProviderInfo,
     Token,
     Transaction,
     TransactionStatus,
@@ -14,18 +16,18 @@ from electrum_gui.common.provider.data import (
 from electrum_gui.common.provider.exceptions import TransactionNotFound
 
 
-class ProviderInterface(ABC):
+class ClientInterface(ABC):
     @abstractmethod
-    def get_info(self) -> ProviderInfo:
+    def get_info(self) -> ClientInfo:
         """
-        Get information of provider
-        :return: ChainInfo
+        Get information of client
+        :return: ClientInfo
         """
 
     @property
     def is_ready(self) -> bool:
         """
-        Is provider ready?
+        Is client ready?
         :return: ready or not
         """
         return self.get_info().is_ready
@@ -34,7 +36,6 @@ class ProviderInterface(ABC):
     def get_address(self, address: str) -> Address:
         """
         Get address information by address str
-        todo token?
         :param address: address
         :return: Address
         """
@@ -112,3 +113,19 @@ class ProviderInterface(ABC):
         get the price per unit of the fee, likes the gas_price on eth
         :return: price per unit
         """
+
+
+class ProviderInterface(ABC):
+    def __init__(
+        self,
+        chain_info: ChainInfo,
+        coins_loader: Callable[[], List[CoinInfo]],
+        client_selector: Callable[[Any], ClientInterface],
+    ):
+        self.chain_info = chain_info
+        self.coins_loader = coins_loader
+        self.client_selector = client_selector
+
+    @abstractmethod
+    def verify_address(self, address: str) -> AddressValidation:
+        pass

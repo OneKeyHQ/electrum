@@ -81,7 +81,7 @@ from ..common.basic.orm.database import db
 from ..common.coin import codes
 from ..common.coin import manager as coin_manager
 from ..common.price import manager as price_manager
-from ..common.wallet import manager as wallet_manager
+from ..common.provider import provider_manager
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
 from .tx_db import TxDb
@@ -1862,8 +1862,7 @@ class AndroidCommands(commands.Commands):
 
         for chain in all_enabled_chains:
             try:
-                adapter = wallet_manager.get_adapter_by_chain(chain.chain_code)
-                validation = adapter.verify_address(maybe_address)
+                validation = provider_manager.verify_address(maybe_address)
                 if validation.is_valid:
                     selection.append(
                         {

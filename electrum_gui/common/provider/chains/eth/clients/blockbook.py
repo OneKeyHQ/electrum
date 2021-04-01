@@ -9,9 +9,9 @@ from electrum_gui.common.basic.request.restful import RestfulRequest
 from electrum_gui.common.provider.data import (
     Address,
     BlockHeader,
+    ClientInfo,
     EstimatedTimeOnPrice,
     PricePerUnit,
-    ProviderInfo,
     Token,
     Transaction,
     TransactionFee,
@@ -23,10 +23,10 @@ from electrum_gui.common.provider.data import (
     TxPaginate,
 )
 from electrum_gui.common.provider.exceptions import TransactionNotFound
-from electrum_gui.common.provider.interfaces import ProviderInterface
+from electrum_gui.common.provider.interfaces import ClientInterface
 
 
-class BlockBook(ProviderInterface):
+class BlockBook(ClientInterface):
     __raw_tx_status_mapping__ = {
         -1: TransactionStatus.PENDING,
         0: TransactionStatus.CONFIRM_REVERTED,
@@ -36,10 +36,10 @@ class BlockBook(ProviderInterface):
     def __init__(self, url: str):
         self.restful = RestfulRequest(url)
 
-    def get_info(self) -> ProviderInfo:
+    def get_info(self) -> ClientInfo:
         resp = self.restful.get("/api")
 
-        return ProviderInfo(
+        return ClientInfo(
             name="blockbook",
             best_block_number=int(resp["blockbook"].get("bestHeight", 0)),
             is_ready=resp["blockbook"].get("inSync") is True,

@@ -1,9 +1,9 @@
 from electrum import bitcoin
-from electrum_gui.common.wallet.data import AddressValidation
-from electrum_gui.common.wallet.interfaces import WalletAdapterInterface
+from electrum_gui.common.provider.data import AddressValidation
+from electrum_gui.common.provider.interfaces import ProviderInterface
 
 
-class BTCWalletAdapter(WalletAdapterInterface):
+class BTCProvider(ProviderInterface):
     def verify_address(self, address: str) -> AddressValidation:
         is_valid, address_format = False, None
 
