@@ -10,7 +10,7 @@
         "symbol": "TBTC",
         "name": "Bitcoin TestNet3",
         "decimals": 8,
-        "icon": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579"
+        "icon": "https://devs.243096.com/onekey/images/token/btc/BTC.png"
       }
     ],
     "chain_affinity": "btc",
@@ -27,7 +27,7 @@
         "symbol": "TETH",
         "name": "Ethereum Ropsten Test Network",
         "decimals": 18,
-        "icon": "https://assets.coingecko.com/coins/images/279/large/ethereum.png?1595348880"
+        "icon": "https://devs.243096.com/onekey/images/token/eth/ETH.png"
       }
     ],
     "clients": [
@@ -62,7 +62,7 @@
         "symbol": "TBNB",
         "name": "Binance Smart Chain Test Network",
         "decimals": 18,
-        "icon": "https://assets.coingecko.com/coins/images/825/large/binance-coin-logo.png?1547034615"
+        "icon": "https://devs.243096.com/onekey/images/token/bsc/BSC.png"
       }
     ],
     "clients": [
@@ -86,7 +86,7 @@
         "symbol": "THT",
         "name": "Huobi ECO Chain Test Network",
         "decimals": 18,
-        "icon": "https://assets.coingecko.com/coins/images/2822/large/huobi-token-logo.png?1547036992"
+        "icon": "https://devs.243096.com/onekey/images/token/heco/HECO.png"
       }
     ],
     "clients": [

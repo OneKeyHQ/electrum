@@ -326,6 +326,7 @@ class AndroidCommands(commands.Commands):
 
             out["coin"] = main_coin_balance_info.get("symbol")
             out["address"] = address
+            out["icon"] = self._get_icon_by_token(coin)
             out["balance"] = main_coin_balance_info.get("balance", "0")
             out["fiat"] = f"{self.daemon.fx.ccy_amount_str(main_coin_balance_info.get('fiat') or 0, True)} {self.ccy}"
             sorted_tokens = sorted(
@@ -337,6 +338,7 @@ class AndroidCommands(commands.Commands):
                 {
                     "coin": i.get("symbol"),
                     "address": i.get("address"),
+                    "icon": self._get_icon_by_token(coin, i.get("address")),
                     "balance": i.get("balance", "0"),
                     "fiat": f"{self.daemon.fx.ccy_amount_str(i.get('fiat') or 0, True)} {self.ccy}",
                 }
@@ -356,6 +358,7 @@ class AndroidCommands(commands.Commands):
 
             out["coin"] = "btc"
             out["address"] = address
+            out["icon"] = self._get_icon_by_token(coin)
             out["balance"] = self.format_amount(balance)
             out["fiat"] = fiat_str
 
@@ -2130,6 +2133,15 @@ class AndroidCommands(commands.Commands):
 
         return tokens_dict
 
+    def _get_icon_by_token(self, coin, address=""):
+        chain_code = self._coin_to_chain_code(coin)
+        if not address:
+            coin = coin_manager.get_coin_info(chain_code, nullable=True)
+        else:
+            coin = coin_manager.query_coins_by_token_addresses(chain_code, [address])
+            coin = coin[0] if coin else None
+        return coin.icon if coin is not None else ""
+
     def get_all_customer_token_info(self, coin=None):
         if coin is None:
             coin = self.wallet.coin if self.wallet is not None else "eth"
@@ -3419,15 +3431,15 @@ class AndroidCommands(commands.Commands):
               "btc": "0.005 BTC",
               "fiat": "1,333.55",
               "wallets": [
-                {"coin": "btc", "balance": "", "fiat": ""}
+                {"coin": "btc", "balance": "", "fiat": "", "icon":""}
               ]
             },
             {
               "name": "",
               "label": "",
               "wallets": [
-                { "coin": "btc", "balance": "", "fiat": ""},
-                { "coin": "usdt", "balance": "", "fiat": ""}
+                { "coin": "btc", "balance": "", "fiat": "", "icon":""},
+                { "coin": "usdt", "balance": "", "fiat": "", "icon":""}
               ]
             }
           ]
@@ -3460,6 +3472,7 @@ class AndroidCommands(commands.Commands):
                             copied_info = {
                                 "coin": info.get("symbol") or coin,
                                 "address": info.get("address"),
+                                "icon": self._get_icon_by_token(coin, info.get("address")),
                                 "balance": info.get("balance", "0"),
                                 "fiat": f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}",
                             }
@@ -3483,6 +3496,7 @@ class AndroidCommands(commands.Commands):
                             "coin": "btc",
                             "balance": wallet_info["btc"],
                             "fiat": wallet_info["fiat"],
+                            "icon": self._get_icon_by_token(coin),
                         }
                     ]
                     wallet_info["sum_fiat"] = fiat
@@ -3835,8 +3849,8 @@ class AndroidCommands(commands.Commands):
         {
           "all_balance": ""
           "wallets": [
-            {"coin": "eth", "address": "", "balance": "", "fiat": ""},
-            {"coin": "usdt", "address": "", "balance": "", "fiat": ""}
+            {"coin": "eth", "address": "", "balance": "", "fiat": "", "icon":""},
+            {"coin": "usdt", "address": "", "balance": "", "fiat": "", "icon":""}
           ]
         }
         """
@@ -3862,6 +3876,7 @@ class AndroidCommands(commands.Commands):
                 {
                     "coin": i.get("symbol") or coin,
                     "address": i.get("address"),
+                    "icon": self._get_icon_by_token(coin, i.get("address")),
                     "balance": i.get("balance", "0"),
                     "fiat": f"{self.daemon.fx.ccy_amount_str(i.get('fiat') or 0, True)} {self.ccy}",
                 }
@@ -3875,7 +3890,14 @@ class AndroidCommands(commands.Commands):
             fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
             info = {
                 "all_balance": fiat_str,  # fixme deprecated field
-                "wallets": [{"coin": "btc", "balance": self.format_amount(balance), "fiat": fiat_str}],
+                "wallets": [
+                    {
+                        "coin": "btc",
+                        "balance": self.format_amount(balance),
+                        "icon": self._get_icon_by_token(coin),
+                        "fiat": fiat_str,
+                    }
+                ],
             }
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.load_wallet(self.wallet)
