@@ -2459,7 +2459,14 @@ class AndroidCommands(commands.Commands):
         self.wallet.storage.is_encrypted_with_hw_device()
 
     def get_xpub_from_hw(
-        self, path="android_usb", _type="p2wpkh", is_creating=True, account_id=None, coin="btc", from_recovery=False, bip39_derivation=None
+        self,
+        path="android_usb",
+        _type="p2wpkh",
+        is_creating=True,
+        account_id=None,
+        coin="btc",
+        from_recovery=False,
+        bip39_derivation=None,
     ):
         """
         Get extended public key from hardware, used by hardware

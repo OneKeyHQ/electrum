@@ -76,7 +76,6 @@ ca_path = certifi.where()
 base_units = {'BTC': 8, 'mBTC': 5, 'bits': 2, 'sat': 0}
 base_units_inverse = inv_dict(base_units)
 base_units_list = ['BTC', 'mBTC', 'bits', 'sat']  # list(dict) does not guarantee order
-
 DECIMAL_POINT_DEFAULT = 5  # mBTC
 
 
@@ -113,9 +112,11 @@ class MultipleSpendMaxTxOutputs(Exception):
     def __str__(self):
         return BaseException(_('At most one output can be set to spend max'))
 
+
 class UnavailableXpub(Exception):
     def __init__(self, *args):
         super(UnavailableXpub, self).__init__(_("Unavailable xpub"), *args)
+
 
 class ReplaceWatchonlyWallet(Exception):
     message = ""
