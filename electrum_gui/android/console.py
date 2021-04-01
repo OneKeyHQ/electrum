@@ -1862,7 +1862,7 @@ class AndroidCommands(commands.Commands):
 
         for chain in all_enabled_chains:
             try:
-                validation = provider_manager.verify_address(maybe_address)
+                validation = provider_manager.verify_address(chain.chain_code, maybe_address)
                 if validation.is_valid:
                     selection.append(
                         {

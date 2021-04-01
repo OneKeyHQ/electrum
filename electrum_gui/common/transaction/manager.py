@@ -111,7 +111,7 @@ def _query_transactions_of_chain(txids_of_chain: Iterable[Tuple[str, str]]) -> I
     for chain_code, group in itertools.groupby(txids_of_chain, key=lambda i: i[0]):
         for (_, txid) in group:
             try:
-                yield chain_code, provider_manager.get_transaction_by_txid(txid)
+                yield chain_code, provider_manager.get_transaction_by_txid(chain_code, txid)
             except Exception as e:
                 logger.exception(f"Error in getting transaction by txid. chain_code: {chain_code}, txid: {txid}", e)
 
@@ -125,7 +125,7 @@ def _search_txs_by_address(
         else:
             paginate = None
 
-        transactions = provider_manager.search_txs_by_address(address, paginate=paginate)
+        transactions = provider_manager.search_txs_by_address(chain_code, address, paginate=paginate)
 
         return transactions
     except Exception as e:
