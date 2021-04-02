@@ -251,14 +251,14 @@ class Abstract_Eth_Wallet(ABC):
         _, balance = PyWalib.get_balance(wallet_address)
 
         balance_info = {
-            self.coin: {'symbol': from_coin, 'address': '', 'balance': Decimal(balance)}
+            self.coin: {'symbol': from_coin, 'address': '', 'balance': Decimal(balance).quantize(Decimal("0.000000"))}
         }
         for contract_address, contract in self.contacts.items():
             symbol, balance = PyWalib.get_balance(wallet_address, contract)
             balance_info[contract_address] = {
                 'symbol': symbol,
                 'address': contract_address,
-                'balance': Decimal(balance),
+                'balance': Decimal(balance).quantize(Decimal("0.0000")),
             }
 
         self.set_total_balance(balance_info)
