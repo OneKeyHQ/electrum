@@ -270,14 +270,14 @@ class Abstract_Eth_Wallet(abc.ABC):
         if not contract_address:
             return None
 
-        contract_address = pywalib.PyWalib.web3.toChecksumAddress(contract_address)
+        contract_address = eth_utils.to_checksum_address(contract_address)
         return self.contacts.get(contract_address)
 
     def delete_contract_token(self, contract_address):
         if not contract_address:
             return
 
-        contract_address = pywalib.PyWalib.web3.toChecksumAddress(contract_address)
+        contract_address = eth_utils.to_checksum_address(contract_address)
         self.contacts.pop(contract_address, None)
         self.db.put("contracts", {addr: c.symbol for addr, c in self.contacts.items()})
         self.save_db()
@@ -706,7 +706,7 @@ class Abstract_Eth_Wallet(abc.ABC):
             preamble = f"\x19Ethereum Signed Message:\n{len(message_bytes)}"
             message_bytes = preamble.encode() + message_bytes
 
-        message_hash = pywalib.PyWalib.web3.keccak(message_bytes)
+        message_hash = eth_utils.keccak(message_bytes)
 
         if isinstance(self.keystore, keystore.Hardware_KeyStore):
             index = self.get_address_index(address)
@@ -947,7 +947,7 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         good_addr = []  # type: List[str]
         bad_addr = []  # type: List[Tuple[str, str]]
         for address in addresses:
-            if not address or not pywalib.PyWalib.get_web3().isAddress(address):
+            if not address or not eth_utils.is_address(address):
                 bad_addr.append((address, i18n._('invalid address')))
                 continue
 
@@ -994,7 +994,7 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
             except BaseException as e:
                 bad_keys.append((key, i18n._('invalid private key') + f': {e}'))
                 continue
-            addr = pywalib.PyWalib.web3.toChecksumAddress(pubkey.to_address())
+            addr = eth_utils.to_checksum_address(pubkey.to_address())
             good_addr.append(addr)
             self.db.add_imported_address(addr, {'pubkey': pubkey.__str__()})
             # self.add_address(addr)

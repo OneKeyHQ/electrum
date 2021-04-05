@@ -36,6 +36,8 @@ from electrum.bip32 import BIP32Node
 from electrum.storage import get_derivation_used_for_hw_device_encryption
 from electrum.keystore import Xpub, Hardware_KeyStore
 
+import eth_utils
+
 if TYPE_CHECKING:
     import threading
     from electrum.wallet import Abstract_Wallet
@@ -121,8 +123,7 @@ class HW_PluginBase(BasePlugin):
     def show_address_helper(self, wallet, address, keystore=None):
         if keystore is None:
             keystore = wallet.get_keystore()
-        from electrum.pywalib import PyWalib
-        if not is_address(address) and not PyWalib.web3.isAddress(address):
+        if not is_address(address) and not eth_utils.is_address(address):
             keystore.handler.show_error(_('Invalid Bitcoin Address or Invalid Ethernum Address'))
             return False
         if not wallet.is_mine(address):

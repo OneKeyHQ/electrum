@@ -55,6 +55,7 @@ from aiorpcx import TaskGroup
 import certifi
 import dns.resolver
 import ecdsa
+import eth_utils
 
 from .i18n import _
 from .logging import get_logger, Logger
@@ -970,7 +971,6 @@ class InvalidAddressURI(Exception):
 def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
     """Raises InvalidBitcoinURI on malformed URI."""
     from . import bitcoin
-    from .pywalib import PyWalib
 
     if not isinstance(uri, str):
         raise InvalidAddressURI(f"expected string, not {repr(uri)}")
@@ -991,7 +991,7 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
 
     if bitcoin.is_address(address):
         res["coin"] = "btc"
-    elif PyWalib.web3.isAddress(address):
+    elif eth_utils.is_address(address):
         coin = u.scheme if u.scheme in ("eth", "bsc", "heco") else "eth"
         res["coin"] = coin
 

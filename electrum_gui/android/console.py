@@ -316,7 +316,7 @@ class AndroidCommands(commands.Commands):
         out = dict()
 
         if coin in self.coins:  # eth base
-            address = self.pywalib.web3.toChecksumAddress(address)
+            address = eth_utils.to_checksum_address(address)
             balance_info = self.wallet.get_all_balance(address, self.coins[coin]["symbol"])
             balance_info = self._fill_balance_info_with_fiat(self.wallet.coin, balance_info)
             sum_fiat = sum(i.get("fiat", 0) for i in balance_info.values())
@@ -1780,7 +1780,7 @@ class AndroidCommands(commands.Commands):
 
             if bitcoin.is_address(self.show_addr):
                 data = util.create_bip21_uri(self.show_addr, "", "")
-            elif self.pywalib.web3.isAddress(self.show_addr):
+            elif eth_utils.is_address(self.show_addr):
                 prefix = "ethereum" if self.wallet.coin == "eth" else self.wallet.coin
                 data = f"{prefix}:{self.show_addr}"
             else:
@@ -2101,7 +2101,7 @@ class AndroidCommands(commands.Commands):
         message = message.strip()
         coin = self.wallet.coin
         if coin in self.coins:
-            if not self.pywalib.web3.isAddress(address):
+            if not eth_utils.is_address(address):
                 raise UnavailableEthAddr()
         elif coin == 'btc':
             if not bitcoin.is_address(address):
@@ -2134,7 +2134,7 @@ class AndroidCommands(commands.Commands):
             if not bitcoin.is_address(address):
                 raise UnavailableBtcAddr()
         elif coin in self.coins:
-            if not self.pywalib.web3.isAddress(address):
+            if not eth_utils.is_address(address):
                 raise UnavailableEthAddr()
         else:
             raise UnsupportedCurrencyCoin()
@@ -2262,7 +2262,7 @@ class AndroidCommands(commands.Commands):
                 token_info.get("logoURI"),
             )
 
-            contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
+            contract_addr = eth_utils.to_checksum_address(contract_addr)
             self.wallet.add_contract_token(symbol, contract_addr)
 
     def delete_token(self, contract_addr):
@@ -2308,7 +2308,7 @@ class AndroidCommands(commands.Commands):
                 from_address, to_addr, value, gas_price=gas_price, gas_limit=gas_limit, data=data, nonce=nonce
             )
         else:
-            contract_addr = self.pywalib.web3.toChecksumAddress(contract_addr)
+            contract_addr = eth_utils.to_checksum_address(contract_addr)
             contract = self.wallet.get_contract_token(contract_addr)
             assert contract is not None
             tx_dict = self.pywalib.get_transaction(
@@ -2826,7 +2826,7 @@ class AndroidCommands(commands.Commands):
                 except BaseException:
                     raise BaseException(UnavailablePublicKey())
             elif flag == "address":
-                if not self.pywalib.web3.isAddress(data):
+                if not eth_utils.is_address(data):
                     raise UnavailableEthAddr()
 
     def replace_watch_only_wallet(self, replace=True):
@@ -3583,7 +3583,7 @@ class AndroidCommands(commands.Commands):
                 coin = wallet.coin
                 if coin in self.coins:
                     with self.pywalib.override_server(self.coins[coin]):
-                        checksum_from_address = self.pywalib.web3.toChecksumAddress(wallet.get_addresses()[0])
+                        checksum_from_address = eth_utils.to_checksum_address(wallet.get_addresses()[0])
                         balances_info = wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
                         balances_info = self._fill_balance_info_with_fiat(wallet.coin, balances_info)
                         sorted_balances = [balances_info.pop(coin, {})]
@@ -3986,7 +3986,7 @@ class AndroidCommands(commands.Commands):
         coin = self.wallet.coin
         if coin in self.coins:
             addrs = self.wallet.get_addresses()
-            checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
+            checksum_from_address = eth_utils.to_checksum_address(addrs[0])
             balance_info = self.wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
             balance_info = self._fill_balance_info_with_fiat(self.wallet.coin, balance_info)
             sum_fiat = sum(i.get("fiat", 0) for i in balance_info.values())
@@ -4057,7 +4057,7 @@ class AndroidCommands(commands.Commands):
             if coin in self.coins:
                 PyWalib.set_server(self.coins[coin])
                 addrs = self.wallet.get_addresses()
-                checksum_from_address = self.pywalib.web3.toChecksumAddress(addrs[0])
+                checksum_from_address = eth_utils.to_checksum_address(addrs[0])
                 balance_info = self.wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
                 balance_info = self._fill_balance_info_with_fiat(self.wallet.coin, balance_info)
                 sorted_balances = [balance_info.pop(coin, {})]
