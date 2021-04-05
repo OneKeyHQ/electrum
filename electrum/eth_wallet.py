@@ -215,9 +215,7 @@ class Abstract_Eth_Wallet(abc.ABC):
     #     self.save_db()
 
     def pubkeys_to_address(self, public_key: str):
-        return eth_utils.to_checksum_address(
-            eth_keys.utils.address.public_key_bytes_to_address(bytes.fromhex(public_key))
-        )
+        return eth_keys.keys.PublicKey(bytes.fromhex(public_key)).to_checksum_address()
 
     def set_total_balance(self, balance):
         self.total_balance['balance_info'] = balance
@@ -1233,9 +1231,7 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
         self.hd_main_eth_address = ''
 
     def pubkeys_to_address(self, public_key: str):
-        return eth_utils.to_checksum_address(
-            eth_keys.utils.address.public_key_bytes_to_address(bytes.fromhex(public_key))
-        )
+        return eth_keys.keys.PublicKey(bytes.fromhex(public_key)).to_checksum_address()
 
     def get_keystore_by_address(self, address, password):
         privatekey = self.get_private_key(address, password)
