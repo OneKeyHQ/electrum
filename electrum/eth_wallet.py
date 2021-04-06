@@ -1309,6 +1309,9 @@ wallet_constructors = {
     'heco_standard': Standard_Eth_Wallet,
     'heco_xpub': Standard_Eth_Wallet,
     'heco_imported': Imported_Eth_Wallet,
+    'okt_standard': Standard_Eth_Wallet,
+    'okt_xpub': Standard_Eth_Wallet,
+    'okt_imported': Imported_Eth_Wallet,
 }
 
 

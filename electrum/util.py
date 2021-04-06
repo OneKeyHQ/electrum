@@ -992,7 +992,7 @@ def parse_URI(uri: str, on_pr: Callable = None, *, loop=None) -> dict:
     if bitcoin.is_address(address):
         res["coin"] = "btc"
     elif eth_utils.is_address(address):
-        coin = u.scheme if u.scheme in ("eth", "bsc", "heco") else "eth"
+        coin = u.scheme if u.scheme in ("eth", "bsc", "heco", "okt") else "eth"
         res["coin"] = coin
 
     append_values_from_query(res, query)

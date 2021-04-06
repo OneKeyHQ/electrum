@@ -4120,7 +4120,7 @@ class AndroidCommands(commands.Commands):
     def list_wallets(self, type_=None):
         """
         List available wallets
-        :param type: None/hw/hd/btc/eth/bsc/heco
+        :param type: None/hw/hd/btc/eth/bsc/heco/okt
         :return: json like "[{"wallet_key":{'type':"", "addr":"", "name":"", "label":"", "device_id": ""}}, ...]"
         exp:
             all_list = testcommond.list_wallets()
@@ -4134,7 +4134,7 @@ class AndroidCommands(commands.Commands):
         generic_wallet_type = None
         if type_ in ("hw", "hd"):
             generic_wallet_type = type_
-        elif type_ in ("btc", "eth", "bsc", "heco"):
+        elif type_ in ("btc", "eth", "bsc", "heco", "okt"):
             coin = type_
         elif type_ is not None:
             raise BaseException(_("Unsupported coin types"))

@@ -233,7 +233,7 @@ class PyWalib:
                 cls.set_server(cache_config)
 
     def get_gas_price(self, coin) -> dict:
-        if coin in ("bsc", "heco"):
+        if coin in ("bsc", "heco", "okt"):
             price_per_unit = provider_manager.get_price_per_unit_of_fee(self.get_chain_code())
             return {
                 "fast": {

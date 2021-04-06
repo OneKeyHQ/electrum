@@ -12,6 +12,7 @@ _COIN_PRIORITY = {
     "eth": 2,
     "bsc": 1,
     "heco": 1,
+    "okt": 1,
 }
 
 _WALLET_TYPE_DIVIDE_PATTERN = re.compile(r"[_\-]")

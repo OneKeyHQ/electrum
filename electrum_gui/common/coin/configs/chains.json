@@ -117,5 +117,29 @@
     "chain_affinity": "eth",
     "qr_code_prefix": "heco",
     "chain_id": "128"
+  },
+  {
+    "chain_code": "okt",
+    "name": "OKExChain Mainnet",
+    "fee_code": "okt",
+    "chain_model": "account",
+    "coins": [
+      {
+        "code": "okt",
+        "symbol": "OKT",
+        "name": "OKExChain Mainnet",
+        "decimals": 18,
+        "icon": "https://onekey.243096.com/onekey/images/token/okt/OKT.svg"
+      }
+    ],
+    "clients": [
+      {
+        "class": "Geth",
+        "url": "https://exchain.okexcn.com/"
+      }
+    ],
+    "chain_affinity": "eth",
+    "qr_code_prefix": "okt",
+    "chain_id": "66"
   }
 ]

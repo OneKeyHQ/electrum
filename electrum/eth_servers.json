@@ -65,5 +65,17 @@
       {"onekey-mainnet": "https://bsc1.onekey.so/api/v2/"}
     ],
     "GasServer": ""
+  },
+  "okt": {
+    "id": "okt",
+    "coinId": 60,
+    "addressType": 44,
+    "symbol": "OKT",
+    "Provider": [
+      {"mainnet": "https://exchain.okexcn.com/", "chainid": "66"},
+      {"testnet": "https://exchaintest.okexcn.com/", "chainid": "65"}
+    ],
+    "TxliServer": [],
+    "GasServer": ""
   }
 }

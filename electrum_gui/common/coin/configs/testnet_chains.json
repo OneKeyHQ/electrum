@@ -98,5 +98,29 @@
     "chain_affinity": "eth",
     "qr_code_prefix": "heco",
     "chain_id": "128"
+  },
+  {
+    "chain_code": "tokt",
+    "name": "OKExChain Testnet",
+    "fee_code": "tokt",
+    "chain_model": "account",
+    "coins": [
+      {
+        "code": "tokt",
+        "symbol": "TOKT",
+        "name": "OKExChain Testnet",
+        "decimals": 18,
+        "icon": "https://onekey.243096.com/onekey/images/token/okt/OKT.svg"
+      }
+    ],
+    "clients": [
+      {
+        "class": "Geth",
+        "url": "https://exchaintest.okexcn.com/"
+      }
+    ],
+    "chain_affinity": "eth",
+    "qr_code_prefix": "okt",
+    "chain_id": "65"
   }
 ]
