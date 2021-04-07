@@ -1,15 +1,9 @@
 {
   "eth": {
     "id": "eth",
-    "name": "Ethereum",
     "coinId": 60,
     "addressType": 44,
     "symbol": "ETH",
-    "decimals": 18,
-    "blockchain": "Ethereum",
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1Extended",
-    "derived_info": "",
     "Provider": [
       {"mainnet": "https://rpc.blkdb.cn/eth", "chainid": "1"},
       {"testnet": "https://ropsten.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff", "chainid": "3"},
@@ -19,15 +13,9 @@
   },
   "heco": {
     "id": "heco",
-    "name": "Huobi ECO Chain",
     "coinId": 60,
     "addressType": 44,
     "symbol": "HT",
-    "decimals": 18,
-    "blockchain": "Heco",
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1Extended",
-    "derived_info": "",
     "Provider": [
       {"mainnet": "https://rpc.blkdb.cn/heco", "chainid": "128"},
       {"testnet": "https://testnode.onekey.so/heco", "chainid": "128"}
@@ -36,15 +24,9 @@
   },
   "bsc": {
     "id": "bsc",
-    "name": "Binance Smart Chain",
     "coinId": 60,
     "addressType": 44,
     "symbol": "BNB",
-    "decimals": 18,
-    "blockchain": "Bsc",
-    "curve": "secp256k1",
-    "publicKeyType": "secp256k1Extended",
-    "derived_info": "",
     "Provider": [
       {"mainnet": "https://rpc.blkdb.cn/bsc", "chainid": "56"},
       {"testnet": "https://data-seed-prebsc-2-s1.binance.org:8545", "chainid": "97"}
