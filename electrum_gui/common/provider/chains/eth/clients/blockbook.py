@@ -6,6 +6,7 @@ from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.text import force_text
 from electrum_gui.common.basic.request.exceptions import ResponseException
 from electrum_gui.common.basic.request.restful import RestfulRequest
+from electrum_gui.common.provider.chains.eth.clients import utils
 from electrum_gui.common.provider.data import (
     Address,
     BlockHeader,
@@ -198,23 +199,8 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
         txid = resp.get("result")
         if txid:
             return TxBroadcastReceipt(is_success=True, receipt_code=TxBroadcastReceiptCode.SUCCESS, txid=txid)
-
-        error_message = resp.get("error", "")
-        if "already known" in error_message:
-            return TxBroadcastReceipt(
-                is_success=True,
-                receipt_code=TxBroadcastReceiptCode.ALREADY_KNOWN,
-            )
-        elif "nonce too low" in error_message:
-            return TxBroadcastReceipt(
-                is_success=False,
-                receipt_code=TxBroadcastReceiptCode.NONCE_TOO_LOW,
-                receipt_message=error_message,
-            )
         else:
-            return TxBroadcastReceipt(
-                is_success=False, receipt_code=TxBroadcastReceiptCode.UNEXPECTED_FAILED, receipt_message=error_message
-            )
+            return utils.populate_error_broadcast_receipt(resp.get("error") or "")
 
     def get_price_per_unit_of_fee(self) -> PricePerUnit:
         num_of_block = 10  # just a number, trezor does case what it is

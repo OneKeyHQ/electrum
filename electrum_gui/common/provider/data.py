@@ -20,6 +20,9 @@ class TxBroadcastReceiptCode(IntEnum):
     SUCCESS = 100
     ALREADY_KNOWN = 101
     NONCE_TOO_LOW = 102
+    RBF_UNDERPRICE = 103
+    ETH_GAS_PRICE_TOO_LOW = 104
+    ETH_GAS_LIMIT_EXCEEDED = 105
 
 
 @dataclass

@@ -17,7 +17,12 @@ from eth_utils import add_0x_prefix, remove_0x_prefix
 from web3 import HTTPProvider, Web3
 
 from electrum.util import make_aiohttp_session
-from electrum_gui.common.provider.data import Token, TransactionStatus, Address
+from electrum_gui.common.provider.data import (
+    Token,
+    TransactionStatus,
+    Address,
+    TxBroadcastReceiptCode,
+)
 from electrum_gui.common.provider import provider_manager
 
 from . import util
@@ -466,11 +471,19 @@ class PyWalib:
             "chain_id": chain_id,
         }
 
+    _ERROR_BROADCAST_RECEIPT_MAPPING = {
+        TxBroadcastReceiptCode.NONCE_TOO_LOW: _("Unexpected nonce, please try again"),
+        TxBroadcastReceiptCode.RBF_UNDERPRICE: _("Replace-by-Fee transaction needs a higher gas price"),
+        TxBroadcastReceiptCode.ETH_GAS_PRICE_TOO_LOW: _("Gas price too low"),
+        TxBroadcastReceiptCode.ETH_GAS_LIMIT_EXCEEDED: _("Gas limit exceeded"),
+    }
+
     @classmethod
     def send_tx(cls, tx_hex: str) -> str:
         receipt = provider_manager.broadcast_transaction(cls.get_chain_code(), tx_hex)
         if not receipt.is_success:
-            raise Exception(f"Transaction send fail. error_message: {receipt.receipt_message}", tx_hex)
+            error_message = cls._ERROR_BROADCAST_RECEIPT_MAPPING.get(receipt.receipt_code) or receipt.receipt_message
+            raise Exception(error_message)
         else:
             return receipt.txid
 

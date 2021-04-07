@@ -2,9 +2,9 @@ from functools import partial
 from typing import Any
 
 from electrum_gui.common.basic.functional.require import require
-from electrum_gui.common.basic.functional.text import force_text
 from electrum_gui.common.basic.request.exceptions import JsonRPCException
 from electrum_gui.common.basic.request.json_rpc import JsonRPCRequest
+from electrum_gui.common.provider.chains.eth.clients import utils
 from electrum_gui.common.provider.data import (
     Address,
     BlockHeader,
@@ -118,31 +118,20 @@ class Geth(ClientInterface):
         )
 
     def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
-        txid, is_success, receipt_code, receipt_message = None, False, TxBroadcastReceiptCode.UNKNOWN, ""
-
         try:
             txid = self.rpc.call("eth_sendRawTransaction", params=[raw_tx])
-            is_success, receipt_code = True, TxBroadcastReceiptCode.SUCCESS
+            return TxBroadcastReceipt(
+                txid=txid,
+                is_success=True,
+                receipt_code=TxBroadcastReceiptCode.SUCCESS,
+            )
         except JsonRPCException as e:
             json_response = e.json_response
-            receipt_code, receipt_message = TxBroadcastReceiptCode.UNEXPECTED_FAILED, force_text(json_response)
-
             if isinstance(json_response, dict) and "error" in json_response:
-                error_message = json_response.get("error", dict()).get("message", "")
-                receipt_message = error_message
+                error_message = json_response.get("error", {}).get("message") or ""
+                return utils.populate_error_broadcast_receipt(error_message)
 
-                if "already known" in error_message:
-                    receipt_code = TxBroadcastReceiptCode.ALREADY_KNOWN
-                    is_success = True
-                elif "nonce too low" in error_message:
-                    receipt_code = TxBroadcastReceiptCode.NONCE_TOO_LOW
-
-        return TxBroadcastReceipt(
-            txid=txid,
-            is_success=is_success,
-            receipt_code=receipt_code,
-            receipt_message=receipt_message,
-        )
+            raise e
 
     def get_price_per_unit_of_fee(self) -> PricePerUnit:
         resp = self.rpc.call("eth_gasPrice", params=[])
