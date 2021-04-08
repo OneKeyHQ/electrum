@@ -33,7 +33,7 @@
     "clients": [
       {
         "class": "Geth",
-        "url": "https://mainnet.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff"
+        "url": "https://eth1.onekey.so/rpc"
       },
       {
         "class": "BlockBook",
@@ -79,7 +79,7 @@
     "clients": [
       {
         "class": "Geth",
-        "url": "https://bsc-dataseed1.binance.org"
+        "url": "https://bsc1.onekey.so/rpc"
       },
       {
         "class": "BlockBook",
@@ -107,7 +107,7 @@
     "clients": [
       {
         "class": "Geth",
-        "url": "https://http-mainnet-node.huobichain.com"
+        "url": "https://heco1.onekey.so/rpc"
       },
       {
         "class": "BlockBook",
