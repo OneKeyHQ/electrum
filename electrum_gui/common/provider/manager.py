@@ -10,6 +10,8 @@ from electrum_gui.common.provider.data import (
     TxBroadcastReceipt,
     TxPaginate,
 )
+from electrum_gui.common.provider.exceptions import NoAvailableClient
+from electrum_gui.common.provider.interfaces import SearchTransactionMixin
 from electrum_gui.common.provider.loader import get_client_by_chain, get_provider_by_chain
 
 
@@ -34,7 +36,12 @@ def search_txs_by_address(
     address: str,
     paginate: Optional[TxPaginate] = None,
 ) -> List[Transaction]:
-    return get_client_by_chain(chain_code).search_txs_by_address(address, paginate=paginate)
+    try:
+        return get_client_by_chain(chain_code, instance_required=SearchTransactionMixin).search_txs_by_address(
+            address, paginate=paginate
+        )
+    except NoAvailableClient:
+        return []
 
 
 def search_txids_by_address(
@@ -42,7 +49,12 @@ def search_txids_by_address(
     address: str,
     paginate: Optional[TxPaginate] = None,
 ) -> List[str]:
-    return get_client_by_chain(chain_code).search_txids_by_address(address, paginate=paginate)
+    try:
+        return get_client_by_chain(chain_code, instance_required=SearchTransactionMixin).search_txids_by_address(
+            address, paginate=paginate
+        )
+    except NoAvailableClient:
+        return []
 
 
 def broadcast_transaction(chain_code: str, raw_tx: str) -> TxBroadcastReceipt:

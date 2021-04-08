@@ -57,7 +57,7 @@ def get_client_by_chain(
     chain_code: str,
     force_update: bool = False,
     instance_required: Any = None,
-) -> ClientInterface:
+) -> Any:
     candidates = _CANDIDATE_CLIENTS_CACHE.get(chain_code)
 
     if not candidates:

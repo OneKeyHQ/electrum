@@ -32,6 +32,10 @@
     ],
     "clients": [
       {
+        "class": "Geth",
+        "url": "https://mainnet.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff"
+      },
+      {
         "class": "BlockBook",
         "url": "https://eth1.onekey.so"
       },
@@ -52,10 +56,6 @@
         "api_keys": [
           "R796P9T31MEA24P8FNDZBCA88UHW8YCNVW"
         ]
-      },
-      {
-        "class": "Geth",
-        "url": "https://mainnet.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff"
       }
     ],
     "chain_affinity": "eth",
@@ -78,12 +78,12 @@
     ],
     "clients": [
       {
-        "class": "BlockBook",
-        "url": "https://bsc1.onekey.so"
-      },
-      {
         "class": "Geth",
         "url": "https://bsc-dataseed1.binance.org"
+      },
+      {
+        "class": "BlockBook",
+        "url": "https://bsc1.onekey.so"
       }
     ],
     "chain_affinity": "eth",
@@ -106,12 +106,12 @@
     ],
     "clients": [
       {
-        "class": "BlockBook",
-        "url": "https://heco1.onekey.so"
-      },
-      {
         "class": "Geth",
         "url": "https://http-mainnet-node.huobichain.com"
+      },
+      {
+        "class": "BlockBook",
+        "url": "https://heco1.onekey.so"
       }
     ],
     "chain_affinity": "eth",

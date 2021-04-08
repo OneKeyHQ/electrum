@@ -23,10 +23,10 @@ from electrum_gui.common.provider.data import (
     TxPaginate,
 )
 from electrum_gui.common.provider.exceptions import TransactionNotFound
-from electrum_gui.common.provider.interfaces import ClientInterface
+from electrum_gui.common.provider.interfaces import ClientInterface, SearchTransactionMixin
 
 
-class BlockBook(ClientInterface):
+class BlockBook(ClientInterface, SearchTransactionMixin):
     __raw_tx_status_mapping__ = {
         -1: TransactionStatus.PENDING,
         0: TransactionStatus.CONFIRM_REVERTED,

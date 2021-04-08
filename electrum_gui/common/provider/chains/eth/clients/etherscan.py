@@ -18,10 +18,10 @@ from electrum_gui.common.provider.data import (
     TxBroadcastReceiptCode,
     TxPaginate,
 )
-from electrum_gui.common.provider.interfaces import ClientInterface
+from electrum_gui.common.provider.interfaces import ClientInterface, SearchTransactionMixin
 
 
-class Etherscan(ClientInterface):
+class Etherscan(ClientInterface, SearchTransactionMixin):
     def __init__(self, url: str, api_keys: List[str] = None):
         self.restful = RestfulRequest(url)
         self.api_key = api_keys[0] if api_keys else None

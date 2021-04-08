@@ -69,7 +69,24 @@ class ClientInterface(ABC):
         except TransactionNotFound:
             return TransactionStatus.UNKNOWN
 
-    def search_txs_by_address(
+    @abstractmethod
+    def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
+        """
+        push transaction to chain
+        :param raw_tx: transaction in str
+        :return: txid, optional
+        """
+
+    @abstractmethod
+    def get_price_per_unit_of_fee(self) -> PricePerUnit:
+        """
+        get the price per unit of the fee, likes the gas_price on eth
+        :return: price per unit
+        """
+
+
+class SearchTransactionMixin(ABC):
+    def search_txs_by_address(  # noqa
         self,
         address: str,
         paginate: Optional[TxPaginate] = None,
@@ -98,21 +115,6 @@ class ClientInterface(ABC):
         txids = {i.txid for i in txs}
         txids = list(txids)
         return txids
-
-    @abstractmethod
-    def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
-        """
-        push transaction to chain
-        :param raw_tx: transaction in str
-        :return: txid, optional
-        """
-
-    @abstractmethod
-    def get_price_per_unit_of_fee(self) -> PricePerUnit:
-        """
-        get the price per unit of the fee, likes the gas_price on eth
-        :return: price per unit
-        """
 
 
 class ProviderInterface(ABC):
