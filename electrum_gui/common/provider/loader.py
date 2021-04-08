@@ -85,7 +85,7 @@ def get_client_by_chain(
         try:
             is_ready, skip_seconds = client.is_ready, 300
         except Exception as e:
-            is_ready, skip_seconds = False, 180
+            is_ready, skip_seconds = False, 30
             logger.info(f"Error in check status of <{candidate}>. error: {e}", exc_info=True)
 
         candidate.update({"expired_at": int(time.time() + skip_seconds), "is_ready": is_ready})
