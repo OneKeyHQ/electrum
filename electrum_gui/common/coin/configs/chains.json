@@ -10,7 +10,7 @@
         "symbol": "BTC",
         "name": "Bitcoin",
         "decimals": 8,
-        "icon": "https://devs.243096.com/onekey/images/token/btc/BTC.png"
+        "icon": "https://onekey.243096.com/onekey/images/token/btc/BTC.png"
       }
     ],
     "chain_affinity": "btc",
@@ -27,7 +27,7 @@
         "symbol": "ETH",
         "name": "Ethereum",
         "decimals": 18,
-        "icon": "https://devs.243096.com/onekey/images/token/eth/ETH.png"
+        "icon": "https://onekey.243096.com/onekey/images/token/eth/ETH.png"
       }
     ],
     "clients": [
@@ -73,7 +73,7 @@
         "symbol": "BNB",
         "name": "Binance Smart Chain",
         "decimals": 18,
-        "icon": "https://devs.243096.com/onekey/images/token/bsc/BSC.png"
+        "icon": "https://onekey.243096.com/onekey/images/token/bsc/BSC.png"
       }
     ],
     "clients": [
@@ -101,7 +101,7 @@
         "symbol": "HT",
         "name": "Huobi ECO Chain",
         "decimals": 18,
-        "icon": "https://devs.243096.com/onekey/images/token/heco/HECO.png"
+        "icon": "https://onekey.243096.com/onekey/images/token/heco/HECO.png"
       }
     ],
     "clients": [

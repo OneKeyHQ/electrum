@@ -6,835 +6,835 @@
 	"tokens": [{
 		"name": "Binance-Peg Ethereum Token",
 		"symbol": "ETH",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ETH.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ETH.png",
 		"address": "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
 		"decimals": 18
 	}, {
 		"name": "Wrapped BNB",
 		"symbol": "WBNB",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/WBNB.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/WBNB.png",
 		"address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Cardano Token",
 		"symbol": "ADA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ADA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ADA.png",
 		"address": "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg BUSD-T",
 		"symbol": "BUSD-T",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BUSD-T.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BUSD-T.png",
 		"address": "0x55d398326f99059ff775485246999027b3197955",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Polkadot Token",
 		"symbol": "DOT",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/DOT.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/DOT.png",
 		"address": "0x7083609fce4d1d8dc0c979aab8c869ea2c873402",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg XRP Token",
 		"symbol": "XRP",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/XRP.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/XRP.png",
 		"address": "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Uniswap",
 		"symbol": "UNI",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/UNI.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/UNI.png",
 		"address": "0xbf5140a22578168fd562dccf235e5d43a02ce9b1",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Litecoin Token",
 		"symbol": "LTC",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/LTC.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/LTC.png",
 		"address": "0x4338665cbb7b2485a8855a139b75d5e34ab0db94",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg ChainLink Token",
 		"symbol": "LINK",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/LINK.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/LINK.png",
 		"address": "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Bitcoin Cash Token",
 		"symbol": "BCH",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BCH.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BCH.png",
 		"address": "0x8ff795a6f4d97e7887c79bea79aba5cc76444adf",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg USD Coin",
 		"symbol": "USDC",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/USDC.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/USDC.png",
 		"address": "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Dogecoin",
 		"symbol": "DOGE",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/DOGE.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/DOGE.png",
 		"address": "0xba2ae424d960c26247dd6c32edc70b295c744c43",
 		"decimals": 8
 	}, {
 		"name": "Binance-Peg EOS Token",
 		"symbol": "EOS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/EOS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/EOS.png",
 		"address": "0x56b6fb708fc5732dec1afc8d8556423a2edccbd6",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Cosmos Token",
 		"symbol": "ATOM",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ATOM.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ATOM.png",
 		"address": "0x0eb3a705fc54725037cc9e008bdede697f62f335",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Tezos Token",
 		"symbol": "XTZ",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/XTZ.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/XTZ.png",
 		"address": "0x16939ef78684453bfdfb47825f8a5f714f12623a",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg BUSD Token",
 		"symbol": "BUSD",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BUSD.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BUSD.png",
 		"address": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Dai Token",
 		"symbol": "DAI",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/DAI.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/DAI.png",
 		"address": "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Synthetix Network Token",
 		"symbol": "SNX",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/SNX.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/SNX.png",
 		"address": "0x9ac983826058b8a9c7aa1c9171441191232e8404",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Compound Coin",
 		"symbol": "COMP",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/COMP.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/COMP.png",
 		"address": "0x52ce071bd9b1c4b00a0b92d298c512478cad67e8",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Maker",
 		"symbol": "MKR",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/MKR.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/MKR.png",
 		"address": "0x5f0da599bb2cccfcf6fdfd7d81743b6020864350",
 		"decimals": 18
 	}, {
 		"name": "PancakeSwap Token",
 		"symbol": "Cake",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/Cake.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/Cake.png",
 		"address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Zcash Token",
 		"symbol": "ZEC",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ZEC.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ZEC.png",
 		"address": "0x1ba42e5193dfa8b03d15dd1b86a3113bbbef8eeb",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Ethereum Classic",
 		"symbol": "ETC",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ETC.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ETC.png",
 		"address": "0x3d6545b08693dae087e957cb1180ee38b9e3c25e",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg yearn.finance",
 		"symbol": "YFI",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/YFI.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/YFI.png",
 		"address": "0x88f1a5ae2a3bf98aeaf342d26b30a79438c9142e",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg BTCB Token",
 		"symbol": "BTCB",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BTCB.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BTCB.png",
 		"address": "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg NEAR Protocol",
 		"symbol": "NEAR",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/NEAR.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/NEAR.png",
 		"address": "0x1fa4a73a3f0133f0025378af00236f3abdee5d63",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Basic Attention Token",
 		"symbol": "BAT",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BAT.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BAT.png",
 		"address": "0x101d82428437127bf1608f699cd651e6abf9766e",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Ontology Token",
 		"symbol": "ONT",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ONT.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ONT.png",
 		"address": "0xfd7b3a77848f1c2d67e05e54d78d174a0c850335",
 		"decimals": 18
 	}, {
 		"name": "Wrapped UST Token",
 		"symbol": "UST",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/UST.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/UST.png",
 		"address": "0x23396cf899ca06c4472205fc903bdb4de249d6fc",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Paxos Standard",
 		"symbol": "PAX",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/PAX.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/PAX.png",
 		"address": "0xb7f8cd00c5a06c0537e2abff0b58033d02e5e094",
 		"decimals": 18
 	}, {
 		"name": "1INCH Token",
 		"symbol": "1INCH",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/1INCH.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/1INCH.png",
 		"address": "0x111111111117dc0aa78b770fa6a738034120c302",
 		"decimals": 18
 	}, {
 		"name": "Venus",
 		"symbol": "XVS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/XVS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/XVS.png",
 		"address": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
 		"decimals": 18
 	}, {
 		"name": "Reef.finance",
 		"symbol": "REEF",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/REEF.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/REEF.png",
 		"address": "0xf21768ccbc73ea5b6fd3c687208a7c2def2d966e",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg IoTeX Network",
 		"symbol": "IOTX",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/IOTX.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/IOTX.png",
 		"address": "0x9678e42cebeb63f23197d726b29b1cb20d0064e5",
 		"decimals": 18
 	}, {
 		"name": "DODO bird",
 		"symbol": "DODO",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/DODO.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/DODO.png",
 		"address": "0x67ee3cb086f8a16f34bee3ca72fad36f7db929e2",
 		"decimals": 18
 	}, {
 		"name": "Wrapped MIR Token",
 		"symbol": "MIR",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/MIR.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/MIR.png",
 		"address": "0x5b6dcf557e2abe2323c48445e8cc948910d8c2c9",
 		"decimals": 18
 	}, {
 		"name": "AlphaToken",
 		"symbol": "ALPHA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ALPHA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ALPHA.png",
 		"address": "0xa1faa113cbe53436df28ff0aee54275c13b40975",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Band Protocol Token",
 		"symbol": "BAND",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BAND.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BAND.png",
 		"address": "0xad6caeb32cd2c308980a548bd0bc5aa4306c6c18",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg Bitcoin Cash ABC",
 		"symbol": "BCHA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BCHA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BCHA.png",
 		"address": "0xd475c9c934dcd6d5f1cac530585aa5ba14185b92",
 		"decimals": 18
 	}, {
 		"name": "Ankr",
 		"symbol": "ANKR",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ANKR.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ANKR.png",
 		"address": "0xf307910a4c7bbc79691fd374889b36d8531b08e3",
 		"decimals": 18
 	}, {
 		"name": "Swipe",
 		"symbol": "SXP",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/SXP.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/SXP.png",
 		"address": "0x47bead2563dcbf3bf2c9407fea4dc236faba485a",
 		"decimals": 18
 	}, {
 		"name": "Venus BTC",
 		"symbol": "vBTC",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vBTC.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vBTC.png",
 		"address": "0x882c173bc7ff3b7786ca16dfed3dfffb9ee7847b",
 		"decimals": 8
 	}, {
 		"name": "SafePal Token",
 		"symbol": "SFP",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/SFP.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/SFP.png",
 		"address": "0xd41fdb03ba84762dd66a0af1a6c8540ff1ba5dfb",
 		"decimals": 18
 	}, {
 		"name": "BakeryToken",
 		"symbol": "BAKE",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BAKE.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BAKE.png",
 		"address": "0xE02dF9e3e622DeBdD69fb838bB799E3F168902c5",
 		"decimals": 18
 	}, {
 		"name": "Litentry",
 		"symbol": "LIT",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/LIT.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/LIT.png",
 		"address": "0xb59490ab09a0f526cc7305822ac65f2ab12f9723",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg ELF Token",
 		"symbol": "ELF",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ELF.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ELF.png",
 		"address": "0xa3f020a5c92e15be13caf0ee5c95cf79585eecc9",
 		"decimals": 18
 	}, {
 		"name": "LTO Network",
 		"symbol": "LTO",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/LTO.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/LTO.png",
 		"address": "0x857b222fc79e1cbbf8ca5f78cb133d1b7cf34bbd",
 		"decimals": 18
 	}, {
 		"name": "VAI Stablecoin",
 		"symbol": "VAI",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/VAI.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/VAI.png",
 		"address": "0x4bd17003473389a42daf6a0a729f6fdb328bbbd7",
 		"decimals": 18
 	}, {
 		"name": "Trust Wallet",
 		"symbol": "TWT",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/TWT.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/TWT.png",
 		"address": "0x4b0f1812e5df2a09796481ff14017e6005508003",
 		"decimals": 18
 	}, {
 		"name": "Binance-Peg PAX Gold",
 		"symbol": "PAXG",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/PAXG.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/PAXG.png",
 		"address": "0x7950865a9140cb519342433146ed5b40c6f210f7",
 		"decimals": 18
 	}, {
 		"name": "MATH Token",
 		"symbol": "MATH",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/MATH.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/MATH.png",
 		"address": "0xf218184af829cf2b0019f8e6f0b2423498a36983",
 		"decimals": 18
 	}, {
 		"name": "beefy.finance",
 		"symbol": "BIFI",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BIFI.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BIFI.png",
 		"address": "0xCa3F508B8e4Dd382eE878A314789373D80A5190A",
 		"decimals": 18
 	}, {
 		"name": "Venus USDC",
 		"symbol": "vUSDC",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vUSDC.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vUSDC.png",
 		"address": "0xeca88125a5adbe82614ffc12d0db554e2e2867c8",
 		"decimals": 8
 	}, {
 		"name": "Binance-Peg YFII.finance Token",
 		"symbol": "YFII",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/YFII.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/YFII.png",
 		"address": "0x7f70642d88cf1c4a3a7abb072b53b929b653eda5",
 		"decimals": 18
 	}, {
 		"name": "Contentos",
 		"symbol": "COS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/COS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/COS.png",
 		"address": "0x96dd399f9c3afda1f194182f71600f1b65946501",
 		"decimals": 18
 	}, {
 		"name": "Cream",
 		"symbol": "CREAM",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/CREAM.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/CREAM.png",
 		"address": "0xd4cb328a82bdf5f03eb737f37fa6b370aef3e888",
 		"decimals": 18
 	}, {
 		"name": "Prometeus",
 		"symbol": "PROM",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/PROM.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/PROM.png",
 		"address": "0xaf53d56ff99f1322515e54fdde93ff8b3b7dafd5",
 		"decimals": 18
 	}, {
 		"name": "SPARTAN PROTOCOL TOKEN",
 		"symbol": "SPARTA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/SPARTA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/SPARTA.png",
 		"address": "0xe4ae305ebe1abe663f261bc00534067c80ad677c",
 		"decimals": 18
 	}, {
 		"name": "CertiK Token",
 		"symbol": "CTK",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/CTK.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/CTK.png",
 		"address": "0xa8c2b8eec3d368c0253ad3dae65a5f2bbb89c929",
 		"decimals": 6
 	}, {
 		"name": "Venus ETH",
 		"symbol": "vETH",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vETH.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vETH.png",
 		"address": "0xf508fcd89b8bd15579dc79a6827cb4686a3592c8",
 		"decimals": 8
 	}, {
 		"name": "Anyswap-BEP20",
 		"symbol": "ANY",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ANY.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ANY.png",
 		"address": "0xf68c9df95a18b2a5a5fa1124d79eeeffbad0b6fa",
 		"decimals": 18
 	}, {
 		"name": "Goose Golden Egg",
 		"symbol": "EGG",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/EGG.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/EGG.png",
 		"address": "0xf952fc3ca7325cc27d15885d37117676d25bfda6",
 		"decimals": 18
 	}, {
 		"name": "Burger Swap",
 		"symbol": "BURGER",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BURGER.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BURGER.png",
 		"address": "0xae9269f27437f0fcbc232d39ec814844a51d6b8f",
 		"decimals": 18
 	}, {
 		"name": "Venus BUSD",
 		"symbol": "vBUSD",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vBUSD.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vBUSD.png",
 		"address": "0x95c78222b3d6e262426483d42cfa53685a67ab9d",
 		"decimals": 8
 	}, {
 		"name": "JulSwap",
 		"symbol": "JulD",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/JulD.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/JulD.png",
 		"address": "0x5a41f637c3f7553dba6ddc2d3ca92641096577ea",
 		"decimals": 18
 	}, {
 		"name": "AUTOv2",
 		"symbol": "AUTO",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/AUTO.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/AUTO.png",
 		"address": "0xa184088a740c695e156f91f5cc086a06bb78b827",
 		"decimals": 18
 	}, {
 		"name": "Antimatter.Finance Mapping Token",
 		"symbol": "MATTER",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/MATTER.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/MATTER.png",
 		"address": "0x1c9491865a1de77c5b6e19d2e6a5f1d7a6f2b25f",
 		"decimals": 18
 	}, {
 		"name": "Venus USDT",
 		"symbol": "vUSDT",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vUSDT.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vUSDT.png",
 		"address": "0xfd5840cd36d94d7229439859c0112a4185bc0255",
 		"decimals": 8
 	}, {
 		"name": "Newscrypto",
 		"symbol": "NWC",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/NWC.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/NWC.png",
 		"address": "0x968f6f898a6df937fc1859b323ac2f14643e3fed",
 		"decimals": 18
 	}, {
 		"name": "StableX Token",
 		"symbol": "STAX",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/STAX.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/STAX.png",
 		"address": "0x0da6ed8b13214ff28e9ca979dd37439e8a88f6c4",
 		"decimals": 18
 	}, {
 		"name": "AlpacaToken",
 		"symbol": "ALPACA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ALPACA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ALPACA.png",
 		"address": "0x8f0528ce5ef7b51152a59745befdd91d97091d2f",
 		"decimals": 18
 	}, {
 		"name": "Helmet.insure Governance Token",
 		"symbol": "Helmet",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/Helmet.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/Helmet.png",
 		"address": "0x948d2a81086a075b3130bac19e4c6dee1d2e3fe8",
 		"decimals": 18
 	}, {
 		"name": "The Force Token",
 		"symbol": "FOR",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/FOR.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/FOR.png",
 		"address": "0x658a109c5900bc6d2357c87549b651670e5b0539",
 		"decimals": 18
 	}, {
 		"name": "Venus SXP",
 		"symbol": "vSXP",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vSXP.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vSXP.png",
 		"address": "0x2ff3d0f6990a40261c66e1ff2017acbc282eb6d0",
 		"decimals": 8
 	}, {
 		"name": "Binance-Peg Token Club",
 		"symbol": "TCT",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/TCT.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/TCT.png",
 		"address": "0xca0a9df6a8cad800046c1ddc5755810718b65c44",
 		"decimals": 18
 	}, {
 		"name": "Venus LINK",
 		"symbol": "vLINK",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vLINK.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vLINK.png",
 		"address": "0x650b940a1033b8a1b1873f78730fcfc73ec11f1f",
 		"decimals": 8
 	}, {
 		"name": "Berry Tributes",
 		"symbol": "BRY",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BRY.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BRY.png",
 		"address": "0xf859Bf77cBe8699013d6Dbc7C2b926Aaf307F830",
 		"decimals": 18
 	}, {
 		"name": "Venus LTC",
 		"symbol": "vLTC",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vLTC.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vLTC.png",
 		"address": "0x57a5297f2cb2c0aac9d554660acd6d385ab50c6b",
 		"decimals": 8
 	}, {
 		"name": "Hakka Finance on xDai on BSC",
 		"symbol": "HAKKA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/HAKKA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/HAKKA.png",
 		"address": "0x1d1eb8e8293222e1a29d2c0e4ce6c0acfd89aaac",
 		"decimals": 18
 	}, {
 		"name": "Venus DOT",
 		"symbol": "vDOT",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vDOT.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vDOT.png",
 		"address": "0x1610bc33319e9398de5f57b33a5b184c806ad217",
 		"decimals": 8
 	}, {
 		"name": "FREE coin BSC",
 		"symbol": "FREE",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/FREE.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/FREE.png",
 		"address": "0x12e34cdf6a031a10fe241864c32fb03a4fdad739",
 		"decimals": 18
 	}, {
 		"name": "BNB48 Club Token",
 		"symbol": "KOGE",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/KOGE.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/KOGE.png",
 		"address": "0xe6df05ce8c8301223373cf5b969afcb1498c5528",
 		"decimals": 18
 	}, {
 		"name": "Raven Protocol",
 		"symbol": "RAVEN",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/RAVEN.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/RAVEN.png",
 		"address": "0xcd7c5025753a49f1881b31c48caa7c517bb46308",
 		"decimals": 18
 	}, {
 		"name": "Venus DAI",
 		"symbol": "vDAI",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vDAI.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vDAI.png",
 		"address": "0x334b3ecb4dca3593bccc3c7ebd1a1c1d1780fbf1",
 		"decimals": 8
 	}, {
 		"name": "fry.world",
 		"symbol": "FRIES",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/FRIES.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/FRIES.png",
 		"address": "0x393b312c01048b3ed2720bf1b090084c09e408a1",
 		"decimals": 18
 	}, {
 		"name": "THUGS",
 		"symbol": "THUGS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/THUGS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/THUGS.png",
 		"address": "0xe10e9822a5de22f8761919310dda35cd997d63c0",
 		"decimals": 18
 	}, {
 		"name": "Billion Happiness",
 		"symbol": "BHC",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BHC.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BHC.png",
 		"address": "0x6fd7c98458a943f469e1cf4ea85b173f5cd342f4",
 		"decimals": 18
 	}, {
 		"name": "Cubiex",
 		"symbol": "CBIX",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/CBIX.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/CBIX.png",
 		"address": "0x34681c1035f97e1edcccec5f142e02ff81a3a230",
 		"decimals": 18
 	}, {
 		"name": "Ditto",
 		"symbol": "DITTO",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/DITTO.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/DITTO.png",
 		"address": "0x233d91a0713155003fc4dce0afa871b508b3b715",
 		"decimals": 9
 	}, {
 		"name": "Extend Finance",
 		"symbol": "EXF",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/EXF.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/EXF.png",
 		"address": "0x6306e883493824ccf606d90e25f68a28e47b98a3",
 		"decimals": 9
 	}, {
 		"name": "StaysBASE",
 		"symbol": "SBS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/SBS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/SBS.png",
 		"address": "0xc1d99537392084cc02d3f52386729b79d01035ce",
 		"decimals": 9
 	}, {
 		"name": "Venus BCH",
 		"symbol": "vBCH",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vBCH.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vBCH.png",
 		"address": "0x5f0388ebc2b94fa8e123f404b79ccf5f40b29176",
 		"decimals": 8
 	}, {
 		"name": "FlashX Ultra",
 		"symbol": "FSXU",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/FSXU.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/FSXU.png",
 		"address": "0xa94b7a842aadb617a0b08fa744e033c6de2f7595",
 		"decimals": 8
 	}, {
 		"name": "Streamity",
 		"symbol": "STM",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/STM.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/STM.png",
 		"address": "0x90df11a8cce420675e73922419e3f4f3fe13cccb",
 		"decimals": 18
 	}, {
 		"name": "vSWAP.fi",
 		"symbol": "vBSWAP",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vBSWAP.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vBSWAP.png",
 		"address": "0x4f0ed527e8a95ecaa132af214dfd41f30b361600",
 		"decimals": 18
 	}, {
 		"name": "Binance Beacon ETH",
 		"symbol": "BETH",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BETH.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BETH.png",
 		"address": "0x250632378e573c6be1ac2f97fcdf00515d0aa91b",
 		"decimals": 18
 	}, {
 		"name": "Bat True Share",
 		"symbol": "BTS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BTS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BTS.png",
 		"address": "0xc2e1acef50ae55661855e8dcb72adb182a3cc259",
 		"decimals": 18
 	}, {
 		"name": "Fuel Token",
 		"symbol": "Fuel",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/Fuel.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/Fuel.png",
 		"address": "0x2090c8295769791ab7a3cf1cc6e0aa19f35e441a",
 		"decimals": 18
 	}, {
 		"name": "Bunny Token",
 		"symbol": "BUNNY",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BUNNY.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BUNNY.png",
 		"address": "0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51",
 		"decimals": 18
 	}, {
 		"name": "ACryptoS",
 		"symbol": "ACS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/ACS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/ACS.png",
 		"address": "0x4197c6ef3879a08cd51e5560da5064b773aa1d29",
 		"decimals": 18
 	}, {
 		"name": "Venus BETH",
 		"symbol": "vBETH",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vBETH.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vBETH.png",
 		"address": "0x972207a639cc1b374b893cc33fa251b55ceb7c07",
 		"decimals": 8
 	}, {
 		"name": "BSCX",
 		"symbol": "BSCX",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BSCX.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BSCX.png",
 		"address": "0x5ac52ee5b2a633895292ff6d8a89bb9190451587",
 		"decimals": 18
 	}, {
 		"name": "VANCI.FINANCE",
 		"symbol": "VANCII",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/VANCII.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/VANCII.png",
 		"address": "0x8f9b482b74afc0b7e8aefc704f1f04df208ee332",
 		"decimals": 18
 	}, {
 		"name": "Shield Protocol",
 		"symbol": "SHIELD",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/SHIELD.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/SHIELD.png",
 		"address": "0x60b3bc37593853c04410c4f07fe4d6748245bf77",
 		"decimals": 18
 	}, {
 		"name": "Kiwi Token",
 		"symbol": "KIWI",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/KIWI.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/KIWI.png",
 		"address": "0xcfdf8a80fecaeecc144fa74c0df8691bfd0e26e3",
 		"decimals": 18
 	}, {
 		"name": "Spore Token",
 		"symbol": "SPORE",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/SPORE.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/SPORE.png",
 		"address": "0x77f6a5f1b7a2b6d6c322af8581317d6bb0a52689",
 		"decimals": 18
 	}, {
 		"name": "Keep3r BSC Network",
 		"symbol": "KP3RB",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/KP3RB.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/KP3RB.png",
 		"address": "0x5ea29eee799aa7cc379fde5cf370bc24f2ea7c81",
 		"decimals": 18
 	}, {
 		"name": "https://degen.trade/",
 		"symbol": "DGN",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/DGN.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/DGN.png",
 		"address": "0x72f28c09be1342447fa01ebc76ef508473d08c5c",
 		"decimals": 18
 	}, {
 		"name": "Ramen Token",
 		"symbol": "Ramen",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/Ramen.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/Ramen.png",
 		"address": "0x4f47a0d15c1e53f3d94c069c7d16977c29f9cb6b",
 		"decimals": 18
 	}, {
 		"name": "PizzaSwap",
 		"symbol": "PIZZA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/PIZZA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/PIZZA.png",
 		"address": "0x2cc26dd730f548dc4ac291ae7d84a0c96980d2cb",
 		"decimals": 18
 	}, {
 		"name": "Seven Up Token",
 		"symbol": "7UP",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/7UP.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/7UP.png",
 		"address": "0x29f350b3822f51dc29619c583adbc9628646e315",
 		"decimals": 18
 	}, {
 		"name": "Phoswap",
 		"symbol": "PHO",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/PHO.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/PHO.png",
 		"address": "0xb9784c1633ef3b839563b988c323798634714368",
 		"decimals": 8
 	}, {
 		"name": "Bat True Dollar",
 		"symbol": "BTD",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BTD.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BTD.png",
 		"address": "0xd1102332a213e21faf78b69c03572031f3552c33",
 		"decimals": 18
 	}, {
 		"name": "Venus XVS",
 		"symbol": "vXVS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vXVS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vXVS.png",
 		"address": "0x151b1e2635a717bcdc836ecd6fbb62b674fe3e1d",
 		"decimals": 8
 	}, {
 		"name": "Venus FIL",
 		"symbol": "vFIL",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vFIL.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vFIL.png",
 		"address": "0xf91d58b5ae142dacc749f58a49fcbac340cb0343",
 		"decimals": 8
 	}, {
 		"name": "Weather",
 		"symbol": "Weather",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/Weather.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/Weather.png",
 		"address": "0xbe3e4cfd929156f612df36042d79201ecf5344d7",
 		"decimals": 18
 	}, {
 		"name": "cheesemaker.farm",
 		"symbol": "CHS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/CHS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/CHS.png",
 		"address": "0xadd8a06fd58761a5047426e160b2b88ad3b9d464",
 		"decimals": 18
 	}, {
 		"name": "Pasta Token",
 		"symbol": "PASTA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/PASTA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/PASTA.png",
 		"address": "0xab9d0fae6eb062f2698c2d429a1be9185a5d4f6e",
 		"decimals": 18
 	}, {
 		"name": "DEFI 100",
 		"symbol": "D100",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/D100.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/D100.png",
 		"address": "0x9d8aac497a4b8fe697dd63101d793f0c6a6eebb6",
 		"decimals": 9
 	}, {
 		"name": "Taco",
 		"symbol": "TACO",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/TACO.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/TACO.png",
 		"address": "0x9066e87Bac891409D690cfEfA41379b34af06391",
 		"decimals": 18
 	}, {
 		"name": "Jointer",
 		"symbol": "JNTR",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/JNTR.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/JNTR.png",
 		"address": "0x5f2caa99fc378248ac02cbbaac27e3fa155ed2c4",
 		"decimals": 18
 	}, {
 		"name": "Linear Token",
 		"symbol": "LINA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/LINA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/LINA.png",
 		"address": "0x762539b45a1dcce3d36d080f74d1aed37844b878",
 		"decimals": 18
 	}, {
 		"name": "Genta",
 		"symbol": "GENA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/GENA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/GENA.png",
 		"address": "0x7f4959528D4C9c7379b3437C7Eea40376fD96B8a",
 		"decimals": 18
 	}, {
 		"name": "CanYaCoin",
 		"symbol": "CAN",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/CAN.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/CAN.png",
 		"address": "0x007ea5c0ea75a8df45d288a4debdd5bb633f9e56",
 		"decimals": 18
 	}, {
 		"name": "Venus XRP",
 		"symbol": "vXRP",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/vXRP.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/vXRP.png",
 		"address": "0xb248a295732e0225acd3337607cc01068e3b9c10",
 		"decimals": 8
 	}, {
 		"name": "Cross Finance",
 		"symbol": "CRP",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/CRP.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/CRP.png",
 		"address": "0x1ad8d89074afa789a027b9a31d0bd14e254711d0",
 		"decimals": 18
 	}, {
 		"name": "Propel",
 		"symbol": "PROPEL",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/PROPEL.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/PROPEL.png",
 		"address": "0x9b44df3318972be845d83f961735609137c4c23c",
 		"decimals": 18
 	}, {
 		"name": "BIDR BEP20",
 		"symbol": "BIDR",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/BIDR.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/BIDR.png",
 		"address": "0x9a2f5556e9a637e8fbce886d8e3cf8b316a1d8a2",
 		"decimals": 18
 	}, {
 		"name": "Cartesi Token",
 		"symbol": "CTSI",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/CTSI.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/CTSI.png",
 		"address": "0x8da443f84fea710266c8eb6bc34b71702d033ef2",
 		"decimals": 18
 	}, {
 		"name": "Chi Gastoken by 1inch",
 		"symbol": "CHI",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/CHI.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/CHI.png",
 		"address": "0x0000000000004946c0e9f43f4dee607b0ef1fa1c",
 		"decimals": 0
 	}, {
 		"name": "Cream Cardano Token",
 		"symbol": "crADA",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/crADA.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/crADA.png",
 		"address": "0x81c15d3e956e55e77e1f3f257f0a65bd2725fc55",
 		"decimals": 8
 	}, {
 		"name": "dForce",
 		"symbol": "DF",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/DF.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/DF.png",
 		"address": "0x4a9a2b2b04549c3927dd2c9668a5ef3fca473623",
 		"decimals": 18
 	}, {
 		"name": "DOS Network Token BEP20",
 		"symbol": "DOS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/DOS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/DOS.png",
 		"address": "0xdc0f0a5719c39764b011edd02811bd228296887c",
 		"decimals": 18
 	}, {
 		"name": "fry.KetchupV2",
 		"symbol": "KHP",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/KHP.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/KHP.png",
 		"address": "0x15B3d410fCd0d695E1bbe4F717F8E1B6D0Fb2D0C",
 		"decimals": 18
 	}, {
 		"name": "InnovativeBioresearchCoin",
 		"symbol": "INNBC",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/INNBC.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/INNBC.png",
 		"address": "0xdf1f0026374d4bcc490be5e316963cf6df2fff19",
 		"decimals": 6
 	}, {
 		"name": "Milk Protocol",
 		"symbol": "MILK",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/MILK.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/MILK.png",
 		"address": "0x8e9f5173e16ff93f81579d73a7f9723324d6b6af",
 		"decimals": 18
 	}, {
 		"name": "Squirrel Finance",
 		"symbol": "NUTS",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/NUTS.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/NUTS.png",
 		"address": "0x8893d5fa71389673c5c4b9b3cb4ee1ba71207556",
 		"decimals": 18
 	}, {
 		"name": "Standard on xDai on BSC",
 		"symbol": "xMARK",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/xMARK.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/xMARK.png",
 		"address": "0x26a5dfab467d4f58fb266648cae769503cec9580",
 		"decimals": 9
 	}, {
 		"name": "Tree Token",
 		"symbol": "TREE",
-		"logoURI": "https://devs.243096.com/onekey/images/token/bsc/TREE.png",
+		"logoURI": "https://onekey.243096.com/onekey/images/token/bsc/TREE.png",
 		"address": "0x9bd547446ea13c0c13df2c1885e1f5b019a77441",
 		"decimals": 2
 	}],
