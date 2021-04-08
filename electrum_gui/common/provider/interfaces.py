@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, Optional
+from typing import Callable, Dict, List, Optional
 
 from electrum_gui.common.coin.data import ChainInfo, CoinInfo
 from electrum_gui.common.provider.data import (
@@ -7,13 +7,16 @@ from electrum_gui.common.provider.data import (
     AddressValidation,
     ClientInfo,
     PricePerUnit,
+    SignedTx,
     Token,
     Transaction,
     TransactionStatus,
     TxBroadcastReceipt,
     TxPaginate,
+    UnsignedTx,
 )
 from electrum_gui.common.provider.exceptions import TransactionNotFound
+from electrum_gui.common.secret.interfaces import SignerInterface, VerifierInterface
 
 
 class ClientInterface(ABC):
@@ -122,12 +125,46 @@ class ProviderInterface(ABC):
         self,
         chain_info: ChainInfo,
         coins_loader: Callable[[], List[CoinInfo]],
-        client_selector: Callable[[Any], ClientInterface],
+        client_selector: Callable,
     ):
         self.chain_info = chain_info
         self.coins_loader = coins_loader
         self.client_selector = client_selector
 
+    @property
+    def client(self):
+        return self.client_selector()
+
     @abstractmethod
     def verify_address(self, address: str) -> AddressValidation:
-        pass
+        """
+        Check whether the address can be recognized
+        :param address: address
+        :return: AddressValidation
+        """
+
+    @abstractmethod
+    def pubkey_to_address(self, verifier: VerifierInterface, encoding: str = None) -> str:
+        """
+        Convert pubkey to address
+        :param verifier: VerifierInterface
+        :param encoding: encoding of address, optional
+        :return: address
+        """
+
+    @abstractmethod
+    def filling_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
+        """
+        Filling unsigned tx as much as possible
+        :param unsigned_tx: incomplete UnsignedTx
+        :return: filled UnsignedTx
+        """
+
+    @abstractmethod
+    def sign_transaction(self, unsigned_tx: UnsignedTx, key_mapping: Dict[str, SignerInterface]) -> SignedTx:
+        """
+        Sign transaction
+        :param unsigned_tx: complete UnsignedTx
+        :param key_mapping: mapping of address to SignerInterface
+        :return: SignedTx
+        """

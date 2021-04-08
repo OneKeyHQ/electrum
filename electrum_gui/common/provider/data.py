@@ -66,8 +66,8 @@ class TransactionOutput(DataClassMixin):
 class Transaction(DataClassMixin):
     txid: str
     status: TransactionStatus
-    inputs: List[TransactionInput] = field(default=list)
-    outputs: List[TransactionOutput] = field(default=list)
+    inputs: List[TransactionInput] = field(default_factory=list)
+    outputs: List[TransactionOutput] = field(default_factory=list)
     fee: TransactionFee = None
     block_header: BlockHeader = None
     raw_tx: str = ""
@@ -120,3 +120,19 @@ class PricePerUnit(DataClassMixin):
 class AddressValidation(DataClassMixin):
     is_valid: bool
     encoding: Optional[str] = None
+
+
+@dataclass
+class UnsignedTx(DataClassMixin):
+    inputs: List[TransactionInput] = field(default_factory=list)
+    outputs: List[TransactionOutput] = field(default_factory=list)
+    nonce: int = None
+    fee_limit: int = None
+    fee_price_per_unit: int = None
+    payload: dict = field(default_factory=dict)
+
+
+@dataclass
+class SignedTx(DataClassMixin):
+    txid: str
+    raw_tx: str
