@@ -1,6 +1,8 @@
 from functools import partial
 from typing import Any
 
+import eth_utils
+
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.request.exceptions import JsonRPCException
 from electrum_gui.common.basic.request.json_rpc import JsonRPCRequest
@@ -146,3 +148,17 @@ class Geth(ClientInterface):
             normal=EstimatedTimeOnPrice(price=normal, time=180),
             slow=EstimatedTimeOnPrice(price=slow, time=600),
         )
+
+    def estimate_gas_limit(self, from_address: str, to_address: str, value: int, data: str = None) -> int:
+        resp = self.rpc.call(
+            "eth_estimateGas",
+            params=[{"from": from_address, "to": to_address, "value": hex(value), "data": data or "0x"}],
+        )
+        return _hex2int(resp)
+
+    def get_contract_code(self, address: str) -> str:
+        resp = self.rpc.call("eth_getCode", params=[address, self.__LAST_BLOCK__])
+        return eth_utils.remove_0x_prefix(resp)
+
+    def is_contract(self, address: str) -> bool:
+        return len(self.get_contract_code(address)) > 0
