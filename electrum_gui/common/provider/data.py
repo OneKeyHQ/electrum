@@ -119,4 +119,4 @@ class PricePerUnit(DataClassMixin):
 @dataclass
 class AddressValidation(DataClassMixin):
     is_valid: bool
-    format: Optional[str] = None
+    encoding: Optional[str] = None

@@ -1934,7 +1934,7 @@ class AndroidCommands(commands.Commands):
                         {
                             "coin": _remove_testnet_prefix(chain.chain_code),
                             "prefix": chain.qr_code_prefix,
-                            "format": validation.format,
+                            "encoding": validation.encoding,
                         }
                     )
             except Exception as e:
