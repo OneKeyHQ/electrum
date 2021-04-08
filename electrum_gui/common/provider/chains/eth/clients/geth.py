@@ -61,7 +61,7 @@ class Geth(ClientInterface):
             resp = self.eth_call({"to": token.contract, "data": call_balance_of})
 
             try:
-                return _hex2int(resp)
+                return _hex2int(resp[:66])
             except ValueError:
                 return 0
 
