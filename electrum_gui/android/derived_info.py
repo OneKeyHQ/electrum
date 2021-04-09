@@ -3,7 +3,7 @@ DEFAULT_HW_DERIVED_NUM = 10000
 
 
 class DerivedInfo:
-    def __init__(self, config, hw):
+    def __init__(self, config, hw=False):
         self.config = config
         self._max_num = DEFAULT_HW_DERIVED_NUM if hw else DEFAULT_SW_DERIVED_NUM
         self._derived_account_id = []

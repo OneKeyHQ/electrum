@@ -48,6 +48,7 @@ from .logging import Logger
 from eth_account import Account
 from eth_keys import keys
 from hexbytes import HexBytes
+from electrum import util
 
 if TYPE_CHECKING:
     from .gui.qt.util import TaskThread
@@ -897,7 +898,7 @@ def from_seed_or_bip39(seed, passphrase, derivation, xtype=None, create=False):
     else:
         is_checksum_valid, _is_wordlist_valid = bip39_is_checksum_valid(seed)
         if not is_checksum_valid:
-            raise BaseException(InvalidBip39Seed())
+            raise BaseException(util.InvalidBip39Seed())
         ks = from_bip39_seed(seed, passphrase, derivation)
     return ks
 

@@ -3265,7 +3265,8 @@ class AndroidCommands(commands.Commands):
     def recovery_import_create_hw_wallet(self, i, name, m, n, xpubs, coin="btc"):
         try:
             self.set_multi_wallet_info(name, m, n)
-            self.add_xpub(xpubs, self.hw_info["device_id"], i, self.hw_info["type"], coin=coin)
+            derivation = self._get_hw_derivation(account_id=i, type=self.hw_info["type"], coin=coin)
+            self.add_xpub(xpubs, self.hw_info["device_id"], derivation)
 
             temp_path = helpers.get_temp_file()
             path = self._wallet_path(temp_path)
@@ -3389,7 +3390,6 @@ class AndroidCommands(commands.Commands):
                     raise e
 
             derived = DerivedInfo(self.config)
-            derived.init_recovery_num()
             AndroidCommands._set_recovery_flag(True)
             for derived_wallet in self.wallet_context.iter_derived_wallets(xpub):
                 recovery_create_subfun(self, coin, derived_wallet['account_id'], derived_wallet['name'])
