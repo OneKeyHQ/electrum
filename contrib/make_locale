@@ -14,14 +14,10 @@ os.chdir(os.path.dirname(os.path.realpath(__file__)))
 os.chdir('..')
 
 code_directories = [
-    'android/app/src/main/python',
-    'electrum/gui',
-    'ios',
+    '../python-trezor',
     # copied by make_ios_project.sh.
     'electrum',
-    'electrum/plugins',
     'electrum_gui',
-    'trezor',
 ]
 cmd = "find {} -type f -name '*.py' -o -name '*.kv'".format(" ".join(code_directories))
 
