@@ -3,6 +3,7 @@ from typing import Callable, Dict, List, Optional
 
 from electrum_gui.common.coin.data import ChainInfo, CoinInfo
 from electrum_gui.common.provider.data import (
+    UTXO,
     Address,
     AddressValidation,
     ClientInfo,
@@ -87,6 +88,14 @@ class ClientInterface(ABC):
         :return: price per unit
         """
 
+    def utxo_can_spend(self, utxo: UTXO) -> bool:
+        """
+        Check whether the UTXO is unspent
+        :param utxo:
+        :return: is unspent or not
+        """
+        raise Exception("Unsupported")
+
 
 class SearchTransactionMixin(ABC):
     def search_txs_by_address(  # noqa
@@ -118,6 +127,17 @@ class SearchTransactionMixin(ABC):
         txids = {i.txid for i in txs}
         txids = list(txids)
         return txids
+
+
+class SearchUTXOMixin(ABC):
+    @abstractmethod
+    def search_utxos_by_address(self, address: str) -> List[UTXO]:
+        """
+        Search UTXOs by address
+        :param address: address
+        :return: list of UTXO
+        todo paginate?
+        """
 
 
 class ProviderInterface(ABC):

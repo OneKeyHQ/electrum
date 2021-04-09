@@ -33,7 +33,7 @@ class ETHProvider(ProviderInterface):
         return AddressValidation(is_valid=is_valid, encoding=encoding)
 
     def pubkey_to_address(self, verifier: VerifierInterface, encoding: str = None) -> str:
-        pubkey = verifier.pubkey(compressed=False)
+        pubkey = verifier.get_pubkey(compressed=False)
         address = eth_utils.add_0x_prefix(eth_utils.keccak(pubkey[-64:])[-20:].hex())  # noqa
         return address
 

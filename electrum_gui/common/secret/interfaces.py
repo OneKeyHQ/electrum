@@ -4,7 +4,7 @@ from typing import Tuple
 
 class VerifierInterface(ABC):
     @abstractmethod
-    def pubkey(self, compressed=True) -> bytes:
+    def get_pubkey(self, compressed=True) -> bytes:
         pass
 
 

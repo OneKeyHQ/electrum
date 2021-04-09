@@ -49,10 +49,18 @@ class TransactionFee(DataClassMixin):
 
 
 @dataclass
+class UTXO(DataClassMixin):
+    txid: str
+    vout: int
+    value: int
+
+
+@dataclass
 class TransactionInput(DataClassMixin):
     address: str
     value: int
     token_address: Optional[str] = None
+    utxo: Optional[UTXO] = None
 
 
 @dataclass

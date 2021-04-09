@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 
 from electrum_gui.common.provider.data import (
+    UTXO,
     Address,
     AddressValidation,
     PricePerUnit,
@@ -13,7 +14,7 @@ from electrum_gui.common.provider.data import (
     UnsignedTx,
 )
 from electrum_gui.common.provider.exceptions import NoAvailableClient
-from electrum_gui.common.provider.interfaces import SearchTransactionMixin
+from electrum_gui.common.provider.interfaces import SearchTransactionMixin, SearchUTXOMixin
 from electrum_gui.common.provider.loader import get_client_by_chain, get_provider_by_chain
 from electrum_gui.common.secret.interfaces import SignerInterface, VerifierInterface
 
@@ -82,3 +83,11 @@ def filling_unsigned_tx(chain_code: str, unsigned_tx: UnsignedTx) -> UnsignedTx:
 
 def sign_transaction(chain_code: str, unsigned_tx: UnsignedTx, key_mapping: Dict[str, SignerInterface]) -> SignedTx:
     return get_provider_by_chain(chain_code).sign_transaction(unsigned_tx, key_mapping)
+
+
+def utxo_can_spend(chain_code: str, utxo: UTXO) -> bool:
+    return get_client_by_chain(chain_code).utxo_can_spend(utxo)
+
+
+def search_utxos_by_address(chain_code: str, address: str) -> List[UTXO]:
+    return get_client_by_chain(chain_code, instance_required=SearchUTXOMixin).search_utxos_by_address(address)
