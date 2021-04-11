@@ -1601,11 +1601,9 @@ class AndroidCommands(commands.Commands):
         for tx in txs:
             fiat = Decimal(tx["amount"]) * amount_coin_price
             fee_fiat = Decimal(tx["fee"]) * main_coin_price
+            fee_symbol = coin_manager.get_coin_info(coin_manager.get_chain_info(chain_code).fee_code).symbol
             tx["amount"] = f"{tx['amount']} {tx['coin']} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})"
-            tx["fee"] = (
-                f"{tx['fee']} {self.pywalib.coin_symbol} "
-                f"({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})"
-            )
+            tx["fee"] = f"{tx['fee']} {fee_symbol} ({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})"
 
         return json.dumps(txs, cls=DecimalEncoder)
 
@@ -1722,16 +1720,15 @@ class AndroidCommands(commands.Commands):
 
     def get_eth_tx_info(self, tx_hash) -> str:
         tx = self.pywalib.get_transaction_info(tx_hash)
-        main_coin_price = price_manager.get_last_price(self._coin_to_chain_code(self.wallet.coin), self.ccy)
+
+        chain_code = self._coin_to_chain_code(self.wallet.coin)
+        main_coin_price = price_manager.get_last_price(chain_code, self.ccy)
         fiat = Decimal(tx["amount"]) * main_coin_price
         fee_fiat = Decimal(tx["fee"]) * main_coin_price
+        symbol = coin_manager.get_coin_info(coin_manager.get_chain_info(chain_code).fee_code).symbol
 
-        tx[
-            "amount"
-        ] = f"{tx['amount']} {self.pywalib.coin_symbol} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})"
-        tx[
-            "fee"
-        ] = f"{tx['fee']} {self.pywalib.coin_symbol} ({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})"
+        tx["amount"] = f"{tx['amount']} {symbol} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})"
+        tx["fee"] = f"{tx['fee']} {symbol} ({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})"
 
         return json.dumps(tx, cls=DecimalEncoder)
 
