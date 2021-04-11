@@ -847,17 +847,13 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
 
     @classmethod
     def _create_customer_wallet(cls, ks, config, coin):
-        def import_seed_to_address(pubkey: str):
-            addr = pywalib.PyWalib.web3.toChecksumAddress(pubkey.to_address())
-            wallet.db.add_imported_address(addr, {'pubkey': str(pubkey)})
-
         db = wallet_db.WalletDB("", manual_upgrades=False)
         db.put("keystore", ks.dump())
         wallet = cls(db, None, config=config)
         wallet.coin = coin
-        pubkey = ks.get_pubkey_from_master_xpub()
-        pubkey = eth_keys.keys.PublicKey.from_compressed_bytes(pubkey)
-        import_seed_to_address(pubkey)
+        pubkey = eth_keys.keys.PublicKey.from_compressed_bytes(ks.get_pubkey_from_master_xpub())
+        addr = eth_utils.to_checksum_address(pubkey.to_address())
+        wallet.db.add_imported_address(addr, {'pubkey': str(pubkey)})
         return wallet
 
     @classmethod
