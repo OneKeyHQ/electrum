@@ -611,38 +611,3 @@ class PyWalib:
     @classmethod
     def get_all_txid(cls, address) -> List[str]:
         return provider_manager.search_txids_by_address(cls.get_chain_code(), address)
-
-    @classmethod
-    def get_transaction_info(cls, txid) -> dict:
-        tx = provider_manager.get_transaction_by_txid(cls.get_chain_code(), txid)
-        amount = Decimal(cls.web3.fromWei(tx.outputs[0].value, "ether"))
-        fee = Decimal(cls.web3.fromWei(tx.fee.used * tx.fee.price_per_unit, "ether"))
-
-        tx_status = _("Unconfirmed")
-        show_status = [1, _("Unconfirmed")]
-        if tx.status == TransactionStatus.CONFIRM_REVERTED:
-            tx_status = _("Sending failure")
-            show_status = [2, _("Sending failure")]
-        elif tx.status == TransactionStatus.CONFIRM_SUCCESS:
-            tx_status = (
-                _("{} confirmations").format(tx.block_header.confirmations)
-                if tx.block_header and tx.block_header.confirmations > 0
-                else _("Confirmed")
-            )
-            show_status = [3, _("Confirmed")]
-
-        return {
-            'txid': txid,
-            'can_broadcast': False,
-            'amount': amount,
-            'fee': fee,
-            'description': "",
-            'tx_status': tx_status,
-            "show_status": show_status,
-            'sign_status': None,
-            'output_addr': [tx.outputs[0].address],
-            'input_addr': [tx.inputs[0].address],
-            'height': tx.block_header.block_number if tx.block_header else -2,
-            'cosigner': [],
-            'tx': tx.raw_tx,
-        }

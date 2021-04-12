@@ -73,6 +73,7 @@ from electrum.wallet import Imported_Wallet, Standard_Wallet, Wallet
 from electrum.wallet_db import WalletDB
 from electrum_gui.android import hardware, helpers, wallet_context
 from electrum_gui.common import the_begging
+from electrum_gui.common.provider import data as provider_data
 
 from ..common.basic.functional.text import force_text
 from ..common.basic.orm.database import db
@@ -1719,18 +1720,51 @@ class AndroidCommands(commands.Commands):
         return self.get_details_info(tx, tx_list=tx_list)
 
     def get_eth_tx_info(self, tx_hash) -> str:
-        tx = self.pywalib.get_transaction_info(tx_hash)
-
         chain_code = self._coin_to_chain_code(self.wallet.coin)
-        main_coin_price = price_manager.get_last_price(chain_code, self.ccy)
-        fiat = Decimal(tx["amount"]) * main_coin_price
-        fee_fiat = Decimal(tx["fee"]) * main_coin_price
-        symbol = coin_manager.get_coin_info(coin_manager.get_chain_info(chain_code).fee_code).symbol
+        fee_code = coin_manager.get_chain_info(chain_code).fee_code
+        symbol = coin_manager.get_coin_info(fee_code).symbol
 
-        tx["amount"] = f"{tx['amount']} {symbol} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})"
-        tx["fee"] = f"{tx['fee']} {symbol} ({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})"
+        main_coin_price = price_manager.get_last_price(fee_code, self.ccy)
+        transaction = provider_manager.get_transaction_by_txid(chain_code, tx_hash)
 
-        return json.dumps(tx, cls=DecimalEncoder)
+        if transaction.status == provider_data.TransactionStatus.CONFIRM_REVERTED:
+            tx_status = _("Sending failure")
+            show_status = [2, _("Sending failure")]
+        elif transaction.status == provider_data.TransactionStatus.CONFIRM_SUCCESS:
+            tx_status = (
+                _("{} confirmations").format(transaction.block_header.confirmations)
+                if transaction.block_header and transaction.block_header.confirmations > 0
+                else _("Confirmed")
+            )
+            show_status = [3, _("Confirmed")]
+        else:
+            tx_status = _("Unconfirmed")
+            show_status = [1, _("Unconfirmed")]
+
+        amount = Decimal(eth_utils.from_wei(transaction.outputs[0].value, "ether"))
+        fee = Decimal(eth_utils.from_wei(transaction.fee.used * transaction.fee.price_per_unit, "ether"))
+        display_amount = (
+            f"{amount} {symbol} ({self.daemon.fx.ccy_amount_str(amount * main_coin_price, True)} {self.ccy})"
+        )
+        display_fee = f"{fee} {symbol} ({self.daemon.fx.ccy_amount_str(fee * main_coin_price, True)} {self.ccy})"
+
+        ret = {
+            "txid": tx_hash,
+            "can_broadcast": False,
+            "amount": display_amount,
+            "fee": display_fee,
+            "description": "",
+            'tx_status': tx_status,
+            "show_status": show_status,
+            'sign_status': None,
+            'output_addr': [transaction.outputs[0].address],
+            'input_addr': [transaction.inputs[0].address],
+            'height': transaction.block_header.block_number if transaction.block_header else -2,
+            'cosigner': [],
+            'tx': transaction.raw_tx,
+        }
+
+        return json.dumps(ret, cls=DecimalEncoder)
 
     def get_card(self, tx_hash, tx_mined_status, delta, fee, balance):
         try:
