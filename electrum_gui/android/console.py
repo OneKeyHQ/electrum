@@ -343,6 +343,7 @@ class AndroidCommands(commands.Commands):
                 for i in sorted_tokens
             ]
             out["sum_fiat"] = f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}"
+            out["btc_asset"] = self._fill_balance_info_with_btc(sum_fiat)
         elif (
             self.network
             and self.network.is_connected()
@@ -359,6 +360,7 @@ class AndroidCommands(commands.Commands):
             out["icon"] = self._get_icon_by_token(coin)
             out["balance"] = self.format_amount(balance)
             out["fiat"] = fiat_str
+            out["btc_asset"] = out["balance"]
 
             if u:
                 out["unconfirmed"] = self.format_amount(u, is_diff=True).strip()
@@ -3552,9 +3554,11 @@ class AndroidCommands(commands.Commands):
         :return:
         {
           "all_balance": "21,233.46 CNY",
+          "btc_asset":"",
           "wallet_info": [
             {
               "name": "",
+              "coin":""
               "label": "",
               "btc": "0.005 BTC",
               "fiat": "1,333.55",
@@ -3564,6 +3568,7 @@ class AndroidCommands(commands.Commands):
             },
             {
               "name": "",
+              "coin":""
               "label": "",
               "wallets": [
                 { "coin": "btc", "balance": "", "fiat": "", "icon":""},
@@ -3581,6 +3586,7 @@ class AndroidCommands(commands.Commands):
                 wallet_info = {"name": wallet.get_name(), "label": str(wallet)}
                 sum_fiat = Decimal(0)
                 coin = wallet.coin
+                wallet_info["coin"] = coin
                 if coin in self.coins:
                     with self.pywalib.override_server(self.coins[coin]):
                         checksum_from_address = eth_utils.to_checksum_address(wallet.get_addresses()[0])
@@ -3645,6 +3651,7 @@ class AndroidCommands(commands.Commands):
             all_wallet_info = [*no_zero_balance_wallets, *zero_balance_wallets]
 
             out["all_balance"] = "%s %s" % (all_balance, self.ccy)
+            out["btc_asset"] = self._fill_balance_info_with_btc(all_balance)
             out["wallet_info"] = all_wallet_info
             return json.dumps(out, cls=DecimalEncoder)
         except BaseException as e:
@@ -3975,7 +3982,8 @@ class AndroidCommands(commands.Commands):
         Get the current balance of your wallet
         :return: json like
         {
-          "all_balance": ""
+          "all_balance": "",
+          "btc_asset":"",
           "wallets": [
             {"coin": "eth", "address": "", "balance": "", "fiat": "", "icon":""},
             {"coin": "usdt", "address": "", "balance": "", "fiat": "", "icon":""}
@@ -4010,7 +4018,12 @@ class AndroidCommands(commands.Commands):
                 }
                 for i in sorted_balances
             ]
-            info = {"all_balance": sum_fiat, "wallets": wallet_balances}
+            info = {
+                "all_balance": sum_fiat,
+                "wallets": wallet_balances,
+                "coin": coin,
+                "btc_asset": self._fill_balance_info_with_btc(sum_fiat),
+            }
         else:
             c, u, x = self.wallet.get_balance()
             balance = c + u
@@ -4026,6 +4039,8 @@ class AndroidCommands(commands.Commands):
                         "fiat": fiat_str,
                     }
                 ],
+                "coin": coin,
+                "btc_asset": self.format_amount(balance),
             }
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.load_wallet(self.wallet)
@@ -4112,6 +4127,10 @@ class AndroidCommands(commands.Commands):
             new_balance_info[k] = {**v, "fiat": Decimal(v.get("balance") or 0) * price}
 
         return new_balance_info
+
+    def _fill_balance_info_with_btc(self, fiat: str) -> str:
+        price = price_manager.get_last_price("btc", self.ccy)
+        return self.format_amount((int(Decimal(fiat) / Decimal(price) * COIN)))
 
     def _coin_to_chain_code(self, coin: str) -> str:
         chain_code = f"t{coin}" if PyWalib.chain_type == "testnet" else coin

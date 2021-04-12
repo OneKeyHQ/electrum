@@ -239,7 +239,7 @@ class Abstract_Eth_Wallet(abc.ABC):
             self.coin: {
                 'symbol': from_coin,
                 'address': '',
-                'balance': decimal.Decimal(balance).quantize(decimal.Decimal("0.000000")),
+                'balance': decimal.Decimal(balance),
             }
         }
         for contract_address, contract in self.contacts.items():
@@ -247,7 +247,7 @@ class Abstract_Eth_Wallet(abc.ABC):
             balance_info[contract_address] = {
                 'symbol': symbol,
                 'address': contract_address,
-                'balance': decimal.Decimal(balance).quantize(decimal.Decimal("0.0000")),
+                'balance': decimal.Decimal(balance),
             }
 
         self.set_total_balance(balance_info)
