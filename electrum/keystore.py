@@ -601,6 +601,13 @@ class BIP32_KeyStore(Xpub, Deterministic_KeyStore):
         self.add_xprv(node.to_xprv())
         self.add_key_origin_from_root_node(derivation_prefix=derivation, root_node=rootnode)
 
+    #only used by User-defined path wallets
+    def get_master_private_key_info(self, password):
+        xprv = self.get_master_private_key(password)
+        node = BIP32Node.from_xkey(xprv)
+        pk = node.eckey.get_secret_bytes()
+        return pk
+
     def get_private_key(self, sequence: Sequence[int], password):
         xprv = self.get_master_private_key(password)
         node = BIP32Node.from_xkey(xprv).subkey_at_private_derivation(sequence)

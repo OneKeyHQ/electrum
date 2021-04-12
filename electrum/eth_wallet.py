@@ -904,7 +904,7 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         return True
 
     def has_seed(self):
-        return False
+        return self.keystore.has_seed()
 
     def is_deterministic(self):
         return False
@@ -924,7 +924,11 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
 
     def export_private_key(self, address, password):
         pubk = self.get_public_key(address)
-        prvk = self.keystore.get_eth_private_key(pubk, password)
+        prvk = ""
+        if isinstance(self.keystore, keystore.Imported_KeyStore):
+            prvk = self.keystore.get_eth_private_key(pubk, password)
+        else:
+            prvk = eth_utils.add_0x_prefix(self.keystore.get_master_private_key_info(password).hex())
         return prvk
 
     def get_account(self, address, password):

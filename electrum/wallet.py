@@ -2380,7 +2380,7 @@ class Imported_Wallet(Simple_Wallet):
         return True
 
     def has_seed(self):
-        return False
+        return self.keystore.has_seed()
 
     def is_deterministic(self):
         return False

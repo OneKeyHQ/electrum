@@ -3948,7 +3948,7 @@ class AndroidCommands(commands.Commands):
             raise FailedToSwitchWallet()
 
         self.wallet = self.daemon.get_wallet(self._wallet_path(name))
-        self.wallet.use_change = self.config.get("use_change", False)
+        # self.wallet.use_change = self.config.get("use_change", False)
         coin = self.wallet.coin
         if coin in self.coins:
             PyWalib.set_server(self.coins[coin])
