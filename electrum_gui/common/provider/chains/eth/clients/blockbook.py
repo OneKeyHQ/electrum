@@ -15,7 +15,6 @@ from electrum_gui.common.provider.data import (
     ClientInfo,
     EstimatedTimeOnPrice,
     PricePerUnit,
-    Token,
     Transaction,
     TransactionFee,
     TransactionInput,
@@ -84,8 +83,8 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
         require(resp["address"].lower() == address.lower())
         return resp
 
-    def get_balance(self, address: str, token: Token = None) -> int:
-        if not token:
+    def get_balance(self, address: str, token_address: Optional[str] = None) -> int:
+        if token_address is None:
             return super(BlockBook, self).get_balance(address)
         else:
             resp = self._get_raw_address_info(address, details="tokenBalances")
@@ -94,7 +93,7 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
                 for token_dict in (resp.get("tokens") or ())
                 if token_dict.get("contract") and token_dict.get("balance")
             }
-            balance = tokens.get(token.contract.lower(), 0)
+            balance = tokens.get(token_address.lower(), 0)
             return int(balance)
 
     def get_transaction_by_txid(self, txid: str) -> Transaction:

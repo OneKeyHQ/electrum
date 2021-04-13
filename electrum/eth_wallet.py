@@ -49,14 +49,14 @@ from electrum import (
     invoices,
     keystore,
     logging,
-    pywalib,
     simple_config,
     storage,
     util,
     wallet_db,
 )
-from electrum_gui.common.basic.functional import text as text_utils
 from electrum_gui.android import helpers
+from electrum_gui.common.basic.functional import text as text_utils
+from electrum_gui.common.provider import manager as provider_manager
 
 _logger = logging.get_logger(__name__)
 
@@ -114,7 +114,7 @@ class Abstract_Eth_Wallet(abc.ABC):
         self.receive_requests = db.get_dict('payment_requests')  # type: Dict[str, invoices.Invoice]
         self.invoices = db.get_dict('invoices')  # type: Dict[str, invoices.Invoice]
         self._reserved_addresses = set(db.get('reserved_addresses', []))
-        self.total_balance = {}
+        self._total_balance = {}  # Cache total balance for a short period of time
         self.calc_unused_change_addresses()
         # save wallet type the first time
         if self.db.get('address_index') is None:
@@ -231,41 +231,54 @@ class Abstract_Eth_Wallet(abc.ABC):
     def pubkeys_to_address(self, public_key: str):
         return eth_keys.keys.PublicKey(bytes.fromhex(public_key)).to_checksum_address()
 
-    def set_total_balance(self, balance):
-        self.total_balance['balance_info'] = balance
-        self.total_balance['time'] = time.time()
-
-    def get_total_balance(self):
-        return self.total_balance
-
-    def get_all_balance(self, wallet_address, from_coin):
+    def get_all_balance(self, provider_chain_code: str) -> Tuple[decimal.Decimal, Dict]:
+        # NOTE: The provider_chain_code is used in case of self.coin is different
+        # from the chain code in the new codes under electrum_gui/common.
         if (
-            self.total_balance
-            and self.total_balance.get("balance_info")
-            and self.total_balance.get("time")
-            and time.time() - self.total_balance["time"] <= 10  # Only cache for 10s
+            self._total_balance.get("time")
+            and time.time() - self._total_balance["time"] <= 10  # Only cache for 10s
         ):
-            return self.total_balance["balance_info"].copy()
+            return (
+                self._total_balance["balance_info"][0],
+                self._total_balance["balance_info"][1].copy()
+            )
 
-        _, balance = pywalib.PyWalib.get_balance(wallet_address)
+        checksum_address = eth_utils.to_checksum_address(self.get_addresses()[0])
+        try:
+            raw_main_balance = provider_manager.get_balance(provider_chain_code, checksum_address)
+        except Exception:
+            _logger.error(
+                "Failed to get balance for main coin of chain %s address %s",
+                provider_chain_code,
+                checksum_address
+            )
+            raw_main_balance = 0
+        main_balance = decimal.Decimal(eth_utils.from_wei(raw_main_balance, "ether"))
 
-        balance_info = {
-            self.coin: {
-                'symbol': from_coin,
-                'address': '',
-                'balance': decimal.Decimal(balance),
-            }
-        }
+        contracts_balance_info = {}
         for contract_address, contract in self.contacts.items():
-            symbol, balance = pywalib.PyWalib.get_balance(wallet_address, contract)
-            balance_info[contract_address] = {
-                'symbol': symbol,
-                'address': contract_address,
-                'balance': decimal.Decimal(balance),
+            try:
+                erc_balance = provider_manager.get_balance(
+                    provider_chain_code,
+                    checksum_address,
+                    token_address=contract_address
+                )
+            except Exception:
+                _logger.error(
+                    "Failed to get balance for token %s of chain %s address %s",
+                    contract_address,
+                    provider_chain_code,
+                    checksum_address
+                )
+                erc_balance = 0
+            contracts_balance_info[contract_address] = {
+                'symbol': contract.get_symbol(),  # TODO: use coin manager to get this in the outer level
+                'balance': decimal.Decimal(erc_balance) / pow(10, decimal.Decimal(contract.contract_decimals)),
             }
 
-        self.set_total_balance(balance_info)
-        return balance_info.copy()
+        self._total_balance['balance_info'] = main_balance, contracts_balance_info
+        self._total_balance['time'] = time.time()
+        return main_balance, contracts_balance_info.copy()
 
     def get_all_token_address(self):
         return list(self.contacts.keys())

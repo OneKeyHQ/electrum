@@ -1,6 +1,6 @@
 import time
 from functools import partial
-from typing import Any
+from typing import Any, Optional
 
 import eth_utils
 
@@ -14,7 +14,6 @@ from electrum_gui.common.provider.data import (
     ClientInfo,
     EstimatedTimeOnPrice,
     PricePerUnit,
-    Token,
     Transaction,
     TransactionFee,
     TransactionInput,
@@ -54,14 +53,14 @@ class Geth(ClientInterface):
         nonce = _hex2int(_nonce)
         return Address(address=address, balance=balance, nonce=nonce, existing=(bool(balance) or bool(nonce)))
 
-    def get_balance(self, address: str, token: Token = None) -> int:
-        if not token:
+    def get_balance(self, address: str, token_address: Optional[str] = None) -> int:
+        if token_address is None:
             return super(Geth, self).get_balance(address)
         else:
             call_balance_of = (
                 "0x70a08231000000000000000000000000" + address[2:]
             )  # method_selector(balance_of) + byte32_pad(address)
-            resp = self.eth_call({"to": token.contract, "data": call_balance_of})
+            resp = self.eth_call({"to": token_address, "data": call_balance_of})
 
             try:
                 return _hex2int(resp[:66])
