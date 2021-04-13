@@ -90,16 +90,14 @@ class TrezorKeyStore(Hardware_KeyStore):
         verify = self.plugin.client.verify_eth_message(address, message, sig)
         return verify
 
-    def sign_message(self, sequence, message, password, txin_type=None):
+    def sign_message(self, address_path, message, password, txin_type=None):
         self.wallet_pair_with_hw()
-        address_path = self.get_derivation_prefix() + "/%d/%d" % sequence
         script_type = self.plugin.get_trezor_input_script_type(txin_type)
         msg_sig = self.plugin.client.sign_message(address_path, message, script_type=script_type)
         return msg_sig.signature
 
-    def sign_eth_message(self, sequence, message):
+    def sign_eth_message(self, address_path, message):
         self.wallet_pair_with_hw()
-        address_path = self.get_derivation_prefix() + "/%d/%d" % sequence
         msg_sig = self.plugin.client.sign_eth_message(address_path, message)
         return msg_sig.signature
 
@@ -418,7 +416,7 @@ class TrezorPlugin(HW_PluginBase):
         deriv_suffix = wallet.get_address_index(address)
         derivation = keystore.get_derivation_prefix()
         self.force_pair_with_xpub(self.client, keystore.xpub, derivation)
-        address_path = "%s/%d/%d" % (derivation, *deriv_suffix)
+        address_path = wallet.get_derivation_path(address)
         script_type = None
         if coin == 'btc':
             script_type = self.get_trezor_input_script_type(wallet.txin_type)

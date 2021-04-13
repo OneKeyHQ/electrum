@@ -543,6 +543,7 @@ class BIP32_KeyStore(Xpub, Deterministic_KeyStore):
     type = 'bip32'
 
     def __init__(self, d):
+        #derivation_prefix:if you are importing a wallet to use, this will pass the full path
         Xpub.__init__(self, derivation_prefix=d.get('derivation'), root_fingerprint=d.get('root_fingerprint'))
         Deterministic_KeyStore.__init__(self, d)
         self.xpub = d.get('xpub')
@@ -763,6 +764,7 @@ class Hardware_KeyStore(Xpub, KeyStore):
     type = 'hardware'
 
     def __init__(self, d):
+        #derivation_prefix:if you are importing a wallet to use, this will pass the full path
         Xpub.__init__(self, derivation_prefix=d.get('derivation'), root_fingerprint=d.get('root_fingerprint'))
         KeyStore.__init__(self)
         # Errors and other user interaction is done through the wallet's

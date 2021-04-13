@@ -2051,8 +2051,8 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
         pass
 
     def sign_message(self, address, message, password):
-        index = self.get_address_index(address)
-        signature = self.keystore.sign_message(index, message, password, txin_type=self.txin_type)
+        address_path = self.get_derivation_path(address)
+        signature = self.keystore.sign_message(address_path, message, password, txin_type=self.txin_type)
         return base64.b64encode(signature).decode()
 
     def verify_message(self, address,message, sig):
@@ -2546,6 +2546,7 @@ class Imported_Wallet(Simple_Wallet):
         # this is significantly faster than the implementation in the superclass
         return self.keystore.decrypt_message(pubkey, message, password)
 
+    # The return value is the full path
     def get_derivation_path(self, address):
         return self.keystore.get_derivation_prefix()
 

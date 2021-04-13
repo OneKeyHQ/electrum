@@ -709,8 +709,8 @@ class Abstract_Eth_Wallet(abc.ABC):
         message_hash = eth_utils.keccak(message_bytes)
 
         if isinstance(self.keystore, keystore.Hardware_KeyStore):
-            index = self.get_address_index(address)
-            signature = self.keystore.sign_eth_message(index, message).hex()
+            address_path = self.get_derivation_path(address)
+            signature = self.keystore.sign_eth_message(address_path, message).hex()
         elif isinstance(self, (Standard_Eth_Wallet, Imported_Eth_Wallet)):
             signature = eth_account.Account.signHash(
                 message_hash, self.get_account(address, password).privateKey
@@ -1024,6 +1024,7 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
         # this is significantly faster than the implementation in the superclass
         return self.keystore.decrypt_message(pubkey, message, password)
 
+    #The return value is the full path
     def get_derivation_path(self, address):
         return self.keystore.get_derivation_prefix()
 
