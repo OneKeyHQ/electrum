@@ -2913,23 +2913,20 @@ class AndroidCommands(commands.Commands):
             xpub = self.get_xpub_from_hw(path=path, _type="p2wpkh", coin=coin)
             account_id = self._get_derived_account_id(xpub + coin.lower(), hw=hw)
 
-        if coin == 'btc':
+        if coin.lower() == 'btc':
             return "%s/0/0" % keystore.bip44_derivation(account_id, bip43_purpose=int(purpose))
         else:
             return keystore.bip44_eth_derivation(account_id)
 
-    def create(  # noqa
+    def create_and_check_wallet(  # noqa
         self,
-        name,
         password=None,
-        seed_type="segwit",
         seed=None,
         passphrase="",
         bip39_derivation=None,
         master=None,
         addresses=None,
         privkeys=None,
-        hd=False,
         purpose=49,
         coin="btc",
         keystores=None,
@@ -2937,49 +2934,6 @@ class AndroidCommands(commands.Commands):
         strength=128,
         customized_path=False,
     ):
-        """
-        Create or restore a new wallet
-        :param name: Wallet name as string
-        :param password: Password ans string
-        :param seed_type: Not for now
-        :param seed: Mnemonic word as string
-        :param passphrase:Customised passwords as string
-        :param bip39_derivation:Not for now
-        :param master:Not for now
-        :param addresses:To create a watch-only wallet you need
-        :param privkeys:To create a wallet with a private key you need
-        :param hd:Not for app
-        :param purpose:BTC address type as (44/49/84), for BTC only
-        :param coin:"btc"/"eth" as string to specify whether to create a BTC/ETH wallet
-        :param keystores:as string for ETH only
-        :param strength:Length of the　Mnemonic word as (128/256)
-        :return: json like {'seed':''
-                            'wallet_info':''
-                            'derived_info':''}
-        .. code-block:: python
-                create a btc wallet by address:
-                    create("test5", addresses="bcrt1qzm6y9j0zg9nnludkgtc0pvhet0sf76szjw7fjw")
-                create a eth wallet by address:
-                    create("test4", addresses="0x....", coin="eth")
-
-                create a btc wallet by privkey:
-                    create("test3", password=password, purpose=84, privkeys="cRR5YkkGHTph8RsM1bQv7YSzY27hxBBhoJnVdHjGnuKntY7RgoGw")
-                create a eth wallet by privkey:
-                    create("test3", password=password, privkeys="0xe6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e", coin="eth")
-
-                create a btc wallet by seed:
-                    create(name, password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer')
-                create a eth wallet by seed:
-                    create(name, password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer', coin="eth")
-
-        """
-        try:
-            if self.get_wallet_num() == 0:
-                self.check_pw_wallet = None
-            if addresses is None:
-                self.check_password(password)
-        except BaseException as e:
-            raise e
 
         wallet = None
         watch_only = False
@@ -3064,6 +3018,88 @@ class AndroidCommands(commands.Commands):
                 raise BaseException("Replace Watch-olny wallet:%s" % wallet.identity)
             else:
                 raise BaseException(FileAlreadyExist())
+        return wallet, wallet_type, new_seed
+
+    def create(  # noqa
+        self,
+        name,
+        password=None,
+        seed_type="segwit",
+        seed=None,
+        passphrase="",
+        bip39_derivation=None,
+        master=None,
+        addresses=None,
+        privkeys=None,
+        hd=False,
+        purpose=49,
+        coin="btc",
+        keystores=None,
+        keystore_password=None,
+        strength=128,
+        customized_path=False,
+    ):
+        """
+        Create or restore a new wallet
+        :param name: Wallet name as string
+        :param password: Password ans string
+        :param seed_type: Not for now
+        :param seed: Mnemonic word as string
+        :param passphrase:Customised passwords as string
+        :param bip39_derivation:Not for now
+        :param master:Not for now
+        :param addresses:To create a watch-only wallet you need
+        :param privkeys:To create a wallet with a private key you need
+        :param hd:Not for app
+        :param purpose:BTC address type as (44/49/84), for BTC only
+        :param coin:"btc"/"eth" as string to specify whether to create a BTC/ETH wallet
+        :param keystores:as string for ETH only
+        :param strength:Length of the　Mnemonic word as (128/256)
+        :return: json like {'seed':''
+                            'wallet_info':''
+                            'derived_info':''}
+        .. code-block:: python
+                create a btc wallet by address:
+                    create("test5", addresses="bcrt1qzm6y9j0zg9nnludkgtc0pvhet0sf76szjw7fjw")
+                create a eth wallet by address:
+                    create("test4", addresses="0x....", coin="eth")
+
+                create a btc wallet by privkey:
+                    create("test3", password=password, purpose=84, privkeys="cRR5YkkGHTph8RsM1bQv7YSzY27hxBBhoJnVdHjGnuKntY7RgoGw")
+                create a eth wallet by privkey:
+                    create("test3", password=password, privkeys="0xe6841ceb170becade0a4aa3e157f08871192f9de1c35835de5e1b47fc167d27e", coin="eth")
+
+                create a btc wallet by seed:
+                    create(name, password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer')
+                create a eth wallet by seed:
+                    create(name, password, seed='pottery curtain belt canal cart include raise receive sponsor vote embody offer', coin="eth")
+
+        """
+        try:
+            if self.get_wallet_num() == 0:
+                self.check_pw_wallet = None
+            if addresses is None:
+                self.check_password(password)
+        except BaseException as e:
+            raise e
+
+        # wallet = None
+        # watch_only = False
+        # new_seed = False
+        wallet, wallet_type, new_seed = self.create_and_check_wallet(
+            password=password,
+            seed=seed,
+            passphrase=passphrase,
+            bip39_derivation=bip39_derivation,
+            master=master,
+            addresses=addresses,
+            privkeys=privkeys,
+            purpose=purpose,
+            coin=coin,
+            keystores=keystores,
+            keystore_password=keystore_password,
+            customized_path=customized_path,
+        )
 
         self.create_new_wallet_update(
             wallet=wallet, seed=seed, password=password, wallet_type=wallet_type, bip39_derivation=bip39_derivation
@@ -3392,6 +3428,7 @@ class AndroidCommands(commands.Commands):
                     raise e
 
             derived = DerivedInfo(self.config)
+            derived.init_recovery_num()
             AndroidCommands._set_recovery_flag(True)
             for derived_wallet in self.wallet_context.iter_derived_wallets(xpub):
                 recovery_create_subfun(self, coin, derived_wallet['account_id'], derived_wallet['name'])
