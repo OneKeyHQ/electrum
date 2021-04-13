@@ -2482,7 +2482,7 @@ class AndroidCommands(commands.Commands):
         if bip39_derivation is None:
             if account_id is None:
                 account_id = 0
-            if coin == "btc":
+            if coin.lower() == "btc":
                 self.hw_info["type"] = _type
                 if _type == "p2wsh":
                     derivation = purpose48_derivation(account_id, xtype="p2wsh")
@@ -2511,7 +2511,7 @@ class AndroidCommands(commands.Commands):
                 xpub = self.trezor_manager.get_eth_xpub(path, derivation)
         else:
             self.hw_info["bip39_derivation"] = bip39_derivation
-            if coin == "btc":
+            if coin.lower() == "btc":
                 xpub = self.trezor_manager.get_xpub(path, bip39_derivation, _type, is_creating)
             else:
                 xpub = self.trezor_manager.get_eth_xpub(path, bip39_derivation)
@@ -2685,7 +2685,7 @@ class AndroidCommands(commands.Commands):
         """
         try:
             wallet = self.get_wallet_by_name(name)
-            if isinstance(wallet, Imported_Wallet) or isinstance(wallet, Imported_Eth_Wallet):
+            if wallet.is_watching_only() or isinstance(wallet.keystore, keystore.Imported_KeyStore):
                 return True
             if wallet.has_seed():
                 xpub = self.get_xpub_by_name(name, wallet)

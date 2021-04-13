@@ -2327,6 +2327,10 @@ class Imported_Wallet(Simple_Wallet):
 
         return cls._create_customer_wallet(ks, config, coin, purpose)
 
+    def get_device_info(self):
+        if isinstance(self.keystore, keystore.Hardware_KeyStore):
+            return self.keystore.get_device_info()
+
     @classmethod
     def from_seed(cls, coin: str, config: SimpleConfig, seed: str, passphrase: str, purpose: int, derivation: str):
         ks = keystore.from_seed_or_bip39(seed, passphrase, derivation)
