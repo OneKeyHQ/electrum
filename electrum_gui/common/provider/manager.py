@@ -6,7 +6,6 @@ from electrum_gui.common.provider.data import (
     AddressValidation,
     PricePerUnit,
     SignedTx,
-    Token,
     Transaction,
     TransactionStatus,
     TxBroadcastReceipt,
@@ -23,8 +22,10 @@ def get_address(chain_code: str, address: str) -> Address:
     return get_client_by_chain(chain_code).get_address(address)
 
 
-def get_balance(chain_code: str, address: str, token: Token = None) -> int:
-    return get_client_by_chain(chain_code).get_balance(address, token=token)
+def get_balance(chain_code: str, address: str, token_address: Optional[str] = None) -> int:
+    # TODO: raise specific exceptions for callers to catch. This also applies
+    # to the APIs in this module.
+    return get_client_by_chain(chain_code).get_balance(address, token_address=token_address)
 
 
 def get_transaction_by_txid(chain_code: str, txid: str) -> Transaction:
