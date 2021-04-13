@@ -19,7 +19,6 @@ from web3 import HTTPProvider, Web3
 from electrum.util import make_aiohttp_session
 from electrum_gui.common.provider.data import (
     TransactionStatus,
-    Address,
     TxBroadcastReceiptCode,
 )
 from electrum_gui.common.provider import provider_manager
@@ -591,10 +590,6 @@ class PyWalib:
             output_txs.append(output_tx)
 
         return output_txs
-
-    @classmethod
-    def get_address(cls, address) -> Address:
-        return provider_manager.get_address(cls.get_chain_code(), address)
 
     @classmethod
     def get_all_txid(cls, address) -> List[str]:
