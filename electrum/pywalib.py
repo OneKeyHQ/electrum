@@ -7,7 +7,7 @@ import sqlite3
 from contextlib import contextmanager
 from decimal import Decimal
 from os.path import expanduser
-from typing import List, Optional
+from typing import Optional
 
 import requests
 import urllib3
@@ -590,7 +590,3 @@ class PyWalib:
             output_txs.append(output_tx)
 
         return output_txs
-
-    @classmethod
-    def get_all_txid(cls, address) -> List[str]:
-        return provider_manager.search_txids_by_address(cls.get_chain_code(), address)
