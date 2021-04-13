@@ -2920,6 +2920,7 @@ class AndroidCommands(commands.Commands):
 
     def create_and_check_wallet(  # noqa
         self,
+        name,
         password=None,
         seed=None,
         passphrase="",
@@ -3087,6 +3088,7 @@ class AndroidCommands(commands.Commands):
         # watch_only = False
         # new_seed = False
         wallet, wallet_type, new_seed = self.create_and_check_wallet(
+            name,
             password=password,
             seed=seed,
             passphrase=passphrase,
