@@ -3569,21 +3569,6 @@ class AndroidCommands(commands.Commands):
         xpub = self.get_hd_wallet_encode_seed(coin=coin.lower())
         return self.wallet_context.get_derived_num(xpub)
 
-    def delete_devired_wallet_info(self, wallet_obj, hw=False):
-        derivation = wallet_obj.get_derivation_path(wallet_obj.get_addresses()[0])
-        coin = wallet_obj.coin
-        account_id = self.get_account_id(derivation, coin)
-
-        if hw:
-            if coin == "btc":
-                xpub = wallet_obj.get_derived_master_xpub() + 'btc'
-            else:
-                xpub = wallet_obj.keystore.xpub + coin.lower()
-        else:
-            xpub = self.get_hd_wallet_encode_seed(coin=coin)
-
-        self.wallet_context.remove_derived_wallet(xpub, account_id)
-
     def get_account_id(self, path, coin):
         if coin in self.coins:
             return helpers.get_path_info(path, INDEX_POS)
@@ -4215,15 +4200,6 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise BaseException(e)
 
-    def has_history_wallet(self, wallet_obj):
-        coin = wallet_obj.coin
-        if coin in self.coins:
-            txids = self.pywalib.get_all_txid(wallet_obj.get_addresses()[0])
-            return bool(txids)
-        elif coin == "btc":
-            history = wallet_obj.get_history()
-            return bool(history)
-
     def reset_config_info(self):
         self.wallet_context.clear_type_info()
         self.wallet_context.clear_derived_info()
@@ -4250,10 +4226,32 @@ class AndroidCommands(commands.Commands):
             raise e
 
     def delete_wallet_devired_info(self, wallet_obj, hw=False):
-        have_tx = self.has_history_wallet(wallet_obj)
-        if not have_tx:
-            # delete wallet info from config
-            self.delete_devired_wallet_info(wallet_obj, hw=hw)
+        coin = wallet_obj.coin
+        if coin in self.coins:
+            # TODO: try implementing get_history for eth wallets.
+            chain_code = self._coin_to_chain_code(coin)
+            history = provider_manager.search_txids_by_address(chain_code, wallet_obj.get_addresses()[0])
+        elif coin == "btc":
+            history = wallet_obj.get_history()
+        else:
+            return
+
+        if history:
+            return
+
+        # delete wallet info from config
+        derivation = wallet_obj.get_derivation_path(wallet_obj.get_addresses()[0])
+        account_id = self.get_account_id(derivation, coin)
+
+        if hw:
+            if coin == "btc":
+                xpub = wallet_obj.get_derived_master_xpub() + 'btc'
+            else:
+                xpub = wallet_obj.keystore.xpub + coin.lower()
+        else:
+            xpub = self.get_hd_wallet_encode_seed(coin=coin)
+
+        self.wallet_context.remove_derived_wallet(xpub, account_id)
 
     def delete_wallet(self, password="", name="", hd=None):
         """
