@@ -1,0 +1,2 @@
+class InvalidECPointException(Exception):
+    pass
