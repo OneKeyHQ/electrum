@@ -3261,46 +3261,43 @@ class AndroidCommands(commands.Commands):
                 # # value = wallets.values()[0]
                 # return wallets[key]
 
-    def update_recover_list(self, recovery_list, balance, wallet_obj, label, coin):
-        show_info = {}
-        show_info["coin"] = coin
-        show_info["blance"] = str(balance)
-        show_info["name"] = str(wallet_obj)
-        show_info["label"] = label
-        show_info["exist"] = "1" if self.daemon.get_wallet(self._wallet_path(wallet_obj.identity)) is not None else "0"
-        recovery_list.append(show_info)
-
     def filter_wallet(self):
         recovery_list = []
         for name, wallet_info in self.recovery_wallets.items():
-            try:
-                wallet = wallet_info["wallet"]
-                coin = wallet.coin
-                if coin in self.coins:
-                    with self.pywalib.override_server(self.coins[coin]):
-                        address = wallet.get_addresses()[0]
-                        try:
-                            address_info = self.pywalib.get_address(address)
-                        except Exception:
-                            address_info = None
+            wallet = wallet_info["wallet"]
+            coin = wallet.coin
+            if coin in self.coins:
+                chain_code = self._coin_to_chain_code(coin)
+                try:
+                    address_info = provider_manager.get_address(chain_code, wallet.get_addresses()[0])
+                except Exception:
+                    address_info = None
 
-                        if address_info and address_info.existing:
-                            main_coin_balance = Decimal(eth_utils.from_wei(address_info.balance, "ether"))
-                            fiat_price = price_manager.get_last_price(coin, self.ccy)
-                            fiat_str = self.daemon.fx.ccy_amount_str(main_coin_balance * fiat_price, True)
-                            balance = f"{main_coin_balance} ({fiat_str} {self.ccy})"
-                            self.update_recover_list(recovery_list, balance, wallet, wallet.get_name(), coin)
-                            continue
-                else:
-                    history = reversed(wallet.get_history())
-                    for item in history:
-                        c, u, _ = wallet.get_balance()
-                        self.update_recover_list(
-                            recovery_list, self.format_amount_and_units(c + u), wallet, wallet.get_name(), "btc"
-                        )
-                        break
-            except BaseException as e:
-                raise e
+                if address_info is None or not address_info.existing:
+                    continue
+
+                main_coin_balance = Decimal(eth_utils.from_wei(address_info.balance, "ether"))
+                fee_code = coin_manager.get_chain_info(chain_code).fee_code
+                main_coin_price = price_manager.get_last_price(fee_code, self.ccy)
+                fiat_str = self.daemon.fx.ccy_amount_str(main_coin_balance * main_coin_price, True)
+                balance = f"{main_coin_balance} ({fiat_str} {self.ccy})"
+            else:
+                history = reversed(wallet.get_history())
+                if not history:
+                    continue
+                c, u, _ = wallet.get_balance()
+                balance = self.format_amount_and_units(c + u)
+
+            recovery_list.append(
+                {
+                    "coin": coin,
+                    "blance": balance,
+                    "name": str(wallet),
+                    "label": wallet.get_name(),
+                    "exist": "1" if self.daemon.get_wallet(self._wallet_path(wallet.identity)) is not None else "0",
+                }
+            )
+
         return recovery_list
 
     def update_recovery_wallet(self, key, wallet_obj, bip39_derivation, name, coin):
