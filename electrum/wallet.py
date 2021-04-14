@@ -2373,6 +2373,12 @@ class Imported_Wallet(Simple_Wallet):
 
     def load_keystore(self):
         self.keystore = load_keystore(self.db, 'keystore') if self.db.get('keystore') else None
+        if not isinstance(self.keystore, keystore.Imported_KeyStore):
+            try:
+                xtype = bip32.xpub_type(self.keystore.xpub)
+            except:
+                xtype = 'standard'
+            self.txin_type = 'p2pkh' if xtype == 'standard' else xtype
 
     def save_keystore(self):
         self.db.put('keystore', self.keystore.dump())

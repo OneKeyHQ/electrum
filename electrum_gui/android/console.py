@@ -2541,8 +2541,9 @@ class AndroidCommands(commands.Commands):
             dervied_xpub = self.get_xpub_from_hw(path=path, _type=_type, account_id=list_info[0], coin=coin)
             self.hw_info["account_id"] = list_info[0]
         else:
+            purpose = PURPOSE_TO_ADDRESS_TYPE.get(int(helpers.get_path_info(bip39_derivation, PURPOSE_POS)))
             dervied_xpub = self.get_xpub_from_hw(
-                path=path, _type=_type, account_id=0, coin=coin, bip39_derivation=bip39_derivation
+                path=path, _type=purpose, account_id=0, coin=coin, bip39_derivation=bip39_derivation
             )
         return dervied_xpub
 
