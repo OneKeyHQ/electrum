@@ -3430,7 +3430,6 @@ class AndroidCommands(commands.Commands):
                     raise e
 
             derived = DerivedInfo(self.config)
-            derived.init_recovery_num()
             AndroidCommands._set_recovery_flag(True)
             for derived_wallet in self.wallet_context.iter_derived_wallets(xpub):
                 recovery_create_subfun(self, coin, derived_wallet['account_id'], derived_wallet['name'])
