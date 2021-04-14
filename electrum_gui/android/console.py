@@ -4061,7 +4061,7 @@ class AndroidCommands(commands.Commands):
                 "all_balance": sum_fiat,
                 "wallets": wallet_balances,
                 "coin": coin,
-                "btc_asset": self._fill_balance_info_with_btc(sum_fiat),
+                "btc_asset": self._fill_balance_info_with_btc(sum_fiat.split(' ')[0]),
             }
         else:
             c, u, x = self.wallet.get_balance()
@@ -4167,7 +4167,7 @@ class AndroidCommands(commands.Commands):
 
         return new_balance_info
 
-    def _fill_balance_info_with_btc(self, fiat: str) -> str:
+    def _fill_balance_info_with_btc(self, fiat: Decimal) -> str:
         price = price_manager.get_last_price("btc", self.ccy)
         return self.format_amount((int(Decimal(fiat) / Decimal(price) * COIN)))
 
