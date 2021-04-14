@@ -33,6 +33,10 @@
     "clients": [
       {
         "class": "Geth",
+        "url": "https://rpc.blkdb.cn/eth"
+      },
+      {
+        "class": "Geth",
         "url": "https://eth1.onekey.so/rpc"
       },
       {
@@ -79,6 +83,10 @@
     "clients": [
       {
         "class": "Geth",
+        "url": "https://rpc.blkdb.cn/bsc"
+      },
+      {
+        "class": "Geth",
         "url": "https://bsc1.onekey.so/rpc"
       },
       {
@@ -105,6 +113,10 @@
       }
     ],
     "clients": [
+      {
+        "class": "Geth",
+        "url": "https://rpc.blkdb.cn/heco"
+      },
       {
         "class": "Geth",
         "url": "https://heco1.onekey.so/rpc"

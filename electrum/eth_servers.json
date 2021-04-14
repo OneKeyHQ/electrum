@@ -11,19 +11,10 @@
     "publicKeyType": "secp256k1Extended",
     "derived_info": "",
     "Provider": [
-      {"mainnet": "https://mainnet.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff", "chainid": "1"},
+      {"mainnet": "https://rpc.blkdb.cn/eth", "chainid": "1"},
       {"testnet": "https://ropsten.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff", "chainid": "3"},
       {"customer": "http://127.0.0.1:8545", "chainid": "11"}
     ],
-    "TxliServer": [
-         {"onekey-mainnet": "https://eth1.onekey.so/api/v2/"},
-         {"etherscan-mainnet": "https://api-cn.etherscan.com/api"},
-         {"etherscan-testnet": "https://api-ropsten.etherscan.io/api"},
-         {"trezor-mainnet": "https://eth1.trezor.io/api/v2/"},
-         {"trezor-mainnet1": "https://eth2.trezor.io/api/v2/"},
-         {"trezor-testnet": "https://eth1.ropsten1.trezor.io/api/v2/"},
-         {"trezor-testnet1": "https://eth2.ropsten1.trezor.io/api/v2/"}
-      ],
     "GasServer": "https://www.gasnow.org/api/v3/gas/price?utm_source=onekey"
   },
   "heco": {
@@ -38,11 +29,8 @@
     "publicKeyType": "secp256k1Extended",
     "derived_info": "",
     "Provider": [
-      {"mainnet": "https://http-mainnet-node.huobichain.com", "chainid": "128"},
+      {"mainnet": "https://rpc.blkdb.cn/heco", "chainid": "128"},
       {"testnet": "https://testnode.onekey.so/heco", "chainid": "128"}
-    ],
-    "TxliServer": [
-      {"onekey-mainnet": "https://heco1.onekey.so/api/v2/"}
     ],
     "GasServer": ""
   },
@@ -58,11 +46,8 @@
     "publicKeyType": "secp256k1Extended",
     "derived_info": "",
     "Provider": [
-      {"mainnet": "https://bsc-dataseed1.binance.org", "chainid": "56"},
+      {"mainnet": "https://rpc.blkdb.cn/bsc", "chainid": "56"},
       {"testnet": "https://data-seed-prebsc-2-s1.binance.org:8545", "chainid": "97"}
-    ],
-    "TxliServer": [
-      {"onekey-mainnet": "https://bsc1.onekey.so/api/v2/"}
     ],
     "GasServer": ""
   },
@@ -75,7 +60,6 @@
       {"mainnet": "https://exchain.okexcn.com/", "chainid": "66"},
       {"testnet": "https://exchaintest.okexcn.com/", "chainid": "65"}
     ],
-    "TxliServer": [],
     "GasServer": ""
   }
 }

@@ -175,7 +175,6 @@ class PyWalib:
     server_config = None
     coin_symbol = None
     web3 = None
-    tx_list_server = None
     gas_server = None
     symbols_price = {}
     config = None
@@ -212,7 +211,6 @@ class PyWalib:
 
     @staticmethod
     def set_server(info):
-        PyWalib.tx_list_server = info['TxliServer']
         PyWalib.gas_server = info['GasServer']
         PyWalib.coin_symbol = info["symbol"]
         PyWalib.server_config = info
