@@ -139,6 +139,11 @@ class InvalidPassword(BaseException):
         return _("Incorrect password.")
 
 
+class InvalidKeystoreFormat(BaseException):
+    def __str__(self):
+        return _("Incorrect eth keystore.")
+
+
 class UserCancel(Exception):
     def __str__(self):
         return _("Operation cancelled")

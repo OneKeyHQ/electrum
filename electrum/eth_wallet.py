@@ -896,7 +896,9 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
     def from_keystores(cls, coin: str, config: simple_config.SimpleConfig, keystores: str, password: str):
         try:
             privkeys = eth_account.Account.decrypt(keystores, password).hex()
-        except ValueError:
+        except (TypeError, KeyError, NotImplementedError, json.decoder.JSONDecodeError):
+            raise util.InvalidKeystoreFormat()
+        except Exception as e:
             raise util.InvalidPassword()
         return cls.from_privkeys(coin, config, privkeys)
 

@@ -2817,7 +2817,7 @@ class AndroidCommands(commands.Commands):
                 try:
                     Account.decrypt(json.loads(data), password).hex()
                 except (TypeError, KeyError, NotImplementedError):
-                    raise BaseException(_("Incorrect eth keystore."))
+                    raise util.InvalidKeystoreFormat()
                 except BaseException:
                     raise InvalidPassword()
 
