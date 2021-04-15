@@ -317,7 +317,7 @@ class PyWalib:
             gas_limit = int(gas_limit * 1.2)
             return gas_limit
         except Exception:
-            return 40000
+            raise Exception(_("Estimate gas limit failed, try again."))
 
     def get_transaction(
         self, from_address, to_address, value, contract=None, gas_price=None, nonce=None, gas_limit=None, data=None
