@@ -805,10 +805,9 @@ class AndroidCommands(commands.Commands):
                 wallet_info, wallet = self._create_multi_wallet(
                     name, hd=hd, hide_type=hide_type, coin=coin, index=self.hw_info["account_id"]
                 )
+            customised_path_is_default_path = wallet.check_customer_and_default_path()
             derivation_path = wallet.get_derivation_path(wallet.get_addresses()[0])
-            customer_path = derivation_path[0 : derivation_path.rindex('/')]
-            default_path = helpers.get_default_path(coin, int(helpers.get_path_info(derivation_path, pos=PURPOSE_POS)))
-            if len(self.hw_info) != 0 and customer_path == default_path:
+            if len(self.hw_info) != 0 and customised_path_is_default_path:
                 bip39_path = self.get_coin_derived_path(int(self.get_account_id(derivation_path, coin)), coin=coin)
                 self.update_devired_wallet_info(bip39_path, self.hw_info["xpub"] + coin.lower(), name, coin)
 
@@ -2911,7 +2910,7 @@ class AndroidCommands(commands.Commands):
             derive_key = self.get_hd_wallet_encode_seed(coin=coin)
             account_id = self._get_derived_account_id(derive_key)
         elif hw:
-            xpub = self.get_xpub_from_hw(path=path, _type="p2wpkh", coin=coin)
+            xpub = self.get_xpub_from_hw(path=path, coin=coin)
             account_id = self._get_derived_account_id(xpub + coin.lower(), hw=hw)
 
         if coin.lower() == 'btc':

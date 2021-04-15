@@ -29,11 +29,9 @@ def get_show_addr(addr):
 
 def get_default_path(coin, purpose):
     if coin == 'btc':
-        default_path = bip44_derivation(0, bip43_purpose=purpose)
-        return default_path[0 : default_path.rindex('/')]
+        return bip44_derivation(0, bip43_purpose=purpose)
     elif coin in ['eth', 'bsc', 'heco']:
-        default_path = bip44_eth_derivation(0)
-        return default_path[0 : default_path.rindex('/')]
+        return bip44_eth_derivation(0)
 
 
 def get_temp_file():

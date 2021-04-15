@@ -56,6 +56,7 @@ from electrum import (
     wallet_db,
 )
 from electrum_gui.common.basic.functional import text as text_utils
+from electrum_gui.android import helpers
 
 _logger = logging.get_logger(__name__)
 
@@ -154,6 +155,19 @@ class Abstract_Eth_Wallet(abc.ABC):
             # crypto.sha256 returns a bytes object
             self._identity = crypto.sha256(prefix + self.get_addresses()[0]).hex()
         return self._identity
+
+    def get_derivation_path(self, address):
+        pass
+
+    def check_customer_and_default_path(self):
+        derivation_path = self.get_derivation_path(self.get_addresses()[0])
+        wallet_path_list = derivation_path.split('/')
+        default_path = helpers.get_default_path(self.coin, int(helpers.get_path_info(derivation_path, pos=1)))
+        default_path_list = default_path.split('/')
+
+        wallet_path_list.pop(-1)
+        default_path_list.pop(-1)
+        return wallet_path_list == default_path_list
 
     def ensure_storage(self, path: str) -> None:
         # create a storage.WalletStorage for the newly created wallet
