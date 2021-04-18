@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Tuple
 
 import eth_abi
 import eth_account
@@ -109,3 +109,6 @@ class ETHProvider(ProviderInterface):
             txid=eth_utils.add_0x_prefix(eth_utils.keccak(encoded_tx).hex()),  # noqa
             raw_tx=eth_utils.add_0x_prefix(encoded_tx.hex()),
         )
+
+    def get_token_info_by_address(self, token_address: str) -> Tuple[str, str, int]:
+        return self.geth.get_token_info_by_address(token_address)

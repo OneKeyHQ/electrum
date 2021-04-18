@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 from electrum_gui.common.coin.data import ChainInfo, CoinInfo
 from electrum_gui.common.provider.data import (
@@ -196,4 +196,12 @@ class ProviderInterface(ABC):
         :param unsigned_tx: complete UnsignedTx
         :param key_mapping: mapping of address to SignerInterface
         :return: SignedTx
+        """
+
+    @abstractmethod
+    def get_token_info_by_address(self, token_address: str) -> Tuple[str, str, int]:
+        """
+        Get the base information (symbol, name, decimals) of a token on the chain.
+        :param address: token address
+        :return: Tuple[str, str, int], token symbol, token name, token decimals
         """

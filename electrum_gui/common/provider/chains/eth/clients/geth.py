@@ -28,6 +28,20 @@ from electrum_gui.common.provider.interfaces import BatchGetAddressMixin, Client
 _hex2int = partial(int, base=16)
 
 
+def _extract_eth_call_str_result(data: bytes) -> str:
+    payload_offset = int.from_bytes(data[:32], "big")
+    payload = data[payload_offset:]
+    str_length = int.from_bytes(payload[:32], "big")
+    str_result = payload[32 : 32 + str_length].decode()
+    return str_result
+
+
+class InvalidContractAddress(ValueError):
+    # TODO: organize exceptions better
+    def __init__(self, address):
+        super(InvalidContractAddress, self).__init__(f"Invalid contract address {address}.")
+
+
 class Geth(ClientInterface, BatchGetAddressMixin):
     __LAST_BLOCK__ = "latest"
 
@@ -184,3 +198,26 @@ class Geth(ClientInterface, BatchGetAddressMixin):
 
     def is_contract(self, address: str) -> bool:
         return len(self.get_contract_code(address)) > 0
+
+    def get_token_info_by_address(self, token_address: str) -> str:
+        if not self.is_contract(token_address):
+            raise InvalidContractAddress(token_address)
+
+        # >>> eth_utils.keccak("symbol()".encode())[:4].hex()
+        # '95d89b41'
+        # >>> eth_utils.keccak("name()".encode())[:4].hex()
+        # '06fdde03'
+        # >>> eth_utils.keccak("decimals()".encode())[:4].hex()
+        # '313ce567'
+        symbol_resp, name_resp, decimals_resp = self.rpc.batch_call(
+            [
+                ("eth_call", [{"to": token_address, "data": "0x95d89b41"}, self.__LAST_BLOCK__]),
+                ("eth_call", [{"to": token_address, "data": "0x06fdde03"}, self.__LAST_BLOCK__]),
+                ("eth_call", [{"to": token_address, "data": "0x313ce567"}, self.__LAST_BLOCK__]),
+            ]
+        )
+        return (
+            _extract_eth_call_str_result(bytes.fromhex(symbol_resp[2:])),
+            _extract_eth_call_str_result(bytes.fromhex(name_resp[2:])),
+            _hex2int(decimals_resp),
+        )

@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from electrum_gui.common.provider import exceptions
 from electrum_gui.common.provider.data import (
@@ -102,3 +102,7 @@ def utxo_can_spend(chain_code: str, utxo: UTXO) -> bool:
 
 def search_utxos_by_address(chain_code: str, address: str) -> List[UTXO]:
     return get_client_by_chain(chain_code, instance_required=SearchUTXOMixin).search_utxos_by_address(address)
+
+
+def get_token_info_by_address(chain_code: str, token_address: str) -> Tuple[str, str, int]:
+    return get_provider_by_chain(chain_code).get_token_info_by_address(token_address)

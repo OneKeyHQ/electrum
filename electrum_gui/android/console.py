@@ -80,7 +80,6 @@ from electrum_gui.common import the_begging
 from electrum_gui.common.provider import data as provider_data
 
 from ..common.basic.functional.text import force_text
-from ..common.basic.orm.database import db
 from ..common.coin import codes
 from ..common.coin import manager as coin_manager
 from ..common.price import manager as price_manager
@@ -957,22 +956,27 @@ class AndroidCommands(commands.Commands):
         gas_limit=None,
     ):
         estimate_gas_prices = self.pywalib.get_gas_price(coin)
+        chain_code = self._coin_to_chain_code(self.wallet.coin)
         if gas_price:
             gas_price = Decimal(gas_price)
             best_time = self.pywalib.get_best_time_by_gas_price(gas_price, estimate_gas_prices)
             estimate_gas_prices = {"customer": {"gas_price": gas_price, "time": best_time}}
 
         if not gas_limit:
+            if contract_address is not None:
+                contract_token = coin_manager.get_coin_by_token_address(chain_code, contract_address)
+            else:
+                contract_token = None
             gas_limit = self.pywalib.estimate_gas_limit(
                 from_address,
                 to_address,
-                self.wallet.get_contract_token(contract_address),
+                contract_token,
                 value,
                 data,
             )
 
         gas_limit = Decimal(gas_limit)
-        last_price = price_manager.get_last_price(self._coin_to_chain_code(self.wallet.coin), self.ccy)
+        last_price = price_manager.get_last_price(chain_code, self.ccy)
 
         for val in estimate_gas_prices.values():
             val["gas_limit"] = gas_limit
@@ -1577,17 +1581,19 @@ class AndroidCommands(commands.Commands):
             return json.dumps(all_data[start:end])
 
     def get_eth_tx_list(self, wallet_obj, contract_address=None, search_type=None):
-        contract = self.wallet.get_contract_token(contract_address) if contract_address else None
+        chain_code = self._coin_to_chain_code(wallet_obj.coin)
+        if contract_address is not None:
+            contract_token = coin_manager.get_coin_by_token_address(chain_code, contract_address)
+        else:
+            contract_token = None
         txs = PyWalib.get_transaction_history(
             wallet_obj.get_addresses()[0],
-            contract=contract,
+            contract_token=contract_token,
             search_type=search_type,
         )
-        chain_code = self._coin_to_chain_code(wallet_obj.coin)
         main_coin_price = price_manager.get_last_price(chain_code, self.ccy)
-        if contract:
-            coins = coin_manager.query_coins_by_token_addresses(chain_code, [contract.address.lower()])
-            amount_coin_price = price_manager.get_last_price(coins[0].code, self.ccy) if coins else Decimal(0)
+        if contract_token:
+            amount_coin_price = price_manager.get_last_price(contract_token.code, self.ccy)
         else:
             amount_coin_price = main_coin_price
 
@@ -2166,10 +2172,7 @@ class AndroidCommands(commands.Commands):
         Get all token contract addresses in the current wallet
         :return:
         """
-        try:
-            return json.dumps(self.wallet.get_all_token_address())
-        except BaseException as e:
-            raise e
+        return json.dumps(self.wallet.get_all_token_address())
 
     def get_customer_token_info(self, contract_address):
         """
@@ -2184,8 +2187,19 @@ class AndroidCommands(commands.Commands):
                 "logoURI": "",
                 "rank": 0
         """
+        self._assert_wallet_isvalid()
+        chain_code = self._coin_to_chain_code(self.wallet.coin)
+        symbol, name, decimals = provider_manager.get_token_info_by_address(chain_code, contract_address)
+        token_info = {
+            "chain_id": coin_manager.get_chain_info(chain_code).chain_id,
+            "decimals": decimals,
+            "address": contract_address,
+            "symbol": symbol,
+            "name": name,
+            "logoURI": "",
+            "rank": 0,
+        }
 
-        token_info = PyWalib.get_token_info("", contract_address)
         return json.dumps(token_info)
 
     def get_all_token_info(self, coin=None):
@@ -2264,22 +2278,18 @@ class AndroidCommands(commands.Commands):
         chain_code = self._coin_to_chain_code(coin)
 
         contract_addr = contract_addr.lower()
-        token_info = self._load_tokens_dict(chain_code).get(contract_addr) or PyWalib.get_token_info(
-            symbol, contract_addr
-        )
+        token_info = self._load_tokens_dict(chain_code).get(contract_addr)
+        if token_info is not None:
+            symbol = token_info["symbol"]
+            decimals = token_info["decimals"]
+            name = token_info.get("name")
+            icon = token_info.get("logoURI")
+        else:
+            symbol, name, decimals = provider_manager.get_token_info_by_address(chain_code, contract_addr)
+            icon = None
 
-        with db.atomic():
-            coin_manager.add_coin(
-                chain_code,
-                contract_addr,
-                token_info["symbol"],
-                token_info["decimals"],
-                token_info.get("name"),
-                token_info.get("logoURI"),
-            )
-
-            contract_addr = eth_utils.to_checksum_address(contract_addr)
-            self.wallet.add_contract_token(symbol, contract_addr)
+        coin_manager.add_coin(chain_code, contract_addr, symbol, decimals, name, icon)
+        self.wallet.add_contract_token(symbol, contract_addr)
 
     def delete_token(self, contract_addr):
         """
@@ -2287,10 +2297,8 @@ class AndroidCommands(commands.Commands):
         :param contract_addr: coin address
         :return: raise except if error
         """
-        try:
+        if contract_addr:
             self.wallet.delete_contract_token(contract_addr)
-        except BaseException as e:
-            raise e
 
     def sign_eth_tx(
         self,
@@ -2324,14 +2332,14 @@ class AndroidCommands(commands.Commands):
                 from_address, to_addr, value, gas_price=gas_price, gas_limit=gas_limit, data=data, nonce=nonce
             )
         else:
-            contract_addr = eth_utils.to_checksum_address(contract_addr)
-            contract = self.wallet.get_contract_token(contract_addr)
-            assert contract is not None
+            chain_code = self._coin_to_chain_code(self.wallet.coin)
+            contract_token = coin_manager.get_coin_by_token_address(chain_code, contract_addr)
+            assert contract_token is not None
             tx_dict = self.pywalib.get_transaction(
                 from_address,
                 to_addr,
                 value,
-                contract=contract,
+                contract_token=contract_token,
                 gas_price=gas_price,
                 gas_limit=gas_limit,
                 data=data,
@@ -4163,7 +4171,7 @@ class AndroidCommands(commands.Commands):
     ) -> Tuple[Dict, List, Decimal]:
         wallet = wallet or self.wallet
         chain_code = self._coin_to_chain_code(wallet.coin)
-        main_balance, contracts_balance_info = wallet.get_all_balance(chain_code)
+        main_balance, tokens_balance_info = wallet.get_all_balance()
         sum_fiat = Decimal('0')
 
         main_coin_code = coin_manager.get_chain_info(chain_code).fee_code
@@ -4180,31 +4188,29 @@ class AndroidCommands(commands.Commands):
             "fiat": f"{self.daemon.fx.ccy_amount_str(main_coin_fiat, True)} {self.ccy}",
         }
 
-        token_addresses = [address.lower() for address in contracts_balance_info.keys()]
-        token_prices = {}
-        token_icons = {}
-        for token in coin_manager.query_coins_by_token_addresses(chain_code, token_addresses):
-            address = token.token_address.lower()
-            token_prices[address] = price_manager.get_last_price(token.code, self.ccy)
-            token_icons[address] = token.icon
-
         ret_contracts_balance_info = []
         _sort_helper_dict = {}
-        for address, info in contracts_balance_info.items():
-            address = address.lower()
-            fiat = info["balance"] * token_prices.get(address, 0)
+
+        token_addresses = list(tokens_balance_info.keys())
+        for token in coin_manager.query_coins_by_token_addresses(chain_code, token_addresses):
+            token_address = token.token_address.lower()
+            token_balance = Decimal(tokens_balance_info.get(token_address)) / pow(10, token.decimals)
+            price = price_manager.get_last_price(token.code, self.ccy)
+            fiat = token_balance * price
+            fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
             if with_sum_fiat:
                 sum_fiat += fiat
+
             ret_contracts_balance_info.append(
                 {
-                    "coin": info["symbol"],  # The key is misleading, should be symbol
-                    "address": address,
-                    "icon": token_icons.get(address, 0),
-                    "balance": info["balance"],
-                    "fiat": f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}",
+                    "coin": token.symbol,  # The key is misleading, should be symbol
+                    "address": token.token_address,
+                    "icon": token.icon,
+                    "balance": token_balance,
+                    "fiat": fiat_str,
                 }
             )
-            _sort_helper_dict[address] = fiat
+            _sort_helper_dict[token_address] = fiat
 
         ret_contracts_balance_info.sort(
             key=lambda balance_info: (_sort_helper_dict.get(balance_info["address"]), balance_info["balance"]),

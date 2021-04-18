@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Tuple
 
 from electrum import bitcoin
 from electrum_gui.common.provider.data import AddressValidation, SignedTx, UnsignedTx
@@ -24,4 +24,7 @@ class BTCProvider(ProviderInterface):
         raise NotImplementedError()
 
     def sign_transaction(self, unsigned_tx: UnsignedTx, key_mapping: Dict[str, SignerInterface]) -> SignedTx:
+        raise NotImplementedError()
+
+    def get_token_info_by_address(self, token_address: str) -> Tuple[str, str, int]:
         raise NotImplementedError()

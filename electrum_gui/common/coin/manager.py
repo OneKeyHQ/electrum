@@ -4,6 +4,7 @@ from electrum_gui.common.coin import daos, exceptions
 from electrum_gui.common.coin.data import ChainInfo, CoinInfo
 from electrum_gui.common.coin.loader import CHAINS_DICT, COINS_DICT
 from electrum_gui.common.conf import settings
+from electrum_gui.common.provider import manager as provider_manager
 
 
 def get_chain_info(chain_code: str) -> ChainInfo:
@@ -175,3 +176,25 @@ def _deduplicate_coins(coins: List[CoinInfo]) -> List[CoinInfo]:
 
 def query_coins_by_token_addresses(chain_code: str, token_addresses: List[str]) -> List[CoinInfo]:
     return daos.query_coins_by_token_addresses(chain_code, token_addresses)
+
+
+def get_coin_by_token_address(chain_code: str, token_address: str, add_if_missing: bool = False) -> Optional[CoinInfo]:
+    coin = None
+    coins = query_coins_by_token_addresses(chain_code, [token_address])
+
+    if coins:
+        coin = coins[0]
+    elif add_if_missing:
+        symbol, name, decimals = provider_manager.get_token_info_by_address(chain_code, token_address)
+        coin_code = add_coin(chain_code, token_address, symbol, decimals, name)
+        coin = get_coin_info(coin_code)
+    else:
+        raise exceptions.CoinNotFoundByTokenAddress(token_address)
+
+    return coin
+
+
+def get_chain_code_by_legacy_wallet_chain(chain_code: str) -> str:
+    # Return chain code for legacy wallets
+    prefix = "t" if settings.IS_DEV else ""
+    return f"{prefix}{chain_code}"

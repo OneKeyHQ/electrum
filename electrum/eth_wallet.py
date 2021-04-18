@@ -44,7 +44,6 @@ import hexbytes
 from electrum import (
     bip32,
     crypto,
-    eth_contract,
     i18n,
     invoices,
     keystore,
@@ -56,6 +55,7 @@ from electrum import (
 )
 from electrum_gui.android import helpers
 from electrum_gui.common.basic.functional import text as text_utils
+from electrum_gui.common.coin import manager as coin_manager
 from electrum_gui.common.provider import manager as provider_manager
 
 _logger = logging.get_logger(__name__)
@@ -122,12 +122,7 @@ class Abstract_Eth_Wallet(abc.ABC):
         self.name = self.db.get("name")
         self._coin_price_cache = {}
 
-        self.contacts = {}
-        for addr, symbol in self.db.get("contracts", {}).items():
-            try:
-                self.contacts[addr] = eth_contract.Eth_Contract(symbol, addr)
-            except Exception as e:
-                _logger.exception(f"Error in recovering contracts. contract_addr: {addr}, error: {e}")
+        self._contracts = None
 
     @property
     def coin(self) -> str:
@@ -155,6 +150,25 @@ class Abstract_Eth_Wallet(abc.ABC):
             # crypto.sha256 returns a bytes object
             self._identity = crypto.sha256(prefix + self.get_addresses()[0]).hex()
         return self._identity
+
+    @property
+    def contracts(self) -> dict:
+        if self._contracts is None:
+            self._contracts = {}
+            chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.coin)
+            for token_address in self.db.get("contracts", {}).keys():
+                try:
+                    token = coin_manager.get_coin_by_token_address(chain_code, token_address, add_if_missing=True)
+                except Exception as e:
+                    _logger.exception(f"Error in recovering contracts. contract_addr: {token_address}, error: {e}")
+
+                if token is None:
+                    _logger.error(f"Error in recovering contract {token_address} on chain {chain_code}.")
+                    continue
+
+                self._contracts[token_address] = token.symbol
+
+        return self._contracts
 
     def get_derivation_path(self, address):
         pass
@@ -231,9 +245,7 @@ class Abstract_Eth_Wallet(abc.ABC):
     def pubkeys_to_address(self, public_key: str):
         return eth_keys.keys.PublicKey(bytes.fromhex(public_key)).to_checksum_address()
 
-    def get_all_balance(self, provider_chain_code: str) -> Tuple[decimal.Decimal, Dict]:
-        # NOTE: The provider_chain_code is used in case of self.coin is different
-        # from the chain code in the new codes under electrum_gui/common.
+    def get_all_balance(self) -> Tuple[decimal.Decimal, Dict]:
         if (
             self._total_balance.get("time")
             and time.time() - self._total_balance["time"] <= 10  # Only cache for 10s
@@ -243,70 +255,60 @@ class Abstract_Eth_Wallet(abc.ABC):
                 self._total_balance["balance_info"][1].copy()
             )
 
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.coin)
         checksum_address = eth_utils.to_checksum_address(self.get_addresses()[0])
         try:
-            raw_main_balance = provider_manager.get_balance(provider_chain_code, checksum_address)
+            raw_main_balance = provider_manager.get_balance(chain_code, checksum_address)
         except Exception:
             _logger.error(
                 "Failed to get balance for main coin of chain %s address %s",
-                provider_chain_code,
+                chain_code,
                 checksum_address
             )
             raw_main_balance = 0
         main_balance = decimal.Decimal(eth_utils.from_wei(raw_main_balance, "ether"))
 
-        contracts_balance_info = {}
-        for contract_address, contract in self.contacts.items():
+        tokens_balance_info = {}
+        for token_address in self.contracts.keys():
             try:
                 erc_balance = provider_manager.get_balance(
-                    provider_chain_code,
+                    chain_code,
                     checksum_address,
-                    token_address=contract_address
+                    token_address=token_address
                 )
             except Exception:
                 _logger.error(
                     "Failed to get balance for token %s of chain %s address %s",
-                    contract_address,
-                    provider_chain_code,
+                    token_address,
+                    chain_code,
                     checksum_address
                 )
                 erc_balance = 0
-            contracts_balance_info[contract_address] = {
-                'symbol': contract.get_symbol(),  # TODO: use coin manager to get this in the outer level
-                'balance': decimal.Decimal(erc_balance) / pow(10, decimal.Decimal(contract.contract_decimals)),
-            }
 
-        self._total_balance['balance_info'] = main_balance, contracts_balance_info
+            tokens_balance_info[token_address.lower()] = erc_balance
+
+        self._total_balance['balance_info'] = main_balance, tokens_balance_info
         self._total_balance['time'] = time.time()
-        return main_balance, contracts_balance_info.copy()
+        return main_balance, tokens_balance_info.copy()
 
     def get_all_token_address(self):
-        return list(self.contacts.keys())
+        return list(self.contracts.keys())
 
     def get_contract_symbols_with_address(self):
-        token_info = [{"coin": contract.symbol, "address": key} for key, contract in self.contacts.items()]
-        return token_info
+        return [
+            {"coin": symbol, "address": address} for address, symbol in self.contracts.items()
+        ]
 
     def add_contract_token(self, contract_symbol, contract_address):
-        contract = eth_contract.Eth_Contract(contract_symbol, contract_address)
-        self.contacts[contract_address] = contract
-        self.db.put("contracts", {addr: c.symbol for addr, c in self.contacts.items()})
+        contract_address = eth_utils.to_checksum_address(contract_address)
+        self.contracts[contract_address] = contract_symbol
+        self.db.put("contracts", self.contracts)
         self.save_db()
 
-    def get_contract_token(self, contract_address) -> eth_contract.Eth_Contract:
-        if not contract_address:
-            return None
-
-        contract_address = eth_utils.to_checksum_address(contract_address)
-        return self.contacts.get(contract_address)
-
     def delete_contract_token(self, contract_address):
-        if not contract_address:
-            return
-
         contract_address = eth_utils.to_checksum_address(contract_address)
-        self.contacts.pop(contract_address, None)
-        self.db.put("contracts", {addr: c.symbol for addr, c in self.contacts.items()})
+        self.contracts.pop(contract_address, None)
+        self.db.put("contracts", self.contracts)
         self.save_db()
 
     def load_and_cleanup(self):

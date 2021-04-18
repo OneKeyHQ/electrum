@@ -3,14 +3,12 @@ from os import path
 from electrum_gui.common.coin import codes
 from electrum_gui.common.conf.utils import get_data_dir
 
-IS_DEV = False
 try:
     from electrum import constants
 
-    if constants.net.NET != "Bitcoin":
-        IS_DEV = True
+    IS_DEV = constants.net.TESTNET
 except ImportError:
-    pass
+    IS_DEV = False
 
 PROJECT_DIR = path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
 DATA_DIR = get_data_dir()

@@ -284,7 +284,7 @@ class PyWalib:
         else:
             return 10
 
-    def estimate_gas_limit(self, from_address, to_address=None, contract=None, value="0", data=None) -> int:
+    def estimate_gas_limit(self, from_address, to_address=None, contract_token=None, value="0", data=None) -> int:
         try:
             if not to_address:
                 return 40000
@@ -292,11 +292,11 @@ class PyWalib:
             estimate_payload = {}
             to_address = self.web3.toChecksumAddress(to_address)
 
-            if contract:
+            if contract_token:
                 data = Eth_Transaction.get_tx_erc20_data_field(
-                    to_address, int(Decimal(value) * pow(10, contract.get_decimals()))
+                    to_address, int(Decimal(value) * pow(10, contract_token.decimals))
                 )
-                estimate_payload.update({"to": contract.get_address(), "data": data, "value": 0})
+                estimate_payload.update({"to": contract_token.token_address, "data": data, "value": 0})
             elif data or self.is_contract(to_address):
                 estimate_payload.update(
                     {
@@ -318,12 +318,12 @@ class PyWalib:
             raise Exception(_("Estimate gas limit failed, try again."))
 
     def get_transaction(
-        self, from_address, to_address, value, contract=None, gas_price=None, nonce=None, gas_limit=None, data=None
+        self, from_address, to_address, value, contract_token=None, gas_price=None, nonce=None, gas_limit=None, data=None
     ):
         if (
             not self.web3.isAddress(from_address)
             or not self.web3.isAddress(to_address)
-            or (contract and not self.web3.isAddress(contract.get_address()))
+            or (contract_token and not self.web3.isAddress(contract_token.token_address))
         ):
             raise InvalidAddress()
 
@@ -331,9 +331,8 @@ class PyWalib:
         to_address = self.web3.toChecksumAddress(to_address)
 
         try:
-            if contract:
-                decimal = contract.get_decimals()
-                value = int(Decimal(value) * pow(10, decimal))
+            if contract_token:
+                value = int(Decimal(value) * pow(10, contract_token.decimals))
             else:
                 value = self.web3.toWei(value, "ether")
 
@@ -348,9 +347,9 @@ class PyWalib:
         except (ValueError, AssertionError, TypeError):
             raise InvalidValueException()
 
-        if contract:
+        if contract_token:
             # check whether there is sufficient ERC20 token balance
-            erc20_balance = self._get_balance_inner(from_address, contract.get_address())
+            erc20_balance = self._get_balance_inner(from_address, contract_token.token_address)
             if value > erc20_balance:
                 raise InsufficientERC20FundsException()
 
@@ -360,17 +359,17 @@ class PyWalib:
             chain_id=int(PyWalib.chain_id),
             gas_price=gas_price,
             nonce=nonce,
-            to_address=contract.get_address() if contract else to_address,
-            value=0 if contract else value,
+            to_address=contract_token.token_address if contract_token else to_address,
+            value=0 if contract_token else value,
         )
 
-        if not data and contract:
+        if not data and contract_token:
             data = Eth_Transaction.get_tx_erc20_data_field(to_address, value)
         if data:
             tx_payload["data"] = data
 
         if not gas_limit:
-            if not contract and not self.is_contract(to_address):
+            if not contract_token and not self.is_contract(to_address):
                 gas_limit = DEFAULT_GAS_LIMIT
             else:
                 params = {
@@ -389,29 +388,12 @@ class PyWalib:
         # check whether there is sufficient eth balance for this transaction
         balance = self._get_balance_inner(from_address)
         fee_cost = int(tx_dict['gas'] * tx_dict['gasPrice'])
-        eth_required = fee_cost + (value if not contract else 0)
+        eth_required = fee_cost + (value if not contract_token else 0)
 
         if eth_required > balance:
             raise InsufficientFundsException()
 
         return tx_dict
-
-    @classmethod
-    def get_token_info(cls, symbol, contract_address):
-        from .eth_contract import Eth_Contract
-
-        contract_address = PyWalib.web3.toChecksumAddress(contract_address)
-        contract = Eth_Contract(symbol, contract_address)
-        token_info = {
-            "chain_id": PyWalib.chain_id,
-            "decimals": contract.get_decimals(),
-            "address": contract_address,
-            "symbol": contract.get_symbol(),
-            "name": contract.get_name(),
-            "logoURI": "",
-            "rank": 0,
-        }
-        return token_info
 
     @classmethod
     def get_nonce(cls, address):
@@ -527,12 +509,12 @@ class PyWalib:
         return actions
 
     @classmethod
-    def get_transaction_history(cls, address, contract=None, search_type=None):
+    def get_transaction_history(cls, address, contract_token=None, search_type=None):
         address = address.lower()
         actions = cls._search_tx_actions(address)
 
-        if contract:
-            contract_address = contract.address.lower()
+        if contract_token:
+            contract_address = contract_token.token_address.lower()
             actions = (i for i in actions if i.get("token_address") and i["token_address"].lower() == contract_address)
         else:
             actions = (i for i in actions if not i.get("token_address"))
@@ -546,8 +528,8 @@ class PyWalib:
 
         output_txs = []
 
-        if contract:
-            decimal_multiply = pow(10, Decimal(contract.contract_decimals))
+        if contract_token:
+            decimal_multiply = pow(10, Decimal(contract_token.decimals))
         else:
             decimal_multiply = pow(10, Decimal(18))
 
@@ -573,7 +555,7 @@ class PyWalib:
 
             output_tx = {
                 "type": "history",
-                "coin": contract.symbol if contract else cls.coin_symbol,
+                "coin": contract_token.symbol if contract_token is not None else cls.coin_symbol,
                 "tx_status": tx_status,
                 "show_status": show_status,
                 'fee': fee,
