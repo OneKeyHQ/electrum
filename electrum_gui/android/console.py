@@ -1778,18 +1778,10 @@ class AndroidCommands(commands.Commands):
                 self.show_addr = addr
                 show_addr_info[self.wallet.__str__()] = self.show_addr
                 self.config.set_key("show_addr_info", show_addr_info)
-
-            if bitcoin.is_address(self.show_addr):
-                data = util.create_bip21_uri(self.show_addr, "", "")
-            elif eth_utils.is_address(self.show_addr):
-                prefix = "ethereum" if self.wallet.coin == "eth" else self.wallet.coin
-                data = f"{prefix}:{self.show_addr}"
-            else:
-                data = self.show_addr
         except Exception as e:
             raise BaseException(e)
         data_json = {}
-        data_json["qr_data"] = data
+        data_json["qr_data"] = self.show_addr
         data_json["addr"] = self.show_addr
         return json.dumps(data_json)
 
