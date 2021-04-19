@@ -810,6 +810,7 @@ class AndroidCommands(commands.Commands):
             if len(self.hw_info) != 0 and customised_path_is_default_path:
                 bip39_path = self.get_coin_derived_path(int(self.get_account_id(derivation_path, coin)), coin=coin)
                 self.update_devired_wallet_info(bip39_path, self.hw_info["xpub"] + coin.lower(), name, coin)
+            self.hw_info = {}
             return wallet_info
         except BaseException as e:
             raise e
