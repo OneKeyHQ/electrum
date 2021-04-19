@@ -1,3 +1,4 @@
+import time
 from functools import partial
 from typing import Any
 
@@ -35,11 +36,11 @@ class Geth(ClientInterface):
         self.rpc = JsonRPCRequest(url)
 
     def get_info(self) -> ClientInfo:
-        block_number = self.rpc.call("eth_blockNumber", params=[])
+        the_latest_block = self.rpc.call("eth_getBlockByNumber", params=["latest", False])
         return ClientInfo(
             "geth",
-            best_block_number=_hex2int(block_number),
-            is_ready=True,
+            best_block_number=_hex2int(the_latest_block["number"]),
+            is_ready=time.time() - _hex2int(the_latest_block["timestamp"]) < 120,
         )
 
     def get_address(self, address: str) -> Address:

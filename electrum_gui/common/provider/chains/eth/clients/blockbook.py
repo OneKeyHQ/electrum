@@ -1,4 +1,6 @@
+import datetime
 import json
+import time
 from decimal import Decimal
 from typing import List, Optional
 
@@ -27,6 +29,16 @@ from electrum_gui.common.provider.exceptions import TransactionNotFound
 from electrum_gui.common.provider.interfaces import ClientInterface, SearchTransactionMixin
 
 
+def _normalize_iso_format(time_str: str) -> str:
+    result = time_str.split(".")[0]  # exclude 9 digits microseconds
+    if "Z" in time_str:
+        result += "+00:00"
+    elif "+" in time_str:
+        result += "+" + time_str.split("+")[1]
+
+    return result
+
+
 class BlockBook(ClientInterface, SearchTransactionMixin):
     __raw_tx_status_mapping__ = {
         -1: TransactionStatus.PENDING,
@@ -40,10 +52,20 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
     def get_info(self) -> ClientInfo:
         resp = self.restful.get("/api")
 
+        is_ready = resp["blockbook"].get("inSync") is True
+        if is_ready:
+            normalize_last_block_time = _normalize_iso_format(resp["blockbook"]["lastBlockTime"])
+
+            try:
+                last_block_time = datetime.datetime.fromisoformat(normalize_last_block_time).timestamp()
+                is_ready = time.time() - last_block_time < 120
+            except ValueError:
+                pass
+
         return ClientInfo(
             name="blockbook",
             best_block_number=int(resp["blockbook"].get("bestHeight", 0)),
-            is_ready=resp["blockbook"].get("inSync") is True,
+            is_ready=is_ready,
             desc=resp["blockbook"].get("about"),
         )
 
