@@ -40,6 +40,10 @@
         "url": "https://eth1.onekey.so/rpc"
       },
       {
+        "class": "Geth",
+        "url": "https://mainnet.infura.io/v3/46f0be7a38444796a858f7e8e273dde7"
+      },
+      {
         "class": "BlockBook",
         "url": "https://eth1.onekey.so"
       },
