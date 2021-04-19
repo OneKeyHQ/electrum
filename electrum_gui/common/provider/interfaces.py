@@ -182,7 +182,7 @@ class ProviderInterface(ABC):
         """
 
     @abstractmethod
-    def filling_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
+    def fill_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
         """
         Filling unsigned tx as much as possible
         :param unsigned_tx: incomplete UnsignedTx
@@ -190,11 +190,11 @@ class ProviderInterface(ABC):
         """
 
     @abstractmethod
-    def sign_transaction(self, unsigned_tx: UnsignedTx, key_mapping: Dict[str, SignerInterface]) -> SignedTx:
+    def sign_transaction(self, unsigned_tx: UnsignedTx, signers: Dict[str, SignerInterface]) -> SignedTx:
         """
         Sign transaction
         :param unsigned_tx: complete UnsignedTx
-        :param key_mapping: mapping of address to SignerInterface
+        :param signers: mapping of address to SignerInterface
         :return: SignedTx
         """
 

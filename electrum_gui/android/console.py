@@ -17,7 +17,7 @@ from os.path import exists, join
 from typing import Dict, List, Optional, Tuple
 
 import eth_utils
-from eth_account import Account
+from eth_account import account as eth_account_account
 from eth_keys import keys
 from hexbytes import HexBytes
 from mnemonic import Mnemonic
@@ -78,6 +78,7 @@ from electrum.wallet_db import WalletDB
 from electrum_gui.android import hardware, helpers, wallet_context
 from electrum_gui.common import the_begging
 from electrum_gui.common.provider import data as provider_data
+from electrum_gui.common.provider import exceptions as provider_exceptions
 
 from ..common.basic.functional.text import force_text
 from ..common.coin import codes
@@ -1580,31 +1581,69 @@ class AndroidCommands(commands.Commands):
             self.old_history_info = all_data
             return json.dumps(all_data[start:end])
 
-    def get_eth_tx_list(self, wallet_obj, contract_address=None, search_type=None):
-        chain_code = self._coin_to_chain_code(wallet_obj.coin)
+    def get_eth_tx_list(self, contract_address=None, search_type=None):
+        ret = []
+
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
+        main_coin = coin_manager.get_coin_info(coin_manager.get_chain_info(chain_code).fee_code)
+        main_coin_price = price_manager.get_last_price(main_coin.code, self.ccy)
         if contract_address is not None:
-            contract_token = coin_manager.get_coin_by_token_address(chain_code, contract_address)
+            contract_address = contract_address.lower()
+            coin = coin_manager.get_coin_by_token_address(chain_code, contract_address)
+            coin_price = price_manager.get_last_price(coin.code, self.ccy)
         else:
-            contract_token = None
-        txs = PyWalib.get_transaction_history(
-            wallet_obj.get_addresses()[0],
-            contract_token=contract_token,
-            search_type=search_type,
-        )
-        main_coin_price = price_manager.get_last_price(chain_code, self.ccy)
-        if contract_token:
-            amount_coin_price = price_manager.get_last_price(contract_token.code, self.ccy)
-        else:
-            amount_coin_price = main_coin_price
+            contract_address = None
+            coin = main_coin
+            coin_price = main_coin_price
 
-        for tx in txs:
-            fiat = Decimal(tx["amount"]) * amount_coin_price
-            fee_fiat = Decimal(tx["fee"]) * main_coin_price
-            fee_symbol = coin_manager.get_coin_info(coin_manager.get_chain_info(chain_code).fee_code).symbol
-            tx["amount"] = f"{tx['amount']} {tx['coin']} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})"
-            tx["fee"] = f"{tx['fee']} {fee_symbol} ({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})"
+        decimal_divisor = pow(10, coin.decimals)
+        address = self.wallet.get_addresses()[0].lower()
+        for transaction in provider_manager.search_txs_by_address(chain_code, address):
+            fee = Decimal(eth_utils.from_wei(transaction.fee.used * transaction.fee.price_per_unit, "ether"))
+            fee_fiat = fee * main_coin_price
+            detailed_status = transaction.detailed_status
+            show_status = transaction.show_status
+            date_str = transaction.date_str
+            height = transaction.height
+            confirmations = transaction.confirmations
 
-        return json.dumps(txs, cls=DecimalEncoder)
+            for input, output in zip(transaction.inputs, transaction.outputs):
+                if output.token_address != contract_address:
+                    continue
+
+                input_address = input.address.lower()
+                output_address = output.address.lower()
+
+                if search_type == "send" and input_address != address:
+                    continue
+                elif search_type == "receive" and output_address != address:
+                    continue
+                elif input_address != address and output_address != address:
+                    continue
+
+                show_address = output_address if input_address == address else input_address
+                amount = Decimal(output.value) / decimal_divisor
+                fiat = amount * coin_price
+                ret.append(
+                    {
+                        "type": "histroy",
+                        "coin": coin.symbol,
+                        "tx_status": detailed_status,
+                        "show_status": show_status,
+                        "fee": f"{fee} {main_coin.symbol} ({self.daemon.fx.ccy_amount_str(fee_fiat, True)} {self.ccy})",
+                        "date": date_str,
+                        "tx_hash": transaction.txid,
+                        "is_mine": input_address == address,
+                        "height": height,
+                        "confirmations": confirmations,
+                        "input_addr": [input_address],
+                        "output_addr": [output_address],
+                        "address": f"{show_address[:6]}...{show_address[-6:]}",
+                        "amount": f"{amount} {coin.symbol} ({self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy})",
+                    }
+                )
+
+        return json.dumps(ret, cls=DecimalEncoder)
 
     def get_detail_tx_info_by_hash(self, tx_hash):
         """
@@ -1645,13 +1684,10 @@ class AndroidCommands(commands.Commands):
                  "address":"",
                  "amount":""}, ...]
         """
-        try:
-            if coin == "btc":
-                return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
-            else:
-                return self.get_eth_tx_list(self.wallet, contract_address=contract_address, search_type=search_type)
-        except BaseException as e:
-            raise e
+        if coin == "btc":
+            return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
+        else:
+            return self.get_eth_tx_list(contract_address=contract_address, search_type=search_type)
 
     def get_history_show_info(self, info, list_info):
         info["type"] = "history"
@@ -2238,8 +2274,6 @@ class AndroidCommands(commands.Commands):
             coin = self.wallet.coin if self.wallet is not None else "eth"
 
         chain_code = self._coin_to_chain_code(coin)
-        chain_info = coin_manager.get_chain_info(chain_code)
-        chain_id = int(chain_info.chain_id)
 
         token_dict = self._load_tokens_dict(chain_code)
         top_50_tokens = set(itertools.islice(token_dict.keys(), 50))
@@ -2249,7 +2283,7 @@ class AndroidCommands(commands.Commands):
         )
         custom_token_info_list = [
             {
-                "chain_id": chain_id,
+                "chain_id": coin_manager.get_chain_info(chain_code).chain_id,
                 "decimals": i.decimals,
                 "address": i.token_address.lower(),
                 "symbol": i.symbol,
@@ -2326,55 +2360,76 @@ class AndroidCommands(commands.Commands):
         :param nonce: from address nonce
         :return: tx_hash as string
         """
-        from_address = self.wallet.get_addresses()[0]
+        chain_code = self._coin_to_chain_code(self.wallet.coin)
         if contract_addr is None:
-            tx_dict = self.pywalib.get_transaction(
-                from_address, to_addr, value, gas_price=gas_price, gas_limit=gas_limit, data=data, nonce=nonce
-            )
+            main_coin_code = coin_manager.get_chain_info(chain_code).fee_code
+            coin = coin_manager.get_coin_info(main_coin_code)
         else:
-            chain_code = self._coin_to_chain_code(self.wallet.coin)
-            contract_token = coin_manager.get_coin_by_token_address(chain_code, contract_addr)
-            assert contract_token is not None
-            tx_dict = self.pywalib.get_transaction(
-                from_address,
-                to_addr,
-                value,
-                contract_token=contract_token,
-                gas_price=gas_price,
-                gas_limit=gas_limit,
-                data=data,
-                nonce=nonce,
-            )
+            coin = coin_manager.get_coin_by_token_address(chain_code, contract_addr)
 
+        from_address = self.wallet.get_addresses()[0]
+        input = provider_data.TransactionInput.from_dict(
+            {
+                'address': from_address,
+                'value': 0,  # This doesn't matter.
+            }
+        )
+        value = int(Decimal(value) * pow(10, coin.decimals))
+        output = provider_data.TransactionOutput.from_dict(
+            {'address': to_addr, 'value': value, 'token_address': contract_addr}
+        )
+        if gas_limit is not None:
+            gas_limit = int(gas_limit)
+        if gas_price is not None:
+            gas_price = eth_utils.to_wei(gas_price, "gwei")
+        unsigned_tx = provider_data.UnsignedTx.from_dict(
+            {
+                'inputs': [input],
+                'outputs': [output],
+                'fee_limit': gas_limit,
+                'fee_price_per_unit': gas_price,
+                'payload': {'data': data},
+            }
+        )
+        unsigned_tx = provider_manager.fill_unsigned_tx(chain_code, unsigned_tx)
         signed_tx_hex = None
 
-        if isinstance(self.wallet.get_keystore(), Hardware_KeyStore):
-            if path:
-                address_path = self.wallet.get_derivation_path(from_address)
-                address_n = parse_path(address_path)
+        if isinstance(self.wallet.get_keystore(), Hardware_KeyStore) and path is not None:
+            address_path = self.wallet.get_derivation_path(from_address)
+            address_n = parse_path(address_path)
+            self.trezor_manager.ensure_client(path)
 
-                self.trezor_manager.ensure_client(path)
-
-                (v, r, s) = self.wallet.sign_transaction(
-                    address_n,
-                    tx_dict["nonce"],
-                    tx_dict["gasPrice"],
-                    tx_dict["gas"],
-                    str(tx_dict["to"]),
-                    tx_dict["value"],
-                    data=bytes.fromhex(eth_utils.remove_0x_prefix(tx_dict["data"])) if tx_dict.get("data") else None,
-                    chain_id=tx_dict["chainId"],
-                )
-                from eth_utils.encoding import big_endian_to_int
-
-                r = big_endian_to_int(r)
-                s = big_endian_to_int(s)
-                signed_tx_hex = self.pywalib.serialize_tx(tx_dict, vrs=(v, r, s))
+            output = unsigned_tx.outputs[0]
+            if output.token_address is not None:  # erc20 transfer
+                to_address = output.token_address
+                value = 0
+            else:
+                to_address = output.address
+                value = output.value
+            data = unsigned_tx.payload["data"]
+            if data is not None:
+                data = bytes.fromhex(eth_utils.remove_0x_prefix(data))
+            signed_tx_hex = self.wallet.sign_transaction(
+                address_n,
+                unsigned_tx.nonce,
+                unsigned_tx.fee_price_per_unit,
+                unsigned_tx.fee_limit,
+                to_address,
+                value,
+                data=data,
+                chain_id=int(coin_manager.get_chain_info(chain_code).chain_id),
+            )
         else:
-            signed_tx_hex = self.pywalib.sign_tx(self.wallet.get_account(from_address, password), tx_dict)
+            signer = helpers.EthSoftwareSigner(self.wallet, password)
+            signed_tx = provider_manager.sign_transaction(chain_code, unsigned_tx, {from_address: signer})
+            signed_tx_hex = signed_tx.raw_tx
 
-        if signed_tx_hex and auto_send_tx:
-            return self.pywalib.send_tx(signed_tx_hex)
+        if signed_tx_hex is not None and auto_send_tx:
+            try:
+                receipt = provider_manager.broadcast_transaction(chain_code, signed_tx_hex)
+            except provider_exceptions.TransactionAlreadyKnown:
+                return None
+            return receipt.txid
 
         return signed_tx_hex
 
@@ -2404,11 +2459,31 @@ class AndroidCommands(commands.Commands):
             password=password,
             auto_send_tx=False,
         )
-        signed_tx_info = self.pywalib.decode_signed_tx(signed_tx_hex)
+        signed_tx = eth_account_account.Transaction.from_bytes(bytes.fromhex(signed_tx_hex[2:]))
+        signed_tx_info = {
+            "raw": signed_tx_hex,
+            "tx": {
+                "nonce": hex(signed_tx.nonce),
+                "gasPrice": hex(signed_tx.gasPrice),
+                "gas": hex(signed_tx.gas),
+                "value": hex(signed_tx.value),
+                "to": eth_utils.add_0x_prefix(signed_tx.to.hex()),
+                "data": eth_utils.add_0x_prefix(signed_tx.data.hex()),
+                "v": hex(signed_tx.v),
+                "r": hex(signed_tx.r),
+                "s": hex(signed_tx.s),
+                "hash": signed_tx.hash().hex(),
+            },
+        }
         return json.dumps(signed_tx_info)
 
     def dapp_eth_send_tx(self, tx_hex: str):
-        return self.pywalib.send_tx(tx_hex)
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
+        try:
+            receipt = provider_manager.broadcast_transaction(chain_code, tx_hex)
+        except provider_exceptions.TransactionAlreadyKnown:
+            return None
+        return receipt.txid
 
     def dapp_eth_rpc_info(self):
         return json.dumps(PyWalib.get_rpc_info())
@@ -2850,7 +2925,7 @@ class AndroidCommands(commands.Commands):
                     raise BaseException(UnavailablePrivateKey())
             elif flag == "keystore":
                 try:
-                    Account.decrypt(json.loads(data), password).hex()
+                    eth_account_account.Account.decrypt(json.loads(data), password).hex()
                 except (TypeError, KeyError, NotImplementedError):
                     raise util.InvalidKeystoreFormat()
                 except BaseException:

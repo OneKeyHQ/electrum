@@ -177,7 +177,7 @@ class Etherscan(ClientInterface, SearchTransactionMixin):
         if txid:
             return TxBroadcastReceipt(is_success=True, receipt_code=TxBroadcastReceiptCode.SUCCESS, txid=txid)
         else:
-            return utils.populate_error_broadcast_receipt(resp.get("error", {}).get("message") or "")
+            return utils.handle_broadcast_error(resp.get("error", {}).get("message") or "")
 
     def get_price_per_unit_of_fee(self) -> PricePerUnit:
         resp = self._call_action("gastracker", "gasoracle")

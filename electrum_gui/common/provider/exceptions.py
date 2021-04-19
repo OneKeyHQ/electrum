@@ -17,3 +17,28 @@ class NoAvailableClient(Exception):
 class ProviderClassNotFound(Exception):
     def __init__(self, chain_code: str, path: str):
         super(ProviderClassNotFound, self).__init__(f"chain_code: {repr(chain_code)}, path: {path}")
+
+
+class UnknownBroadcastError(Exception):
+    def __init__(self, message: str):
+        super(UnknownBroadcastError, self).__init__(f"error message: {message}")
+
+
+class TransactionAlreadyKnown(UnknownBroadcastError):
+    pass
+
+
+class TransactionNonceTooLow(UnknownBroadcastError):
+    pass
+
+
+class TransactionUnderpriced(UnknownBroadcastError):
+    pass
+
+
+class TransactionGasTooLow(UnknownBroadcastError):
+    pass
+
+
+class TransactionGasLimitExceeded(UnknownBroadcastError):
+    pass

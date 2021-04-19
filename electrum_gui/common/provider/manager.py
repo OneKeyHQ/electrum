@@ -88,12 +88,12 @@ def pubkey_to_address(chain_code: str, verifier: VerifierInterface, encoding: st
     return get_provider_by_chain(chain_code).pubkey_to_address(verifier, encoding=encoding)
 
 
-def filling_unsigned_tx(chain_code: str, unsigned_tx: UnsignedTx) -> UnsignedTx:
-    return get_provider_by_chain(chain_code).filling_unsigned_tx(unsigned_tx)
+def fill_unsigned_tx(chain_code: str, unsigned_tx: UnsignedTx) -> UnsignedTx:
+    return get_provider_by_chain(chain_code).fill_unsigned_tx(unsigned_tx)
 
 
-def sign_transaction(chain_code: str, unsigned_tx: UnsignedTx, key_mapping: Dict[str, SignerInterface]) -> SignedTx:
-    return get_provider_by_chain(chain_code).sign_transaction(unsigned_tx, key_mapping)
+def sign_transaction(chain_code: str, unsigned_tx: UnsignedTx, signers: Dict[str, SignerInterface]) -> SignedTx:
+    return get_provider_by_chain(chain_code).sign_transaction(unsigned_tx, signers)
 
 
 def utxo_can_spend(chain_code: str, utxo: UTXO) -> bool:

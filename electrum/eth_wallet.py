@@ -37,6 +37,7 @@ import time
 from typing import Dict, List, Optional, Sequence, Set, Tuple, Union
 
 import eth_account
+from eth_account._utils import transactions as eth_account_transactions
 import eth_keys
 import eth_utils
 import hexbytes
@@ -439,17 +440,19 @@ class Abstract_Eth_Wallet(abc.ABC):
         except Exception:
             return
 
-    def sign_transaction(self, *args, **kwargs):
+    def sign_transaction(self, *args, **kwargs) -> str:
+        # TODO: change python-trezor and trezor plugin code to make this
+        # work in the way of
+        # electrum_gui.common.secret.interfaces.SignerInterface
         if self.is_watching_only():
             return
 
         # sign. start with ready keystores.
         sig_num = 0
-        sign = tuple()
         for k in sorted(self.get_keystores(), key=lambda ks: ks.ready_to_sign(), reverse=True):
             try:
                 # if k.can_sign(tmp_tx):
-                sign = k.sign_eth_tx(*args, **kwargs)
+                v, r, s = k.sign_eth_tx(*args, **kwargs)
             except BaseException as e:
                 msg = str(e)
                 print(f"wallet:L1510======={e}======")
@@ -460,7 +463,27 @@ class Abstract_Eth_Wallet(abc.ABC):
                     continue
                 raise BaseException(e)
 
-        return sign
+        r = eth_utils.big_endian_to_int(r)
+        s = eth_utils.big_endian_to_int(s)
+        unsigned_transaction_dict = {
+            "nonce": args[1],
+            "gasPrice": args[2],
+            "gas": args[3],
+            "to": args[4],
+            "value": args[5],
+            "chainId": kwargs["chain_id"],
+        }
+        data = kwargs.get("data")
+        if data is not None:
+            unsigned_transaction_dict["data"] = data
+        signed_tx_hex = eth_account_transactions.encode_transaction(
+            eth_account_transactions.serializable_unsigned_transaction_from_dict(
+                unsigned_transaction_dict
+            ),
+            (v, r, s)
+        ).hex()
+
+        return eth_utils.add_0x_prefix(signed_tx_hex)
 
     def is_mine(self, address) -> bool:
         if not address:

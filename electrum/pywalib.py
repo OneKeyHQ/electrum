@@ -11,19 +11,11 @@ from typing import Optional
 
 import requests
 import urllib3
-from eth_account._utils.transactions import Transaction
-from eth_typing import HexStr
-from eth_utils import add_0x_prefix, remove_0x_prefix
 from web3 import HTTPProvider, Web3
 
 from electrum.util import make_aiohttp_session
-from electrum_gui.common.provider.data import (
-    TransactionStatus,
-    TxBroadcastReceiptCode,
-)
 from electrum_gui.common.provider import provider_manager
 
-from . import util
 from .eth_transaction import Eth_Transaction
 from .i18n import _
 from .network import Network
@@ -317,119 +309,8 @@ class PyWalib:
         except Exception:
             raise Exception(_("Estimate gas limit failed, try again."))
 
-    def get_transaction(
-        self, from_address, to_address, value, contract_token=None, gas_price=None, nonce=None, gas_limit=None, data=None
-    ):
-        if (
-            not self.web3.isAddress(from_address)
-            or not self.web3.isAddress(to_address)
-            or (contract_token and not self.web3.isAddress(contract_token.token_address))
-        ):
-            raise InvalidAddress()
-
-        from_address = self.web3.toChecksumAddress(from_address)
-        to_address = self.web3.toChecksumAddress(to_address)
-
-        try:
-            if contract_token:
-                value = int(Decimal(value) * pow(10, contract_token.decimals))
-            else:
-                value = self.web3.toWei(value, "ether")
-
-            gas_price = DEFAULT_GAS_PRICE_WEI if gas_price is None else self.web3.toWei(gas_price, "gwei")
-
-            assert value >= 0
-            assert gas_price >= 0
-
-            if gas_limit:
-                gas_limit = int(gas_limit)
-                assert gas_limit > 0
-        except (ValueError, AssertionError, TypeError):
-            raise InvalidValueException()
-
-        if contract_token:
-            # check whether there is sufficient ERC20 token balance
-            erc20_balance = self._get_balance_inner(from_address, contract_token.token_address)
-            if value > erc20_balance:
-                raise InsufficientERC20FundsException()
-
-        nonce = self.get_nonce(from_address) if nonce is None else int(nonce)
-
-        tx_payload = dict(
-            chain_id=int(PyWalib.chain_id),
-            gas_price=gas_price,
-            nonce=nonce,
-            to_address=contract_token.token_address if contract_token else to_address,
-            value=0 if contract_token else value,
-        )
-
-        if not data and contract_token:
-            data = Eth_Transaction.get_tx_erc20_data_field(to_address, value)
-        if data:
-            tx_payload["data"] = data
-
-        if not gas_limit:
-            if not contract_token and not self.is_contract(to_address):
-                gas_limit = DEFAULT_GAS_LIMIT
-            else:
-                params = {
-                    "from": from_address,
-                    "to": tx_payload["to_address"],
-                    "value": tx_payload["value"],
-                }
-                if tx_payload.get("data"):
-                    params["data"] = tx_payload["data"]
-
-                gas_limit = self.web3.eth.estimateGas(params)
-
-        tx_payload["gas"] = gas_limit
-        tx_dict = Eth_Transaction.build_transaction(**tx_payload)
-
-        # check whether there is sufficient eth balance for this transaction
-        balance = self._get_balance_inner(from_address)
-        fee_cost = int(tx_dict['gas'] * tx_dict['gasPrice'])
-        eth_required = fee_cost + (value if not contract_token else 0)
-
-        if eth_required > balance:
-            raise InsufficientFundsException()
-
-        return tx_dict
-
-    @classmethod
-    def get_nonce(cls, address):
-        return provider_manager.get_address(cls.get_chain_code(), address).nonce
-
     def is_contract(self, address) -> bool:
         return len(self.web3.eth.getCode(self.web3.toChecksumAddress(address))) > 0
-
-    @staticmethod
-    def sign_tx(account, tx_dict):
-        return Eth_Transaction.sign_transaction(account, tx_dict)
-
-    @staticmethod
-    def serialize_tx(tx_dict, vrs):
-        return Eth_Transaction.serialize_tx(tx_dict, vrs)
-
-    @staticmethod
-    def decode_signed_tx(signed_tx_hex: str) -> dict:
-        signed_tx_hex = remove_0x_prefix(HexStr(signed_tx_hex))
-
-        tx = Transaction.from_bytes(bytes.fromhex(signed_tx_hex))
-        return {
-            "raw": add_0x_prefix(signed_tx_hex),
-            "tx": {
-                "nonce": hex(tx.nonce),
-                "gasPrice": hex(tx.gasPrice),
-                "gas": hex(tx.gas),
-                "value": hex(tx.value),
-                "to": add_0x_prefix(tx.to.hex()),
-                "data": add_0x_prefix(tx.data.hex()),
-                "v": hex(tx.v),
-                "r": hex(tx.r),
-                "s": hex(tx.s),
-                "hash": tx.hash().hex(),
-            },
-        }
 
     @classmethod
     def get_rpc_info(cls) -> dict:
@@ -449,29 +330,6 @@ class PyWalib:
             "chain_id": chain_id,
         }
 
-    _ERROR_BROADCAST_RECEIPT_MAPPING = {
-        TxBroadcastReceiptCode.NONCE_TOO_LOW: _("Unexpected nonce, please try again"),
-        TxBroadcastReceiptCode.RBF_UNDERPRICE: _("Replace-by-Fee transaction needs a higher gas price"),
-        TxBroadcastReceiptCode.ETH_GAS_PRICE_TOO_LOW: _("Gas price too low"),
-        TxBroadcastReceiptCode.ETH_GAS_LIMIT_EXCEEDED: _("Gas limit exceeded"),
-    }
-
-    @classmethod
-    def send_tx(cls, tx_hex: str) -> str:
-        receipt = provider_manager.broadcast_transaction(cls.get_chain_code(), tx_hex)
-        if not receipt.is_success:
-            error_message = cls._ERROR_BROADCAST_RECEIPT_MAPPING.get(receipt.receipt_code) or receipt.receipt_message
-            raise Exception(error_message)
-        else:
-            return receipt.txid
-
-    @classmethod
-    def _get_balance_inner(cls, address: str, contract_address: Optional[str] = None):
-        try:
-            return provider_manager.get_balance(cls.get_chain_code(), address, token_address=contract_address)
-        except Exception:
-            return 0
-
     @classmethod
     def get_chain_code(cls) -> str:
         chain_code = cls.server_config["id"]
@@ -480,95 +338,3 @@ class PyWalib:
             chain_code = f"t{chain_code}"
 
         return chain_code
-
-    @classmethod
-    def _search_tx_actions(cls, address):
-        txs = provider_manager.search_txs_by_address(cls.get_chain_code(), address)
-        actions = []
-
-        for tx in txs:
-            common_params = {
-                "txid": tx.txid,
-                "status": tx.status,
-                "block_header": tx.block_header,
-                "fee": tx.fee,
-            }
-            for tx_input, tx_output in zip(tx.inputs, tx.outputs):
-                action = {
-                    **common_params,
-                    "from": tx_input.address.lower(),
-                    "to": tx_output.address.lower(),
-                    "value": tx_output.value,
-                }
-
-                if tx_output.token_address:
-                    action["token_address"] = tx_output.token_address.lower()
-
-                actions.append(action)
-
-        return actions
-
-    @classmethod
-    def get_transaction_history(cls, address, contract_token=None, search_type=None):
-        address = address.lower()
-        actions = cls._search_tx_actions(address)
-
-        if contract_token:
-            contract_address = contract_token.token_address.lower()
-            actions = (i for i in actions if i.get("token_address") and i["token_address"].lower() == contract_address)
-        else:
-            actions = (i for i in actions if not i.get("token_address"))
-
-        if search_type == "send":
-            actions = (i for i in actions if i.get("from") and i["from"] == address)
-        elif search_type == "receive":
-            actions = (i for i in actions if i.get("to") and i["to"] == address)
-        else:
-            actions = (i for i in actions if i.get("from") == address or i.get("to") == address)
-
-        output_txs = []
-
-        if contract_token:
-            decimal_multiply = pow(10, Decimal(contract_token.decimals))
-        else:
-            decimal_multiply = pow(10, Decimal(18))
-
-        for action in actions:
-            block_header = action["block_header"]
-            amount = Decimal(action["value"]) / decimal_multiply
-            fee = Decimal(cls.web3.fromWei(action["fee"].used * action["fee"].price_per_unit, "ether"))
-
-            tx_status = _("Unconfirmed")
-            show_status = [1, _("Unconfirmed")]
-            if action["status"] == TransactionStatus.CONFIRM_REVERTED:
-                tx_status = _("Sending failure")
-                show_status = [2, _("Sending failure")]
-            elif action["status"] == TransactionStatus.CONFIRM_SUCCESS:
-                tx_status = (
-                    _("{} confirmations").format(block_header.confirmations)
-                    if block_header and block_header.confirmations > 0
-                    else _("Confirmed")
-                )
-                show_status = [3, _("Confirmed")]
-
-            show_address = action["to"] if action["from"].lower() == address else action["from"]
-
-            output_tx = {
-                "type": "history",
-                "coin": contract_token.symbol if contract_token is not None else cls.coin_symbol,
-                "tx_status": tx_status,
-                "show_status": show_status,
-                'fee': fee,
-                "date": util.format_time(block_header.block_time) if block_header else _("Unknown"),
-                "tx_hash": action["txid"],
-                "is_mine": action["from"].lower() == address,
-                'height': block_header.block_number if block_header else -2,
-                "confirmations": block_header.confirmations if block_header else 0,
-                'input_addr': [action["from"]],
-                'output_addr': [action["to"]],
-                "address": f"{show_address[:6]}...{show_address[-6:]}",
-                "amount": amount,
-            }
-            output_txs.append(output_tx)
-
-        return output_txs

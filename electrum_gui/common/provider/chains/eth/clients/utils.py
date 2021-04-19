@@ -1,25 +1,20 @@
-from electrum_gui.common.provider.data import TxBroadcastReceipt, TxBroadcastReceiptCode
+from electrum_gui.common.provider import exceptions
 
 _MAPPING = {
-    "already known": TxBroadcastReceiptCode.ALREADY_KNOWN,
-    "nonce too low": TxBroadcastReceiptCode.NONCE_TOO_LOW,
-    "transaction underpriced": TxBroadcastReceiptCode.RBF_UNDERPRICE,
-    "gas too low": TxBroadcastReceiptCode.ETH_GAS_PRICE_TOO_LOW,
-    "gas limit exceeded": TxBroadcastReceiptCode.ETH_GAS_LIMIT_EXCEEDED,
+    "already known": exceptions.TransactionAlreadyKnown,
+    "nonce too low": exceptions.TransactionNonceTooLow,
+    "transaction underpriced": exceptions.TransactionUnderpriced,
+    "gas too low": exceptions.TransactionGasTooLow,
+    "gas limit exceeded": exceptions.TransactionGasLimitExceeded,
 }
 
 
-def populate_error_broadcast_receipt(error_message: str) -> TxBroadcastReceipt:
-    receipt_code = TxBroadcastReceiptCode.UNEXPECTED_FAILED
+def handle_broadcast_error(error_message: str) -> None:
 
-    for keywords, code in _MAPPING.items():
+    for keywords, exception_class in _MAPPING.items():
         if keywords in error_message:
-            receipt_code = code
             break
+    else:
+        exception_class = exceptions.UnknownBroadcastError
 
-    is_success = receipt_code == TxBroadcastReceiptCode.ALREADY_KNOWN
-    return TxBroadcastReceipt(
-        is_success=is_success,
-        receipt_code=receipt_code,
-        receipt_message=error_message,
-    )
+    raise exception_class(error_message)

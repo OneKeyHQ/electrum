@@ -221,7 +221,7 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
         if txid:
             return TxBroadcastReceipt(is_success=True, receipt_code=TxBroadcastReceiptCode.SUCCESS, txid=txid)
         else:
-            return utils.populate_error_broadcast_receipt(resp.get("error") or "")
+            return utils.handle_broadcast_error(resp.get("error") or "")
 
     def get_price_per_unit_of_fee(self) -> PricePerUnit:
         num_of_block = 10  # just a number, trezor does case what it is

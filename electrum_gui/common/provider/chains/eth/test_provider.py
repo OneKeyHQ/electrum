@@ -43,7 +43,7 @@ class TestETHProvider(TestCase):
         )
         verifier.get_pubkey.assert_called_once_with(compressed=False)
 
-    def test_filling_unsigned_tx(self):
+    def test_fill_unsigned_tx(self):
         external_address_a = "0x71df3bb810127271d400f7be99cc1f4504ab4c1a"
         external_address_b = "0xa305fab8bda7e1638235b054889b3217441dd645"
         contract_address = "0x0000000037871deb014490c37a4844f7019f38bd"
@@ -74,7 +74,7 @@ class TestETHProvider(TestCase):
 
         with self.subTest("Empty UnsignedTx"):
             self.assertEqual(
-                self.provider.filling_unsigned_tx(
+                self.provider.fill_unsigned_tx(
                     UnsignedTx(),
                 ),
                 UnsignedTx(fee_limit=21000, fee_price_per_unit=int(30 * 1e9)),
@@ -88,7 +88,7 @@ class TestETHProvider(TestCase):
 
         with self.subTest("Transfer ETH to external address with preset gas price"):
             self.assertEqual(
-                self.provider.filling_unsigned_tx(
+                self.provider.fill_unsigned_tx(
                     UnsignedTx(
                         inputs=[TransactionInput(address=external_address_a, value=21)],
                         outputs=[TransactionOutput(address=external_address_b, value=21)],
@@ -113,7 +113,7 @@ class TestETHProvider(TestCase):
 
         with self.subTest("Transfer ETH to contract address with preset nonce"):
             self.assertEqual(
-                self.provider.filling_unsigned_tx(
+                self.provider.fill_unsigned_tx(
                     UnsignedTx(
                         inputs=[TransactionInput(address=external_address_a, value=21)],
                         outputs=[TransactionOutput(address=contract_address, value=21)],
@@ -140,7 +140,7 @@ class TestETHProvider(TestCase):
         with self.subTest("Transfer ERC20 with preset gas price and lower gas limit"):
             erc20_transfer_data = "0xa9059cbb000000000000000000000000a305fab8bda7e1638235b054889b3217441dd6450000000000000000000000000000000000000000000000000000000000000015"
             self.assertEqual(
-                self.provider.filling_unsigned_tx(
+                self.provider.fill_unsigned_tx(
                     UnsignedTx(
                         inputs=[
                             TransactionInput(
@@ -205,7 +205,7 @@ class TestETHProvider(TestCase):
                     )
                 )
             )
-            key_mapping = {"0x71df3bb810127271d400f7be99cc1f4504ab4c1a": fake_signer}
+            signers = {"0x71df3bb810127271d400f7be99cc1f4504ab4c1a": fake_signer}
             self.assertEqual(
                 self.provider.sign_transaction(
                     UnsignedTx(
@@ -223,7 +223,7 @@ class TestETHProvider(TestCase):
                         fee_limit=21000,
                         fee_price_per_unit=107670000000,
                     ),
-                    key_mapping,
+                    signers,
                 ),
                 SignedTx(
                     txid="0xd27c78c026978846312d70cb56f8e2863b5480a37159dab9e22fb8cdd5127469",
@@ -245,8 +245,8 @@ class TestETHProvider(TestCase):
                     )
                 )
             )
-            key_mapping = {"0x9ce42ba2d6bb04f1e464520b044012187782f869": fake_signer}
 
+            signers = {"0x9ce42ba2d6bb04f1e464520b044012187782f869": fake_signer}
             self.assertEqual(
                 self.provider.sign_transaction(
                     UnsignedTx(
@@ -271,7 +271,7 @@ class TestETHProvider(TestCase):
                             "data": "0xa9059cbb000000000000000000000000a305fab8bda7e1638235b054889b3217441dd64500000000000000000000000000000000000000000000000000000003110c5a4f"
                         },
                     ),
-                    key_mapping,
+                    signers,
                 ),
                 SignedTx(
                     txid="0xaee8c4369180309b99abc48b736fbda7a70c1de014f902cb2fc2e3441a72e4fa",

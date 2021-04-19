@@ -41,7 +41,7 @@ class ETHProvider(ProviderInterface):
     def geth(self) -> Geth:
         return self.client_selector(instance_required=Geth)
 
-    def filling_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
+    def fill_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
         fee_price_per_unit = unsigned_tx.fee_price_per_unit or self.client.get_price_per_unit_of_fee().normal.price
         nonce = unsigned_tx.nonce
         payload = unsigned_tx.payload.copy()
@@ -83,12 +83,13 @@ class ETHProvider(ProviderInterface):
             payload=payload,
         )
 
-    def sign_transaction(self, unsigned_tx: UnsignedTx, key_mapping: Dict[str, SignerInterface]) -> SignedTx:
+    def sign_transaction(self, unsigned_tx: UnsignedTx, signers: Dict[str, SignerInterface]) -> SignedTx:
+        # TODO: check whether main coin balance and token balance are enough
         require(len(unsigned_tx.inputs) == 1 and len(unsigned_tx.outputs) == 1)
         from_address = unsigned_tx.inputs[0].address
-        require(key_mapping.get(from_address) is not None)
+        require(signers.get(from_address) is not None)
 
-        eth_key = _EthKey(key_mapping[from_address])
+        eth_key = _EthKey(signers[from_address])
 
         output = unsigned_tx.outputs[0]
         is_erc20_transfer = bool(output.token_address)

@@ -1,7 +1,11 @@
 import random
 import string
+from typing import Tuple
+
+import eth_utils
 
 from electrum.keystore import bip44_derivation, bip44_eth_derivation
+from electrum_gui.common.secret import interfaces as secret_interfaces
 
 
 def get_best_block_by_feerate(feerate, fee_info_list):
@@ -40,3 +44,20 @@ def get_temp_file():
 
 def get_path_info(path, pos):
     return path.split("/")[pos].split("'")[0]
+
+
+class EthSoftwareSigner(secret_interfaces.SignerInterface):
+    def __init__(self, wallet, password):
+        self.prvkey = wallet.get_account(wallet.get_addresses()[0], password)._key_obj
+
+    def get_pubkey(self, compressed=True) -> bytes:
+        raise NotImplementedError()  # Shouldn't reach
+
+    def verify(self, digest: bytes, signature: bytes) -> bool:
+        raise NotImplementedError()  # Shouldn't reach
+
+    def sign(self, digest: bytes) -> Tuple[bytes, int]:
+        signature = self.prvkey.sign_msg_hash(digest)
+        sig = eth_utils.int_to_big_endian(signature.r) + eth_utils.int_to_big_endian(signature.s)
+        rec_id = signature.v
+        return sig, rec_id

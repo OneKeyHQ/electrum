@@ -20,10 +20,10 @@ class BTCProvider(ProviderInterface):
     def pubkey_to_address(self, verifier: VerifierInterface, encoding: str = None) -> str:
         raise NotImplementedError()
 
-    def filling_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
+    def fill_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
         raise NotImplementedError()
 
-    def sign_transaction(self, unsigned_tx: UnsignedTx, key_mapping: Dict[str, SignerInterface]) -> SignedTx:
+    def sign_transaction(self, unsigned_tx: UnsignedTx, signers: Dict[str, SignerInterface]) -> SignedTx:
         raise NotImplementedError()
 
     def get_token_info_by_address(self, token_address: str) -> Tuple[str, str, int]:

@@ -167,7 +167,7 @@ class Geth(ClientInterface, BatchGetAddressMixin):
             json_response = e.json_response
             if isinstance(json_response, dict) and "error" in json_response:
                 error_message = json_response.get("error", {}).get("message") or ""
-                return utils.populate_error_broadcast_receipt(error_message)
+                return utils.handle_broadcast_error(error_message)
 
             raise e
 
