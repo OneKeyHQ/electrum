@@ -810,7 +810,6 @@ class AndroidCommands(commands.Commands):
             if len(self.hw_info) != 0 and customised_path_is_default_path:
                 bip39_path = self.get_coin_derived_path(int(self.get_account_id(derivation_path, coin)), coin=coin)
                 self.update_devired_wallet_info(bip39_path, self.hw_info["xpub"] + coin.lower(), name, coin)
-
             return wallet_info
         except BaseException as e:
             raise e
@@ -4037,6 +4036,7 @@ class AndroidCommands(commands.Commands):
             balance_info = self.wallet.get_all_balance(checksum_from_address, self.coins[coin]["symbol"])
             balance_info = self._fill_balance_info_with_fiat(self.wallet.coin, balance_info)
             sum_fiat = sum(i.get("fiat", 0) for i in balance_info.values())
+            btc_asset = self._fill_balance_info_with_btc(sum_fiat)
             sum_fiat = f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}"
 
             sorted_balances = [balance_info.pop(coin, {})]
@@ -4061,7 +4061,7 @@ class AndroidCommands(commands.Commands):
                 "all_balance": sum_fiat,
                 "wallets": wallet_balances,
                 "coin": coin,
-                "btc_asset": self._fill_balance_info_with_btc(sum_fiat.split(' ')[0]),
+                "btc_asset": btc_asset,
             }
         else:
             c, u, x = self.wallet.get_balance()
