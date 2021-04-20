@@ -1,4 +1,4 @@
-from threading import Timer
+
 
 class CreateWalletInfo():
     def __init__(self):
@@ -18,7 +18,7 @@ class CreateWalletInfo():
 
     @staticmethod
     def create_wallet_info(coin_type, name, exist=0):
-        return [{'coin_type':coin_type, 'name':name, 'exist':exist}]
+        return [{'coin_type': coin_type, 'name': name, 'exist': exist}]
 
     def add_derived_info(self, derived_info):
         if derived_info is not None:
