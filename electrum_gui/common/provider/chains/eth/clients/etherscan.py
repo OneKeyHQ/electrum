@@ -89,7 +89,7 @@ class Etherscan(ClientInterface, SearchTransactionMixin):
             status = TransactionStatus.CONFIRM_SUCCESS
 
         gas_limit = int(raw_tx["gas"], base=16)
-        gas_used = int(receipt["gasUsed"], 0) if receipt else None
+        gas_used = int(receipt["gasUsed"], base=16) if receipt else None
         gas_used = gas_used or gas_limit
         fee = TransactionFee(
             limit=gas_limit,
@@ -152,7 +152,7 @@ class Etherscan(ClientInterface, SearchTransactionMixin):
             fee = TransactionFee(limit=gas_limit, used=gas_used, price_per_unit=int(raw_tx["gasPrice"]))
             sender = raw_tx.get("from", "").lower()
             receiver = raw_tx.get("to", "").lower()
-            value = int(raw_tx.get("value", "0x0"), base=16)
+            value = int(raw_tx.get("value", "0"))
 
             tx = Transaction(
                 txid=raw_tx["hash"],
@@ -162,7 +162,7 @@ class Etherscan(ClientInterface, SearchTransactionMixin):
                 status=status,
                 fee=fee,
                 raw_tx=json.dumps(raw_tx),
-                nonce=int(raw_tx["nonce"], base=16),
+                nonce=int(raw_tx["nonce"]),
             )
             txs.append(tx)
 
