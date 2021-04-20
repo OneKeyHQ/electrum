@@ -14,6 +14,8 @@ class _Handler(object):
     @staticmethod
     def sendEmptyMessage(code):
         print(f"\nGot Custom UI empty message: {code}\n")
+        if code == 1:
+            customer_ui.CustomerUI.set_pin("000000000")
 
 
 customer_ui.CustomerUI.handler = _Handler()
