@@ -184,7 +184,7 @@ password = "111111"
 # ret1 = testcommond.is_seed("wls")
 #testcommond.create(name, password, seed='rocket omit review divert bomb brief mushroom family fatal limb goose lion')
 #testcommond.get_all_mnemonic()
-testcommond.load_all_wallet()
+testcommond._load_all_wallet()
 keystore = {'address': 'ae2425eb0235c2df1ad39d91fc50978edb7bea83', 'crypto': {'cipher': 'aes-128-ctr', 'cipherparams': {'iv': 'c46726d14060bec5a7a0c44718cb6ef8'}, 'ciphertext': '2c0f6e49754d0471288302d5c1de8623b6e4440563f47af4f178534fd9489da6', 'kdf': 'pbkdf2', 'kdfparams': {'c': 1000000, 'dklen': 32, 'prf': 'hmac-sha256', 'salt': 'd3e21673bfcc20c3438c00c0200d2eba'}, 'mac': 'b4e6b735d0fd6ea709cd7ba4c040dbcfe2ad4cafe411dbce0ca2e4eef3c3d701'}, 'id': 'ee6f2e41-6435-4f14-b3ff-f765804ca872', 'version': 3}
 testcommond.create_eth('test_history', password=password, keystores=keystore)
 time.sleep(10)

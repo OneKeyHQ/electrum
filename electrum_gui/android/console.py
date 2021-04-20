@@ -271,6 +271,8 @@ class AndroidCommands(commands.Commands):
 
         self.trezor_manager = hardware.TrezorManager(self.plugin)
 
+        self._load_all_wallet()
+
     def __getattr__(self, name):
         if name in self.trezor_manager.exposed_commands:
             return getattr(self.trezor_manager, name)
@@ -3133,7 +3135,7 @@ class AndroidCommands(commands.Commands):
         self._assert_wallet_isvalid()
         return self.wallet.is_watching_only()
 
-    def load_all_wallet(self):
+    def _load_all_wallet(self):
         """
         Load all wallet info
         :return:None
