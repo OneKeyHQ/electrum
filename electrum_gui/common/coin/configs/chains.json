@@ -90,8 +90,19 @@
         "url": "https://bsc1.onekey.so/rpc"
       },
       {
+        "class": "Geth",
+        "url": "https://bsc-dataseed1.binance.org"
+      },
+      {
         "class": "BlockBook",
         "url": "https://bsc1.onekey.so"
+      },
+      {
+        "class": "Etherscan",
+        "url": "https://api.bscscan.com",
+        "api_keys": [
+          "VNC1NCG47T8X1Y5HZ3NSKQX2USKVWR4ZUK"
+        ]
       }
     ],
     "chain_affinity": "eth",
@@ -122,8 +133,19 @@
         "url": "https://heco1.onekey.so/rpc"
       },
       {
+        "class": "Geth",
+        "url": "https://http-mainnet-node.huobichain.com"
+      },
+      {
         "class": "BlockBook",
         "url": "https://heco1.onekey.so"
+      },
+      {
+        "class": "Etherscan",
+        "url": "https://api.hecoinfo.com",
+        "api_keys": [
+          "HDZRTIMGS873R25FCA8M7U96IIHJNNIBJD"
+        ]
       }
     ],
     "chain_affinity": "eth",
