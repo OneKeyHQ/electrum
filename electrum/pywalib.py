@@ -24,6 +24,9 @@ from electrum_gui.common.provider.data import (
     TxBroadcastReceiptCode,
 )
 from electrum_gui.common.provider import provider_manager
+from electrum_gui.common.transaction import manager as transaction_manager
+from electrum_gui.common.coin import manager as coin_manager
+from electrum_gui.common.transaction.data import TxActionSearchType, TxActionStatus
 
 from . import util
 from .eth_transaction import Eth_Transaction
@@ -513,96 +516,70 @@ class PyWalib:
         return chain_code
 
     @classmethod
-    def _search_tx_actions(cls, address):
-        txs = provider_manager.search_txs_by_address(cls.get_chain_code(), address)
-        actions = []
-
-        for tx in txs:
-            common_params = {
-                "txid": tx.txid,
-                "status": tx.status,
-                "block_header": tx.block_header,
-                "fee": tx.fee,
-            }
-            for tx_input, tx_output in zip(tx.inputs, tx.outputs):
-                action = {
-                    **common_params,
-                    "from": tx_input.address.lower(),
-                    "to": tx_output.address.lower(),
-                    "value": tx_output.value,
-                }
-
-                if tx_output.token_address:
-                    action["token_address"] = tx_output.token_address.lower()
-
-                actions.append(action)
-
-        return actions
-
-    @classmethod
-    def get_transaction_history(cls, address, contract=None, search_type=None):
+    def get_transaction_history(
+        cls,
+        address,
+        contract=None,
+        search_type=None,
+        page_number: int = 1,
+        items_per_page: int = 100,
+    ):
         address = address.lower()
-        actions = cls._search_tx_actions(address)
-
+        chain_code = cls.get_chain_code()
         if contract:
             contract_address = contract.address.lower()
-            actions = (i for i in actions if i.get("token_address") and i["token_address"].lower() == contract_address)
+            token = coin_manager.query_coins_by_token_addresses(chain_code, [contract_address])
+            token = token[0] if token else None
         else:
-            actions = (i for i in actions if not i.get("token_address"))
+            token = None
 
-        if search_type == "send":
-            actions = (i for i in actions if i.get("from") and i["from"] == address)
-        elif search_type == "receive":
-            actions = (i for i in actions if i.get("to") and i["to"] == address)
-        else:
-            actions = (i for i in actions if i.get("from") == address or i.get("to") == address)
+        coin_code = chain_code if token is None else token.code
+        search_type = (
+            TxActionSearchType.ALL
+            if search_type is None
+            else (TxActionSearchType.SENDER if search_type == "send" else TxActionSearchType.RECEIVER)
+        )
+        actions = transaction_manager.get_actions_by_address(
+            chain_code=chain_code,
+            coin_code=coin_code,
+            address=address,
+            page_number=page_number,
+            items_per_page=items_per_page,
+            search_type=search_type,
+        )
 
-        output_txs = []
-
-        if contract:
-            decimal_multiply = pow(10, Decimal(contract.contract_decimals))
-        else:
-            decimal_multiply = pow(10, Decimal(18))
-
+        result = []
         for action in actions:
-            block_header = action["block_header"]
-            amount = Decimal(action["value"]) / decimal_multiply
-            fee = Decimal(cls.web3.fromWei(action["fee"].used * action["fee"].price_per_unit, "ether"))
-
             tx_status = _("Unconfirmed")
             show_status = [1, _("Unconfirmed")]
-            if action["status"] == TransactionStatus.CONFIRM_REVERTED:
+            if action.status == TxActionStatus.CONFIRM_REVERTED:
                 tx_status = _("Sending failure")
                 show_status = [2, _("Sending failure")]
-            elif action["status"] == TransactionStatus.CONFIRM_SUCCESS:
-                tx_status = (
-                    _("{} confirmations").format(block_header.confirmations)
-                    if block_header and block_header.confirmations > 0
-                    else _("Confirmed")
-                )
+            elif action.status == TxActionStatus.CONFIRM_SUCCESS:
+                tx_status = _("Confirmed")
                 show_status = [3, _("Confirmed")]
 
-            show_address = action["to"] if action["from"].lower() == address else action["from"]
+            show_address = action.to_address if action.from_address.lower() == address else action.from_address
 
             output_tx = {
                 "type": "history",
-                "coin": contract.symbol if contract else cls.coin_symbol,
+                "coin": action.symbol,
                 "tx_status": tx_status,
                 "show_status": show_status,
-                'fee': fee,
-                "date": util.format_time(block_header.block_time) if block_header else _("Unknown"),
-                "tx_hash": action["txid"],
-                "is_mine": action["from"].lower() == address,
-                'height': block_header.block_number if block_header else -2,
-                "confirmations": block_header.confirmations if block_header else 0,
-                'input_addr': [action["from"]],
-                'output_addr': [action["to"]],
+                'fee': (action.fee_used or action.fee_limit) * action.fee_price_per_unit / pow(10, 18),
+                "date": util.format_time(action.block_time) if action.block_time is not None else _("Unknown"),
+                "tx_hash": action.txid,
+                "is_mine": action.from_address.lower() == address,
+                'height': action.block_number if action.block_number is not None else -2,
+                "confirmations": 0,
+                'input_addr': [action.from_address],
+                'output_addr': [action.to_address],
                 "address": f"{show_address[:6]}...{show_address[-6:]}",
-                "amount": amount,
+                "amount": action.value / pow(10, action.decimals),
             }
-            output_txs.append(output_tx)
+            result.append(output_tx)
 
-        return output_txs
+        return result
 
     @classmethod
     def get_address(cls, address) -> Address:
@@ -614,35 +591,33 @@ class PyWalib:
 
     @classmethod
     def get_transaction_info(cls, txid) -> dict:
-        tx = provider_manager.get_transaction_by_txid(cls.get_chain_code(), txid)
-        amount = Decimal(cls.web3.fromWei(tx.outputs[0].value, "ether"))
-        fee = Decimal(cls.web3.fromWei(tx.fee.used * tx.fee.price_per_unit, "ether"))
+        chain_code = cls.get_chain_code()
+        actions = transaction_manager.get_actions_by_txid(chain_code, txid, index=0)
+        action = actions[0] if actions else None
+        if not action:
+            raise Exception("Transaction Not Found")
 
         tx_status = _("Unconfirmed")
         show_status = [1, _("Unconfirmed")]
-        if tx.status == TransactionStatus.CONFIRM_REVERTED:
+        if action.status == TxActionStatus.CONFIRM_REVERTED:
             tx_status = _("Sending failure")
             show_status = [2, _("Sending failure")]
-        elif tx.status == TransactionStatus.CONFIRM_SUCCESS:
-            tx_status = (
-                _("{} confirmations").format(tx.block_header.confirmations)
-                if tx.block_header and tx.block_header.confirmations > 0
-                else _("Confirmed")
-            )
+        elif action.status == TxActionStatus.CONFIRM_SUCCESS:
+            tx_status = _("Confirmed")
             show_status = [3, _("Confirmed")]
 
         return {
             'txid': txid,
             'can_broadcast': False,
-            'amount': amount,
-            'fee': fee,
+            "amount": action.value / pow(10, action.decimals),
+            'fee': (action.fee_used or action.fee_limit) * action.fee_price_per_unit / pow(10, 18),
             'description': "",
             'tx_status': tx_status,
             "show_status": show_status,
             'sign_status': None,
-            'output_addr': [tx.outputs[0].address],
-            'input_addr': [tx.inputs[0].address],
-            'height': tx.block_header.block_number if tx.block_header else -2,
+            'output_addr': [action.to_address],
+            'input_addr': [action.from_address],
+            'height': action.block_number if action.block_number else -2,
             'cosigner': [],
-            'tx': tx.raw_tx,
+            'tx': action.raw_tx,
         }

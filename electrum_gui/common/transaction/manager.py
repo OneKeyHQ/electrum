@@ -1,16 +1,19 @@
 import datetime
 import itertools
 import logging
+import time
 from decimal import Decimal
 from typing import Iterable, List, Optional, Tuple
 
+from electrum_gui.common.basic.functional.timing import timing_logger
 from electrum_gui.common.basic.orm.database import db
+from electrum_gui.common.basic.ticker.utils import on_interval
 from electrum_gui.common.coin import manager as coin_manager
 from electrum_gui.common.coin.data import ChainModel
 from electrum_gui.common.provider import provider_manager
 from electrum_gui.common.provider.data import Transaction, TxPaginate
 from electrum_gui.common.transaction import daos
-from electrum_gui.common.transaction.data import TX_TO_ACTION_STATUS_DIRECT_MAPPING, TxActionStatus
+from electrum_gui.common.transaction.data import TX_TO_ACTION_STATUS_DIRECT_MAPPING, TxActionSearchType, TxActionStatus
 from electrum_gui.common.transaction.models import TxAction
 
 logger = logging.getLogger("app.transaction")
@@ -26,6 +29,8 @@ def create_action(
     to_address: str,
     fee_limit: Decimal,
     raw_tx: str,
+    fee_price_per_unit: Decimal = 1,
+    nonce: int = -1,
     **kwargs,
 ) -> TxAction:
     coin = coin_manager.get_coin_info(coin_code)
@@ -40,6 +45,8 @@ def create_action(
         from_address=from_address,
         to_address=to_address,
         fee_limit=fee_limit,
+        fee_price_per_unit=fee_price_per_unit,
+        nonce=nonce,
         raw_tx=raw_tx,
         **kwargs,
     ).save()
@@ -49,16 +56,48 @@ def get_action_by_id(action_id: int) -> TxAction:
     return daos.get_action_by_id(action_id)
 
 
-def query_actions_by_address(
+def update_action_status(
     chain_code: str,
+    txid: str,
+    status: TxActionStatus,
+):
+    daos.update_actions_status(chain_code, txid, status)
+
+
+_SYNC_TIME_CACHE = {}
+
+
+def get_actions_by_address(
+    chain_code: str,
+    coin_code: str,
     address: str,
-    txid: Optional[str] = None,
     page_number: int = 1,
     items_per_page: int = 100,
+    force_update: bool = False,
+    search_type: TxActionSearchType = TxActionSearchType.ALL,
 ) -> List[TxAction]:
+    last_sync_time_key = f"{coin_code}:{address}".lower()
+    last_sync_time = _SYNC_TIME_CACHE.get(last_sync_time_key)
+    if page_number == 1 and (force_update or last_sync_time is None or time.time() - last_sync_time >= 60):
+        try:
+            sync_address_actions(chain_code, address, force_update=force_update)
+            _SYNC_TIME_CACHE[last_sync_time_key] = time.time()
+        except Exception as e:
+            logger.exception(
+                f"Error in syncing actions by address. chain_code: {chain_code}, address: {address}, error: {e}"
+            )
+
     return daos.query_actions_by_address(
-        chain_code, address, txid=txid, page_number=page_number, items_per_page=items_per_page
+        coin_code,
+        address,
+        search_type=search_type,
+        page_number=page_number,
+        items_per_page=items_per_page,
     )
+
+
+def get_actions_by_txid(chain_code: str, txid: str, index: int = None) -> List[TxAction]:
+    return daos.query_actions_by_txid(chain_code, txid, index=index)
 
 
 def update_pending_actions(chain_code: Optional[str] = None):
@@ -220,4 +259,12 @@ def sync_address_actions(chain_code: str, address: str, force_update: bool = Fal
 
     with db.atomic():
         actions = action_factory(chain_code, (i for i in txs.values() if i.txid in syncing_txids))
+        actions = (i for i in actions if i.from_address == address or i.to_address == address)
         daos.bulk_create(actions)
+
+
+@on_interval(60)
+@timing_logger("transaction_manager.on_ticker_signal")
+@db
+def on_ticker_signal():
+    update_pending_actions()

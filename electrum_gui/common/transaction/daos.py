@@ -2,7 +2,7 @@ import datetime
 from decimal import Decimal
 from typing import Iterable, List, Optional, Set
 
-from electrum_gui.common.transaction.data import TxActionStatus
+from electrum_gui.common.transaction.data import TxActionSearchType, TxActionStatus
 from electrum_gui.common.transaction.models import TxAction
 
 
@@ -91,26 +91,37 @@ def update_actions_status(
 
 
 def query_actions_by_address(
-    chain_code: str,
+    coin_code: str,
     address: str,
-    txid: Optional[str] = None,
+    search_type: TxActionSearchType = TxActionSearchType.ALL,
     page_number: int = 1,
     items_per_page: int = 100,
 ) -> List[TxAction]:
-    expressions = [
-        TxAction.chain_code == chain_code,
-        (TxAction.from_address.collate("NOCASE") == address) | (TxAction.to_address.collate("NOCASE") == address),
-    ]
+    expressions = [TxAction.coin_code == coin_code]
 
-    if txid is not None:
-        expressions.append(TxAction.txid == txid)
+    if search_type == TxActionSearchType.ALL:
+        expressions.append(
+            (TxAction.from_address.collate("NOCASE") == address) | (TxAction.to_address.collate("NOCASE") == address),
+        )
+    elif search_type == TxActionSearchType.SENDER:
+        expressions.append(TxAction.from_address.collate("NOCASE") == address)
+    else:
+        expressions.append(TxAction.to_address.collate("NOCASE") == address)
 
-    return list(
-        TxAction.select()
-        .where(*expressions)
-        .order_by(TxAction.block_time.desc(nulls="first"))
-        .paginate(page_number, items_per_page)
-    )
+    actions = TxAction.select().where(*expressions).order_by(TxAction.block_time.desc(nulls="first"))
+
+    if page_number is not None and items_per_page is not None:
+        actions = actions.paginate(page_number, items_per_page)
+
+    return list(actions)
+
+
+def query_actions_by_txid(chain_code: str, txid: str, index: int) -> List[TxAction]:
+    expressions = [TxAction.chain_code == chain_code, TxAction.txid == txid]
+    if index is not None:
+        expressions.append(TxAction.index == index)
+
+    return list(TxAction.select().where(*expressions))
 
 
 def get_action_by_id(action_id: int) -> Optional[TxAction]:

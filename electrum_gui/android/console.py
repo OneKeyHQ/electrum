@@ -80,6 +80,8 @@ from ..common.coin import codes
 from ..common.coin import manager as coin_manager
 from ..common.price import manager as price_manager
 from ..common.provider import provider_manager
+from ..common.transaction import manager as transaction_manager
+from ..common.transaction.data import TxActionStatus
 from .create_wallet_info import CreateWalletInfo
 from .derived_info import DerivedInfo
 from .tx_db import TxDb
@@ -1585,12 +1587,19 @@ class AndroidCommands(commands.Commands):
             self.old_history_info = all_data
             return json.dumps(all_data[start:end])
 
-    def get_eth_tx_list(self, wallet_obj, contract_address=None, search_type=None):
+    def get_eth_tx_list(self, wallet_obj, contract_address=None, search_type=None, start=None, end=None):
+        if start is not None and end is not None:
+            items_per_page = min(end - start, 10)
+            page_number = min(round(start / items_per_page), 0) + 1
+        else:
+            page_number, items_per_page = 1, 100
         contract = self.wallet.get_contract_token(contract_address) if contract_address else None
         txs = PyWalib.get_transaction_history(
             wallet_obj.get_addresses()[0],
             contract=contract,
             search_type=search_type,
+            page_number=page_number,
+            items_per_page=items_per_page,
         )
         chain_code = self._coin_to_chain_code(wallet_obj.coin)
         main_coin_price = price_manager.get_last_price(chain_code, self.ccy)
@@ -2344,8 +2353,47 @@ class AndroidCommands(commands.Commands):
         else:
             signed_tx_hex = self.pywalib.sign_tx(self.wallet.get_account(from_address, password), tx_dict)
 
-        if signed_tx_hex and auto_send_tx:
-            return self.pywalib.send_tx(signed_tx_hex)
+        with db.atomic():
+            chain_code = self._coin_to_chain_code(self.wallet.coin)
+            signed_tx_info = self.pywalib.decode_signed_tx(signed_tx_hex)
+            transaction_manager.create_action(
+                txid=signed_tx_info["tx"]["hash"],
+                status=TxActionStatus.SIGNED,
+                chain_code=chain_code,
+                coin_code=chain_code,
+                value=Decimal(int(signed_tx_info["tx"]["value"], base=16)),
+                from_address=from_address.lower(),
+                to_address=signed_tx_info["tx"]["to"].lower(),
+                fee_limit=Decimal(int(signed_tx_info["tx"]["gas"], base=16)),
+                fee_price_per_unit=Decimal(int(signed_tx_info["tx"]["gasPrice"], base=16)),
+                nonce=int(signed_tx_info["tx"]["nonce"]),
+                raw_tx=signed_tx_info["raw"],
+            )
+
+            if contract_addr is not None:
+                token = coin_manager.query_coins_by_token_addresses(chain_code, token_addresses=[contract_addr])
+                token = token[0] if token else None
+
+                if token is not None:
+                    transaction_manager.create_action(
+                        txid=signed_tx_info["tx"]["hash"],
+                        status=TxActionStatus.SIGNED,
+                        chain_code=chain_code,
+                        coin_code=token.code,
+                        value=Decimal(value) * pow(10, token.decimals),
+                        from_address=from_address.lower(),
+                        to_address=to_addr.lower(),
+                        fee_limit=Decimal(int(signed_tx_info["tx"]["gas"], base=16)),
+                        fee_price_per_unit=Decimal(int(signed_tx_info["tx"]["gasPrice"], base=16)),
+                        nonce=int(signed_tx_info["tx"]["nonce"]),
+                        raw_tx=signed_tx_info["raw"],
+                        index=1,
+                    )
+
+            if signed_tx_hex and auto_send_tx:
+                txid = self.pywalib.send_tx(signed_tx_hex)
+                transaction_manager.update_action_status(chain_code, txid, TxActionStatus.PENDING)
+                return txid
 
         return signed_tx_hex
 
@@ -2378,10 +2426,28 @@ class AndroidCommands(commands.Commands):
             auto_send_tx=False,
         )
         signed_tx_info = self.pywalib.decode_signed_tx(signed_tx_hex)
+
+        transaction_manager.create_action(
+            txid=signed_tx_info["tx"]["hash"],
+            status=TxActionStatus.SIGNED,
+            chain_code=self._coin_to_chain_code(self.wallet.coin),
+            coin_code=self._coin_to_chain_code(self.wallet.coin),
+            value=Decimal(int(signed_tx_info["tx"]["value"], base=16)),
+            from_address=current_address.lower(),
+            to_address=signed_tx_info["tx"]["to"].lower(),
+            fee_limit=Decimal(int(signed_tx_info["tx"]["gas"], base=16)),
+            fee_price_per_unit=Decimal(int(signed_tx_info["tx"]["gasPrice"], base=16)),
+            nonce=int(signed_tx_info["tx"]["nonce"]),
+            raw_tx=signed_tx_info["raw"],
+        )
         return json.dumps(signed_tx_info)
 
     def dapp_eth_send_tx(self, tx_hex: str):
-        return self.pywalib.send_tx(tx_hex)
+        txid = self.pywalib.send_tx(tx_hex)
+        transaction_manager.update_action_status(
+            self._coin_to_chain_code(self.wallet.coin), txid, TxActionStatus.PENDING
+        )
+        return txid
 
     def dapp_eth_rpc_info(self):
         return json.dumps(PyWalib.get_rpc_info())

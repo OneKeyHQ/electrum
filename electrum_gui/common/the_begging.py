@@ -16,8 +16,10 @@ def initialize():
     # example ticker.signals.ticker_signal.connect(my_ticker_callback)
     from electrum_gui.common.basic import ticker
     from electrum_gui.common.price import manager as price_manager
+    from electrum_gui.common.transaction import manager as transaction_manager
 
     ticker.signals.ticker_signal.connect(price_manager.on_ticker_signal)
+    ticker.signals.ticker_signal.connect(transaction_manager.on_ticker_signal)
 
     # start ticker
     ticker.start_default_ticker(seconds=60)  # every 1 min
