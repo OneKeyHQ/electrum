@@ -1042,8 +1042,10 @@ class Imported_Eth_Wallet(Simple_Eth_Wallet):
 
     #The return value is the full path
     def get_derivation_path(self, address):
-        return self.keystore.get_derivation_prefix()
-
+        if self.keystore is None or isinstance(self.keystore, keystore.Imported_KeyStore):
+            return ""
+        else:
+            return self.keystore.get_derivation_prefix()
 
 class Deterministic_Eth_Wallet(Abstract_Eth_Wallet):
     def __init__(self, db, storage, *, config, index):
@@ -1315,7 +1317,7 @@ class Standard_Eth_Wallet(Simple_Eth_Deterministic_Wallet):
     def get_derivation_path(self, address):
         derivation = self.keystore.get_derivation_prefix()
         deriv_suffix = self.get_address_index(address)
-        return "%s/%d/%d" % (derivation, *deriv_suffix)
+        return "%s/%d/%d" % (derivation, *deriv_suffix) if derivation is not None else ""
 
 
 wallet_types = ['standard', 'multisig', 'imported']

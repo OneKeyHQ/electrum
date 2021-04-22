@@ -2568,7 +2568,10 @@ class Imported_Wallet(Simple_Wallet):
 
     # The return value is the full path
     def get_derivation_path(self, address):
-        return self.keystore.get_derivation_prefix()
+        if self.keystore is None or isinstance(self.keystore, keystore.Imported_KeyStore):
+            return ""
+        else:
+            return self.keystore.get_derivation_prefix()
 
 
 
@@ -2827,7 +2830,7 @@ class Standard_Wallet(Simple_Deterministic_Wallet):
     def get_derivation_path(self, address):
         derivation = self.keystore.get_derivation_prefix()
         deriv_suffix = self.get_address_index(address)
-        return "%s/%d/%d" % (derivation, *deriv_suffix)
+        return "%s/%d/%d" % (derivation, *deriv_suffix) if derivation is not None else ""
 
 class Multisig_Wallet(Deterministic_Wallet):
     # generic m of n

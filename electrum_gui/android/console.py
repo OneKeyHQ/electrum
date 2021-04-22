@@ -3543,17 +3543,19 @@ class AndroidCommands(commands.Commands):
     def get_wallet_derivation_path(self, address: str) -> str:
         """
         Get the current wallet derivation path
+        :param address: receiving address of the wallet
         :return: path as string
         """
         self._assert_wallet_isvalid()
         derivation_path = self.wallet.get_derivation_path(address)
-        return json.dumps(
-            {
-                "coin": self.wallet.coin,
-                "path": derivation_path,
-                "type": helpers.get_path_info(derivation_path, PURPOSE_POS),
-            }
-        )
+        out_data = {"coin": self.wallet.coin, "path": derivation_path, "type": ""}
+        if self.wallet.coin == "btc":
+            script_type = self.wallet.get_txin_type(address)
+            add_type = [str(k) for k, v in PURPOSE_TO_ADDRESS_TYPE.items() if v == script_type]
+            add_type = add_type[0] if add_type else '49'
+            out_data.update({"type": add_type})
+
+        return json.dumps(out_data)
 
     def get_devired_num(self, coin="btc"):
         """
