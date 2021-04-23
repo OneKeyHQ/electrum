@@ -2793,14 +2793,12 @@ class AndroidCommands(commands.Commands):
                     private_key = keystore.get_private_keys(data, allow_spaces_inside_key=False)
                     if private_key is None:
                         raise BaseException(UnavailablePrivateKey())
-            elif flag == "public":
+            elif flag == "address":
                 try:
                     ecc.ECPubkey(bfh(data))
-                except BaseException:
-                    raise BaseException(UnavailablePublicKey())
-            elif flag == "address":
-                if not bitcoin.is_address(data):
-                    raise UnavailableBtcAddr()
+                except Exception:
+                    if not keystore.is_xpub(data) and not bitcoin.is_address(data):
+                        raise util.UnavailableBtcAddr()
         elif coin in self.coins:
             if flag == "private":
                 try:
@@ -2938,7 +2936,10 @@ class AndroidCommands(commands.Commands):
             watch_only = True
             wallet_type = f"{coin}-watch-standard"
             if coin == "btc":
-                wallet = Imported_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
+                if keystore.is_xpub(addresses):
+                    wallet = Standard_Wallet.from_master_key("btc", self.config, addresses)
+                else:
+                    wallet = Imported_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
             elif coin in self.coins:
                 wallet = Imported_Eth_Wallet.from_pubkey_or_addresses(coin, self.config, addresses)
             else:
