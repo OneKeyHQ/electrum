@@ -5,7 +5,6 @@ from trezorlib import customer_ui, transport
 from trezorlib.transport import bridge
 
 from electrum import constants
-from electrum_gui.android import console
 
 # Start monkey patches
 
@@ -56,6 +55,7 @@ if set_network_func is not None:
     set_network_func()
 
 if 'AUTOSTART' in os.environ:
+    from electrum_gui.android import console
     commands = console.AndroidCommands(os.environ['ANDROID_ID'], callback=FakeCallbackIntent())
 
 
