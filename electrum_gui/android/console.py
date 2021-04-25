@@ -3187,36 +3187,38 @@ class AndroidCommands(commands.Commands):
         name_list = json.loads(name_list)
         if len(name_list) != 0:
             for name in name_list:
-                if self.recovery_wallets.__contains__(name):
-                    recovery_info = self.recovery_wallets.get(name)
-                    wallet = recovery_info["wallet"]
-                    self.daemon.add_wallet(wallet)
-                    wallet.hide_type = False
-                    wallet.save_db()
-                    if not hw:
-                        self.set_hd_wallet(wallet)
-                    coin = wallet.coin
-                    if coin in self.coins:
-                        wallet_type = "%s-hw-derived-%s-%s" % (coin, 1, 1) if hw else ("%s-derived-standard" % coin)
-                        self.update_devired_wallet_info(
-                            bip44_eth_derivation(
-                                recovery_info["account_id"],
-                                bip43_purpose=self.coins[coin]["addressType"],
-                                cointype=self.coins[coin]["coinId"],
-                            ),
-                            recovery_info["key"],
-                            wallet.get_name(),
-                            coin,
-                        )
-                    else:
-                        wallet_type = "btc-hw-derived-%s-%s" % (1, 1) if hw else ("btc-derived-standard")
-                        self.update_devired_wallet_info(
-                            bip44_derivation(recovery_info["account_id"], bip43_purpose=84),
-                            recovery_info["key"],
-                            wallet.get_name(),
-                            coin,
-                        )
-                    self.wallet_context.set_wallet_type(wallet.identity, wallet_type)
+                if name not in self.recovery_wallets:
+                    continue
+                recovery_info = self.recovery_wallets[name]
+                wallet = recovery_info["wallet"]
+                self.daemon.add_wallet(wallet)
+                wallet.hide_type = False
+                wallet.save_db()
+                if not hw:
+                    self.set_hd_wallet(wallet)
+                coin = wallet.coin
+                if coin in self.coins:
+                    wallet_type = "%s-hw-derived-%s-%s" % (coin, 1, 1) if hw else ("%s-derived-standard" % coin)
+                    self.update_devired_wallet_info(
+                        bip44_eth_derivation(
+                            recovery_info["account_id"],
+                            bip43_purpose=self.coins[coin]["addressType"],
+                            cointype=self.coins[coin]["coinId"],
+                        ),
+                        recovery_info["key"],
+                        wallet.get_name(),
+                        coin,
+                    )
+                else:
+                    wallet_type = "btc-hw-derived-%s-%s" % (1, 1) if hw else ("btc-derived-standard")
+                    self.update_devired_wallet_info(
+                        bip44_derivation(recovery_info["account_id"], bip43_purpose=84),
+                        recovery_info["key"],
+                        wallet.get_name(),
+                        coin,
+                    )
+                self.wallet_context.set_wallet_type(wallet.identity, wallet_type)
+                self.recovery_wallets.pop(name)
         for name, info in self.recovery_wallets.items():
             info["wallet"].stop()
         self.recovery_wallets.clear()
