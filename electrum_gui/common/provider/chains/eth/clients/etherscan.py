@@ -1,6 +1,7 @@
 import json
 from typing import List, Optional
 
+from electrum_gui.common.basic.request.exceptions import RequestException
 from electrum_gui.common.basic.request.restful import RestfulRequest
 from electrum_gui.common.provider.chains.eth.clients import utils
 from electrum_gui.common.provider.data import (
@@ -8,7 +9,7 @@ from electrum_gui.common.provider.data import (
     BlockHeader,
     ClientInfo,
     EstimatedTimeOnPrice,
-    PricePerUnit,
+    PricesPerUnit,
     Transaction,
     TransactionFee,
     TransactionInput,
@@ -18,6 +19,7 @@ from electrum_gui.common.provider.data import (
     TxBroadcastReceiptCode,
     TxPaginate,
 )
+from electrum_gui.common.provider.exceptions import FailedToGetGasPrices
 from electrum_gui.common.provider.interfaces import ClientInterface, SearchTransactionMixin
 
 
@@ -179,15 +181,21 @@ class Etherscan(ClientInterface, SearchTransactionMixin):
         else:
             return utils.handle_broadcast_error(resp.get("error", {}).get("message") or "")
 
-    def get_price_per_unit_of_fee(self) -> PricePerUnit:
-        resp = self._call_action("gastracker", "gasoracle")
-        result = resp.get("result", dict())
+    def get_prices_per_unit_of_fee(self) -> PricesPerUnit:
+        try:
+            resp = self._call_action("gastracker", "gasoracle")
+        except RequestException:
+            raise FailedToGetGasPrices()
+
+        result = resp.get("result")
+        if result is None:
+            raise FailedToGetGasPrices()
 
         slow = int(result["SafeGasPrice"] * 1e9)
         normal = int(result["ProposeGasPrice"] * 1e9)
         fast = int(result["FastGasPrice"] * 1e9)
 
-        return PricePerUnit(
+        return PricesPerUnit(
             fast=EstimatedTimeOnPrice(price=fast, time=60),
             normal=EstimatedTimeOnPrice(price=normal, time=180),
             slow=EstimatedTimeOnPrice(price=slow, time=600),

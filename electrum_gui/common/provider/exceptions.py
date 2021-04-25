@@ -42,3 +42,8 @@ class TransactionGasTooLow(UnknownBroadcastError):
 
 class TransactionGasLimitExceeded(UnknownBroadcastError):
     pass
+
+
+class FailedToGetGasPrices(Exception):
+    def __init__(self):
+        super(FailedToGetGasPrices, self).__init__("Failed to get gas prices.")

@@ -5,18 +5,14 @@ import json
 import os
 import sqlite3
 from contextlib import contextmanager
-from decimal import Decimal
 from os.path import expanduser
-from typing import Optional
 
 import requests
 import urllib3
 from web3 import HTTPProvider, Web3
 
 from electrum.util import make_aiohttp_session
-from electrum_gui.common.provider import provider_manager
 
-from .eth_transaction import Eth_Transaction
 from .i18n import _
 from .network import Network
 
@@ -224,93 +220,6 @@ class PyWalib:
         finally:
             if cls.server_config.get("id") == config.get("id"):
                 cls.set_server(cache_config)
-
-    def get_gas_price(self, coin) -> dict:
-        if coin in ("bsc", "heco", "okt"):
-            price_per_unit = provider_manager.get_price_per_unit_of_fee(self.get_chain_code())
-            return {
-                "fast": {
-                    "gas_price": int(price_per_unit.fast.price / 1e9),
-                    "time": 1,
-                },
-                "normal": {
-                    "gas_price": int(price_per_unit.normal.price / 1e9),
-                    "time": 2,
-                },
-                "slow": {
-                    "gas_price": int(price_per_unit.slow.price / 1e9),
-                    "time": 3,
-                },
-            }
-        elif PyWalib.gas_server is not None:
-            response = requests.get(PyWalib.gas_server, headers=headers)
-            obj = response.json()
-            out = dict()
-            if obj['code'] == 200:
-                estimated_time = {"rapid": 0.25, "fast": 1, "standard": 3, "slow": 10}
-                out.update(
-                    {
-                        key: {"gas_price": int(self.web3.fromWei(price, "gwei")), "time": estimated_time[key]}
-                        for key, price in obj["data"].items()
-                        if key in estimated_time
-                    }
-                )
-
-            if "standard" in out:
-                out["normal"] = out["standard"]
-                out.pop("standard")
-            return out
-
-    def get_max_use_gas(self, gas_price):
-        gas = gas_price * DEFAULT_GAS_LIMIT
-        return self.web3.fromWei(gas * GWEI_BASE, 'ether')
-
-    @classmethod
-    def get_best_time_by_gas_price(cls, gas_price: float, estimate_gas_prices: dict) -> float:
-        if "rapid" in estimate_gas_prices and gas_price >= estimate_gas_prices["rapid"]["gas_price"]:
-            return estimate_gas_prices["rapid"]["time"]
-        elif "fast" in estimate_gas_prices and gas_price >= estimate_gas_prices["fast"]["gas_price"]:
-            return estimate_gas_prices["fast"]["time"]
-        elif "standard" in estimate_gas_prices and gas_price >= estimate_gas_prices["standard"]["gas_price"]:
-            return estimate_gas_prices["standard"]["time"]
-        else:
-            return 10
-
-    def estimate_gas_limit(self, from_address, to_address=None, contract_token=None, value="0", data=None) -> int:
-        try:
-            if not to_address:
-                return 40000
-
-            estimate_payload = {}
-            to_address = self.web3.toChecksumAddress(to_address)
-
-            if contract_token:
-                data = Eth_Transaction.get_tx_erc20_data_field(
-                    to_address, int(Decimal(value) * pow(10, contract_token.decimals))
-                )
-                estimate_payload.update({"to": contract_token.token_address, "data": data, "value": 0})
-            elif data or self.is_contract(to_address):
-                estimate_payload.update(
-                    {
-                        "to": to_address,
-                        "value": self.web3.toWei(value, "ether"),
-                    }
-                )
-                if data:
-                    estimate_payload["data"] = data
-
-            if not estimate_payload:
-                return DEFAULT_GAS_LIMIT
-
-            estimate_payload.update({"from": from_address})
-            gas_limit = self.web3.eth.estimateGas(estimate_payload)
-            gas_limit = int(gas_limit * 1.2)
-            return gas_limit
-        except Exception:
-            raise Exception(_("Estimate gas limit failed, try again."))
-
-    def is_contract(self, address) -> bool:
-        return len(self.web3.eth.getCode(self.web3.toChecksumAddress(address))) > 0
 
     @classmethod
     def get_rpc_info(cls) -> dict:

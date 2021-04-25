@@ -5,7 +5,7 @@ from electrum_gui.common.provider.chains.eth import ETHProvider, Geth
 from electrum_gui.common.provider.data import (
     AddressValidation,
     EstimatedTimeOnPrice,
-    PricePerUnit,
+    PricesPerUnit,
     SignedTx,
     TransactionInput,
     TransactionOutput,
@@ -49,8 +49,8 @@ class TestETHProvider(TestCase):
         contract_address = "0x0000000037871deb014490c37a4844f7019f38bd"
 
         fake_client = Mock(
-            get_price_per_unit_of_fee=Mock(
-                return_value=PricePerUnit(
+            get_prices_per_unit_of_fee=Mock(
+                return_value=PricesPerUnit(
                     slow=EstimatedTimeOnPrice(price=int(20 * 1e9)),
                     normal=EstimatedTimeOnPrice(price=int(30 * 1e9)),
                     fast=EstimatedTimeOnPrice(price=int(50 * 1e9)),
@@ -79,12 +79,12 @@ class TestETHProvider(TestCase):
                 ),
                 UnsignedTx(fee_limit=21000, fee_price_per_unit=int(30 * 1e9)),
             )
-            fake_client.get_price_per_unit_of_fee.assert_called_once()
+            fake_client.get_prices_per_unit_of_fee.assert_called_once()
             fake_client.get_address.assert_not_called()
             fake_geth.is_contract.assert_not_called()
             fake_geth.estimate_gas_limit.assert_not_called()
 
-            fake_client.get_price_per_unit_of_fee.reset_mock()
+            fake_client.get_prices_per_unit_of_fee.reset_mock()
 
         with self.subTest("Transfer ETH to external address with preset gas price"):
             self.assertEqual(
@@ -103,7 +103,7 @@ class TestETHProvider(TestCase):
                     fee_limit=21000,
                 ),
             )
-            fake_client.get_price_per_unit_of_fee.assert_not_called()
+            fake_client.get_prices_per_unit_of_fee.assert_not_called()
             fake_client.get_address.assert_called_once_with(external_address_a)
             fake_geth.is_contract.assert_called_once_with(external_address_b)
             fake_geth.estimate_gas_limit.assert_not_called()
@@ -128,12 +128,12 @@ class TestETHProvider(TestCase):
                     fee_limit=int(60000 * 1.2),
                 ),
             )
-            fake_client.get_price_per_unit_of_fee.assert_called_once()
+            fake_client.get_prices_per_unit_of_fee.assert_called_once()
             fake_client.get_address.assert_not_called()
             fake_geth.is_contract.assert_called_once_with(contract_address)
             fake_geth.estimate_gas_limit.assert_called_once_with(external_address_a, contract_address, 21, None)
 
-            fake_client.get_price_per_unit_of_fee.reset_mock()
+            fake_client.get_prices_per_unit_of_fee.reset_mock()
             fake_geth.is_contract.reset_mock()
             fake_geth.estimate_gas_limit.reset_mock()
 
@@ -181,7 +181,7 @@ class TestETHProvider(TestCase):
                     payload={"data": erc20_transfer_data},
                 ),
             )
-            fake_client.get_price_per_unit_of_fee.assert_not_called()
+            fake_client.get_prices_per_unit_of_fee.assert_not_called()
             fake_client.get_address.assert_called_once_with(external_address_a)
             fake_geth.is_contract.assert_not_called()
             fake_geth.estimate_gas_limit.assert_called_once_with(

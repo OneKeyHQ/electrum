@@ -42,7 +42,7 @@ class ETHProvider(ProviderInterface):
         return self.client_selector(instance_required=Geth)
 
     def fill_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
-        fee_price_per_unit = unsigned_tx.fee_price_per_unit or self.client.get_price_per_unit_of_fee().normal.price
+        fee_price_per_unit = unsigned_tx.fee_price_per_unit or self.client.get_prices_per_unit_of_fee().normal.price
         nonce = unsigned_tx.nonce
         payload = unsigned_tx.payload.copy()
         tx_input = unsigned_tx.inputs[0] if unsigned_tx.inputs else None

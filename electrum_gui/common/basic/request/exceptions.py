@@ -3,6 +3,10 @@ from typing import Any
 from requests import Response
 
 
+class RequestException(IOError):
+    pass
+
+
 class ResponseException(IOError):
     def __init__(self, message: str, response: Response):
         self.message = message

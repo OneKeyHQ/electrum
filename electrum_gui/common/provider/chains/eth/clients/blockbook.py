@@ -6,7 +6,7 @@ from typing import List, Optional
 
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.text import force_text
-from electrum_gui.common.basic.request.exceptions import ResponseException
+from electrum_gui.common.basic.request.exceptions import RequestException, ResponseException
 from electrum_gui.common.basic.request.restful import RestfulRequest
 from electrum_gui.common.provider.chains.eth.clients import utils
 from electrum_gui.common.provider.data import (
@@ -14,7 +14,7 @@ from electrum_gui.common.provider.data import (
     BlockHeader,
     ClientInfo,
     EstimatedTimeOnPrice,
-    PricePerUnit,
+    PricesPerUnit,
     Transaction,
     TransactionFee,
     TransactionInput,
@@ -24,7 +24,7 @@ from electrum_gui.common.provider.data import (
     TxBroadcastReceiptCode,
     TxPaginate,
 )
-from electrum_gui.common.provider.exceptions import TransactionNotFound
+from electrum_gui.common.provider.exceptions import FailedToGetGasPrices, TransactionNotFound
 from electrum_gui.common.provider.interfaces import ClientInterface, SearchTransactionMixin
 
 
@@ -223,9 +223,12 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
         else:
             return utils.handle_broadcast_error(resp.get("error") or "")
 
-    def get_price_per_unit_of_fee(self) -> PricePerUnit:
+    def get_prices_per_unit_of_fee(self) -> PricesPerUnit:
         num_of_block = 10  # just a number, trezor does case what it is
-        resp = self.restful.get(f"/api/v2/estimatefee/{num_of_block}")
+        try:
+            resp = self.restful.get(f"/api/v2/estimatefee/{num_of_block}")
+        except RequestException:
+            raise FailedToGetGasPrices()
 
         slow = Decimal(resp["result"])
         normal = slow * Decimal(1.25)
@@ -237,7 +240,7 @@ class BlockBook(ClientInterface, SearchTransactionMixin):
         slow = int(max(slow * to_wei_multiple, min_wei))
         fast = int(max(fast * to_wei_multiple, min_wei))
 
-        return PricePerUnit(
+        return PricesPerUnit(
             fast=EstimatedTimeOnPrice(price=fast, time=60),
             normal=EstimatedTimeOnPrice(price=normal, time=180),
             slow=EstimatedTimeOnPrice(price=slow, time=600),

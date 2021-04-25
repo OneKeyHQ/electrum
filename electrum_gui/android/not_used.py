@@ -1,17 +1,7 @@
-from electrum import bitcoin, pywalib, util
+from electrum import bitcoin, util
 
 # TODO: these functions are moved from no-self-use methods of AndroidCommands
 # in console.py, consider remove them.
-
-
-def eth_max_button_use_gas(gas_price, _coin=None):
-    """
-    The gas value when the max button is clicked, for eth only
-    :param gas_price: gas price by coustomer
-    :param coin: eth/bsc
-    :return: gas info as string, unit is ether
-    """
-    return pywalib.PyWalib.get_max_use_gas(gas_price)
 
 
 # #qr api

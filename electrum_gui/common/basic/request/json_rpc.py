@@ -2,7 +2,7 @@ from typing import Any, Callable, List, Tuple, Union
 
 from requests import Response, Session
 
-from electrum_gui.common.basic.request.exceptions import JsonRPCException
+from electrum_gui.common.basic.request.exceptions import JsonRPCException, RequestException
 from electrum_gui.common.basic.request.interfaces import JsonRPCInterface
 from electrum_gui.common.basic.request.restful import RestfulRequest
 
@@ -33,7 +33,10 @@ class JsonRPCRequest(JsonRPCInterface):
         **kwargs,
     ) -> Union[Response, Any]:
         payload = self.normalize_params(method, params)
-        resp = self.inner.post(path, json=payload, timeout=timeout, headers=headers, **kwargs)
+        try:
+            resp = self.inner.post(path, json=payload, timeout=timeout, headers=headers, **kwargs)
+        except RequestException:
+            raise JsonRPCException("Json RPC call failed.")
         return self.parse_response(resp)
 
     def batch_call(
@@ -47,7 +50,10 @@ class JsonRPCRequest(JsonRPCInterface):
         payload = [
             self.normalize_params(method, params, order_id=order_id) for order_id, (method, params) in enumerate(calls)
         ]
-        resp = self.inner.post(path, json=payload, timeout=timeout, headers=headers, **kwargs)
+        try:
+            resp = self.inner.post(path, json=payload, timeout=timeout, headers=headers, **kwargs)
+        except RequestException:
+            raise JsonRPCException("Json RPC call failed.")
 
         if not isinstance(resp, list):
             raise JsonRPCException(f"Responses of batch call should be a list, but got <{resp}>", json_response=resp)

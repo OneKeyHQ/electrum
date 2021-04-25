@@ -13,7 +13,7 @@ from electrum_gui.common.provider.data import (
     BlockHeader,
     ClientInfo,
     EstimatedTimeOnPrice,
-    PricePerUnit,
+    PricesPerUnit,
     Transaction,
     TransactionFee,
     TransactionInput,
@@ -22,7 +22,7 @@ from electrum_gui.common.provider.data import (
     TxBroadcastReceipt,
     TxBroadcastReceiptCode,
 )
-from electrum_gui.common.provider.exceptions import TransactionNotFound
+from electrum_gui.common.provider.exceptions import FailedToGetGasPrices, TransactionNotFound
 from electrum_gui.common.provider.interfaces import BatchGetAddressMixin, ClientInterface
 
 _hex2int = partial(int, base=16)
@@ -171,15 +171,18 @@ class Geth(ClientInterface, BatchGetAddressMixin):
 
             raise e
 
-    def get_price_per_unit_of_fee(self) -> PricePerUnit:
-        resp = self.rpc.call("eth_gasPrice", params=[])
+    def get_prices_per_unit_of_fee(self) -> PricesPerUnit:
+        try:
+            resp = self.rpc.call("eth_gasPrice", params=[])
+        except JsonRPCException:
+            raise FailedToGetGasPrices()
 
         min_wei = int(1e9)
         slow = int(max(_hex2int(resp), min_wei))
         normal = int(max(slow * 1.25, min_wei))
         fast = int(max(slow * 1.5, min_wei))
 
-        return PricePerUnit(
+        return PricesPerUnit(
             fast=EstimatedTimeOnPrice(price=fast, time=60),
             normal=EstimatedTimeOnPrice(price=normal, time=180),
             slow=EstimatedTimeOnPrice(price=slow, time=600),

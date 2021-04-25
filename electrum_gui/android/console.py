@@ -956,35 +956,71 @@ class AndroidCommands(commands.Commands):
         gas_price=None,
         gas_limit=None,
     ):
-        estimate_gas_prices = self.pywalib.get_gas_price(coin)
-        chain_code = self._coin_to_chain_code(self.wallet.coin)
-        if gas_price:
-            gas_price = Decimal(gas_price)
-            best_time = self.pywalib.get_best_time_by_gas_price(gas_price, estimate_gas_prices)
-            estimate_gas_prices = {"customer": {"gas_price": gas_price, "time": best_time}}
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        main_coin_code = coin_manager.get_chain_info(chain_code).fee_code
+        main_coin = coin_manager.get_coin_info(main_coin_code)
 
-        if not gas_limit:
-            if contract_address is not None:
-                contract_token = coin_manager.get_coin_by_token_address(chain_code, contract_address)
+        if not to_address:
+            gas_limit = gas_limit or 40000
+        if gas_limit is None:
+            # Use provider_manager.fill_unsigned_tx to estimate gas limit
+            # TODO: Android app set contract_address to from_address if main
+            #       coin is selected.  Remove the following
+            #       "contract_address != from_address" check after it's fixed
+            #       in Android codes.
+            if contract_address is not None and contract_address != from_address:
+                # Coin should exist, or an exception will be raised.
+                coin = coin_manager.get_coin_by_token_address(chain_code, contract_address)
             else:
-                contract_token = None
-            gas_limit = self.pywalib.estimate_gas_limit(
-                from_address,
-                to_address,
-                contract_token,
-                value,
-                data,
+                coin = main_coin
+
+            input = provider_data.TransactionInput.from_dict(
+                {
+                    "address": from_address,
+                    "value": 0,  # This doesn't matter.
+                }
             )
+            output = provider_data.TransactionOutput.from_dict(
+                {
+                    "address": to_address,
+                    "value": int(Decimal(value) * pow(10, coin.decimals)),
+                    "token_address": contract_address,
+                }
+            )
+            unsigned_tx = provider_data.UnsignedTx.from_dict(
+                {
+                    "inputs": [input],
+                    "outputs": [output],
+                    "payload": {"data": data},
+                    # The following properties don't matter, just use to avoid extra client calls.
+                    "fee_price_per_unit": 0,
+                    "nonce": 0,
+                }
+            )
+            try:
+                unsigned_tx = provider_manager.fill_unsigned_tx(chain_code, unsigned_tx)
+            except Exception:
+                raise Exception(_("Estimate gas limit failed, try again."))
+            gas_limit = unsigned_tx.fee_limit
 
-        gas_limit = Decimal(gas_limit)
-        last_price = price_manager.get_last_price(chain_code, self.ccy)
+        last_price = price_manager.get_last_price(main_coin_code, self.ccy)
+        estimated_gas_prices = {}
+        for description, estimated_gas_price in provider_manager.get_prices_per_unit_of_fee(chain_code):
+            fee = eth_utils.from_wei(gas_limit * estimated_gas_price.price, "ether")
+            price = int(eth_utils.from_wei(estimated_gas_price.price, "gwei"))
+            gas_price_info = {
+                "gas_price": price,
+                "time": Decimal(estimated_gas_price.time) / 60,
+                "gas_limit": gas_limit,
+                "fee": fee,
+                "fiat": f"{self.daemon.fx.ccy_amount_str(Decimal(fee) * last_price, True)} {self.ccy}",
+            }
+            if gas_price is not None and gas_price >= price:
+                return {"customer": gas_price_info}
+            else:
+                estimated_gas_prices[description] = gas_price_info
 
-        for val in estimate_gas_prices.values():
-            val["gas_limit"] = gas_limit
-            val["fee"] = eth_utils.from_wei(gas_limit * eth_utils.to_wei(val["gas_price"], "gwei"), "ether")
-            val["fiat"] = f"{self.daemon.fx.ccy_amount_str(Decimal(val['fee']) * last_price, True)} {self.ccy}"
-
-        return estimate_gas_prices
+        return estimated_gas_prices
 
     def get_block_info(self):
         fee_info_list = self.config.get_block_fee_info()

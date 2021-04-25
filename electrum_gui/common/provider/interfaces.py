@@ -7,7 +7,7 @@ from electrum_gui.common.provider.data import (
     Address,
     AddressValidation,
     ClientInfo,
-    PricePerUnit,
+    PricesPerUnit,
     SignedTx,
     Transaction,
     TransactionStatus,
@@ -81,7 +81,7 @@ class ClientInterface(ABC):
         """
 
     @abstractmethod
-    def get_price_per_unit_of_fee(self) -> PricePerUnit:
+    def get_prices_per_unit_of_fee(self) -> PricesPerUnit:
         """
         get the price per unit of the fee, likes the gas_price on eth
         :return: price per unit
@@ -107,7 +107,7 @@ class BatchGetAddressMixin(ABC):
 
 
 class SearchTransactionMixin(ABC):
-    def search_txs_by_address(  # noqa
+    def search_txs_by_address(
         self,
         address: str,
         paginate: Optional[TxPaginate] = None,

@@ -3,8 +3,8 @@ from urllib.parse import urljoin
 
 from requests import RequestException, Response, Session
 
+from electrum_gui.common.basic.request import exceptions
 from electrum_gui.common.basic.request.enums import Method
-from electrum_gui.common.basic.request.exceptions import ResponseException
 from electrum_gui.common.basic.request.interfaces import RestfulInterface
 
 
@@ -83,7 +83,7 @@ class RestfulRequest(RestfulInterface):
             )
         except RequestException as e:
             self.print_if_debug(f"Error in sending a request. {args_str}, exception: {e}")
-            raise e
+            raise exceptions.RequestException()
 
         if not response.ok:
             message = (
@@ -92,7 +92,7 @@ class RestfulRequest(RestfulInterface):
                 f"response_text: {response.text}"
             )
             self.print_if_debug(message)
-            raise ResponseException(message, response=response)
+            raise exceptions.ResponseException(message, response=response)
 
         if not self.response_jsonlize:
             return response
@@ -102,7 +102,7 @@ class RestfulRequest(RestfulInterface):
         except ValueError as e:
             message = f"Error in parse response to json. {args_str}, " f"response_text: {response.text}, exception: {e}"
             self.print_if_debug(message)
-            raise ResponseException(message, response=response)
+            raise exceptions.ResponseException(message, response=response)
 
     def print_if_debug(self, message: str):
         if self.debug_mode and message:
