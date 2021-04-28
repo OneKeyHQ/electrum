@@ -45,7 +45,6 @@ from electrum.keystore import (
 from electrum.mnemonic import Wordlist
 from electrum.network import BestEffortRequestFailed, TxBroadcastError
 from electrum.plugin import Plugins
-from electrum.pywalib import InvalidValueException, PyWalib
 from electrum.storage import WalletStorage
 from electrum.transaction import PartialTransaction, PartialTxOutput, SerializationError, Transaction, tx_from_any
 from electrum.util import (
@@ -200,13 +199,7 @@ class AndroidCommands(commands.Commands):
         # its callback before the daemon threads start.
         self.daemon = daemon.Daemon(self.config, fd)
         self.coins = read_json("eth_servers.json", {})
-        if constants.net.NET == "Bitcoin":
-            chain_type = "mainnet"
-        else:
-            chain_type = "testnet"
-        self.pywalib = PyWalib(self.config, chain_type=chain_type, path=self._tx_list_path(name="tx_info.db"))
         self.txdb = TxDb(path=self._tx_list_path(name="tx_info.db"))
-        self.pywalib.set_server(self.coins["eth"])
         self.network = self.daemon.network
         self.daemon_running = False
         self.wizard = None
@@ -476,14 +469,13 @@ class AndroidCommands(commands.Commands):
             wallet_type = db.data["wallet_type"]
             coin = wallet_context.split_coin_from_wallet_type(wallet_type)
             if coin in self.coins:
-                with self.pywalib.override_server(self.coins[coin]):
-                    if "importe" in wallet_type:
-                        wallet = Eth_Wallet(db, storage, config=self.config)
-                    else:
-                        index = 0
-                        if "address_index" in db.data:
-                            index = db.data["address_index"]
-                        wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=index)
+                if "importe" in wallet_type:
+                    wallet = Eth_Wallet(db, storage, config=self.config)
+                else:
+                    index = 0
+                    if "address_index" in db.data:
+                        index = db.data["address_index"]
+                    wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=index)
             else:
                 wallet = Wallet(db, storage, config=self.config)
                 wallet.start_network(self.network)
@@ -1058,7 +1050,7 @@ class AndroidCommands(commands.Commands):
             else:
                 eth_tx_info = {}
             if not eth_tx_info.get("gas_price"):
-                raise InvalidValueException()
+                raise Exception(_("Invalid Value"))
             fee = self.eth_estimate_fee(coin, self.wallet.get_addresses()[0], **eth_tx_info)
             fee = fee.get("customer")
             return json.dumps(fee, cls=DecimalEncoder)
@@ -1790,7 +1782,7 @@ class AndroidCommands(commands.Commands):
         return self.get_details_info(tx, tx_list=tx_list)
 
     def get_eth_tx_info(self, tx_hash) -> str:
-        chain_code = self._coin_to_chain_code(self.wallet.coin)
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
         fee_code = coin_manager.get_chain_info(chain_code).fee_code
         symbol = coin_manager.get_coin_info(fee_code).symbol
 
@@ -2260,7 +2252,7 @@ class AndroidCommands(commands.Commands):
                 "rank": 0
         """
         self._assert_wallet_isvalid()
-        chain_code = self._coin_to_chain_code(self.wallet.coin)
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
         symbol, name, decimals = provider_manager.get_token_info_by_address(chain_code, contract_address)
         token_info = {
             "chain_id": coin_manager.get_chain_info(chain_code).chain_id,
@@ -2282,7 +2274,7 @@ class AndroidCommands(commands.Commands):
         if coin is None:
             coin = self.wallet.coin if self.wallet is not None else "eth"
 
-        chain_code = self._coin_to_chain_code(coin)
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
         return json.dumps(list(self._load_tokens_dict(chain_code).values()))
 
     def _load_tokens_dict(self, chain_code: str) -> dict:
@@ -2297,7 +2289,7 @@ class AndroidCommands(commands.Commands):
         return tokens_dict
 
     def _get_icon_by_token(self, coin, address=""):
-        chain_code = self._coin_to_chain_code(coin)
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
         if not address:
             coin = coin_manager.get_coin_info(chain_code, nullable=True)
         else:
@@ -2309,7 +2301,7 @@ class AndroidCommands(commands.Commands):
         if coin is None:
             coin = self.wallet.coin if self.wallet is not None else "eth"
 
-        chain_code = self._coin_to_chain_code(coin)
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
 
         token_dict = self._load_tokens_dict(chain_code)
         top_50_tokens = set(itertools.islice(token_dict.keys(), 50))
@@ -2345,7 +2337,7 @@ class AndroidCommands(commands.Commands):
         if coin is None:
             coin = self.wallet.coin if self.wallet is not None else "eth"
 
-        chain_code = self._coin_to_chain_code(coin)
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
 
         contract_addr = contract_addr.lower()
         token_info = self._load_tokens_dict(chain_code).get(contract_addr)
@@ -2396,7 +2388,7 @@ class AndroidCommands(commands.Commands):
         :param nonce: from address nonce
         :return: tx_hash as string
         """
-        chain_code = self._coin_to_chain_code(self.wallet.coin)
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
         if contract_addr is None:
             main_coin_code = coin_manager.get_chain_info(chain_code).fee_code
             coin = coin_manager.get_coin_info(main_coin_code)
@@ -2522,7 +2514,18 @@ class AndroidCommands(commands.Commands):
         return receipt.txid
 
     def dapp_eth_rpc_info(self):
-        return json.dumps(PyWalib.get_rpc_info())
+        legacy_chain_code = "eth"
+        if self.wallet is not None:
+            # TODO: check coin is eth-based
+            legacy_chain_code = self.wallet.coin
+
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(legacy_chain_code)
+        chain_info = coin_manager.get_chain_info(chain_code)
+        ret = {
+            "rpc": chain_info.clients[0]["url"],  # TODO: use the URL of an alive client
+            "chain_id": chain_info.chain_id,
+        }
+        return json.dumps(ret)
 
     def dapp_eth_keccak(self, message: str) -> str:
         if message.startswith("0x"):
@@ -3408,7 +3411,7 @@ class AndroidCommands(commands.Commands):
         for coin, items in itertools.groupby(wallet_info, key=attrgetter('coin')):
             if coin in self.coins:
                 wallets = list(items)
-                chain_code = self._coin_to_chain_code(coin)
+                chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
                 try:
                     address_info_list = provider_manager.batch_get_address(
                         chain_code, [wallet.get_addresses()[0] for wallet in wallets]
@@ -3614,8 +3617,7 @@ class AndroidCommands(commands.Commands):
                 recovery_wallet(self, add_type)
 
             for coin, info in self.coins.items():
-                with PyWalib.override_server(info):
-                    recovery_wallet(self, info["addressType"], coin=coin)
+                recovery_wallet(self, info["addressType"], coin=coin)
         else:
             for add_type in ["49", "44", "84"]:
                 xpub = self.get_hd_wallet_encode_seed(seed=seed, coin="btc", purpose=add_type)
@@ -3624,8 +3626,7 @@ class AndroidCommands(commands.Commands):
             for coin, info in self.coins.items():
                 add_type = str(info["addressType"])
                 xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin, purpose=add_type)
-                with PyWalib.override_server(info):
-                    recovery_wallet(self, int(add_type), coin=coin)
+                recovery_wallet(self, int(add_type), coin=coin)
 
         recovery_list = self.filter_wallet()
         wallet_data = self.filter_wallet_with_account_is_zero()
@@ -4160,7 +4161,6 @@ class AndroidCommands(commands.Commands):
         # self.wallet.use_change = self.config.get("use_change", False)
         coin = self.wallet.coin
         if coin in self.coins:
-            PyWalib.set_server(self.coins[coin])
             contract_info = self.wallet.get_contract_symbols_with_address()
 
             info = {"name": name, "label": self.wallet.get_name(), "wallets": contract_info}
@@ -4248,7 +4248,6 @@ class AndroidCommands(commands.Commands):
             self.wallet.use_change = self.config.get("use_change", False)
             coin = self.wallet.coin
             if coin in self.coins:
-                PyWalib.set_server(self.coins[coin])
                 main_balance_info, contracts_balance_info, _zero_fiat = self._get_eth_wallet_all_balance(
                     self.wallet, with_sum_fiat=False
                 )
@@ -4281,7 +4280,7 @@ class AndroidCommands(commands.Commands):
         self, wallet: Optional[Abstract_Eth_Wallet] = None, with_sum_fiat: bool = True
     ) -> Tuple[Dict, List, Decimal]:
         wallet = wallet or self.wallet
-        chain_code = self._coin_to_chain_code(wallet.coin)
+        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(wallet.coin)
         main_balance, tokens_balance_info = wallet.get_all_balance()
         sum_fiat = Decimal('0')
 
@@ -4332,10 +4331,6 @@ class AndroidCommands(commands.Commands):
     def _fill_balance_info_with_btc(self, fiat: Decimal) -> str:
         price = price_manager.get_last_price("btc", self.ccy)
         return self.format_amount((int(Decimal(fiat) / Decimal(price) * COIN)))
-
-    def _coin_to_chain_code(self, coin: str) -> str:
-        chain_code = f"t{coin}" if PyWalib.chain_type == "testnet" else coin
-        return chain_code
 
     def set_wallet_location_info(self, wallet_location_info: list, wallet_type="btc") -> None:
         """
@@ -4425,7 +4420,7 @@ class AndroidCommands(commands.Commands):
         coin = wallet_obj.coin
         if coin in self.coins:
             # TODO: try implementing get_history for eth wallets.
-            chain_code = self._coin_to_chain_code(coin)
+            chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
             try:
                 address_info = provider_manager.get_address(chain_code, wallet_obj.get_addresses()[0])
             except Exception:
