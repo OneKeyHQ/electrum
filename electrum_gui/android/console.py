@@ -3404,11 +3404,13 @@ class AndroidCommands(commands.Commands):
     ):
         eths_xpub = None
 
-        def recovery_wallet(self, purpose="", coin="btc") -> None:
+        def recovery_wallet(self, purpose: int, coin: str = "btc") -> None:
             def recovery_create_subfun(self, coin, account_id, name) -> None:
                 nonlocal eths_xpub
                 try:
-                    if coin in self.coins:
+                    if coin == "btc":
+                        pass
+                    elif coin in self.coins:
                         if hw and eths_xpub:
                             self.recovery_import_create_hw_wallet(account_id, name, 1, 1, eths_xpub, coin=coin)
                             return
@@ -3448,24 +3450,25 @@ class AndroidCommands(commands.Commands):
             derived.reset_list()
             account_list = derived.get_list()
             for i in account_list:
-                recovery_create_subfun(self, coin, i, f"{coin}_derived_{i}")
+                recovery_create_subfun(self, coin, i, f"{coin}-derived-{purpose}-{i}")
 
         if hw:
-            recovery_wallet(self)
+            for add_type in [49, 44, 84]:
+                recovery_wallet(self, add_type)
 
             for coin, info in self.coins.items():
                 with PyWalib.override_server(info):
-                    recovery_wallet(self, coin=coin)
+                    recovery_wallet(self, info["addressType"], coin=coin)
         else:
             for add_type in ["49", "44", "84"]:
                 xpub = self.get_hd_wallet_encode_seed(seed=seed, coin="btc", purpose=add_type)
-                recovery_wallet(self, purpose=add_type)
+                recovery_wallet(self, int(add_type))
 
             for coin, info in self.coins.items():
-                add_type = info["addressType"]
+                add_type = str(info["addressType"])
                 xpub = self.get_hd_wallet_encode_seed(seed=seed, coin=coin, purpose=add_type)
                 with PyWalib.override_server(info):
-                    recovery_wallet(self, coin=coin, purpose=add_type)
+                    recovery_wallet(self, int(add_type), coin=coin)
 
         recovery_list = self.filter_wallet()
         wallet_data = self.filter_wallet_with_account_is_zero()
