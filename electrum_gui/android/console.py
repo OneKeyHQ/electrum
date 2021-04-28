@@ -4285,7 +4285,7 @@ class AndroidCommands(commands.Commands):
             else:
                 xpub = wallet_obj.keystore.xpub + coin.lower()
         else:
-            purpose = helpers.get_path_info(wallet_obj.get_derivation_path(), PURPOSE_POS)
+            purpose = helpers.get_path_info(derivation, PURPOSE_POS)
             xpub = self.get_hd_wallet_encode_seed(coin=coin, purpose=purpose)
 
         self.wallet_context.remove_derived_wallet(xpub, account_id)
