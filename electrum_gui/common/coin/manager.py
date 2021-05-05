@@ -20,6 +20,15 @@ def get_chain_info(chain_code: str) -> ChainInfo:
     return CHAINS_DICT[chain_code]
 
 
+def get_chains_by_affinity(chain_affinity: str) -> List[ChainInfo]:
+    """
+    Get chains by affinity
+    :param chain_affinity: chain_affinity used to search the chains
+    :return: list of ChainInfo with the specified chain_affinity
+    """
+    return [chain_info for chain_info in CHAINS_DICT.values() if chain_info.chain_affinity == chain_affinity]
+
+
 def is_chain_enabled(chain_code: str) -> bool:
     """
     Check if a specific chain is enabled
@@ -198,3 +207,11 @@ def get_chain_code_by_legacy_wallet_chain(chain_code: str) -> str:
     # Return chain code for legacy wallets
     prefix = "t" if settings.IS_DEV else ""
     return f"{prefix}{chain_code}"
+
+
+def chain_code_to_legacy_coin(chain_code: str) -> str:
+    # Return legacy chain code for new chain codes
+    if settings.IS_DEV:
+        return chain_code[1:]
+    else:
+        return chain_code
