@@ -1,6 +1,6 @@
 import time
 from functools import partial
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import eth_utils
 
@@ -23,12 +23,12 @@ from electrum_gui.common.provider.data import (
     TxBroadcastReceiptCode,
 )
 from electrum_gui.common.provider.exceptions import TransactionNotFound
-from electrum_gui.common.provider.interfaces import ClientInterface
+from electrum_gui.common.provider.interfaces import BatchGetAddressMixin, ClientInterface
 
 _hex2int = partial(int, base=16)
 
 
-class Geth(ClientInterface):
+class Geth(ClientInterface, BatchGetAddressMixin):
     __LAST_BLOCK__ = "latest"
 
     def __init__(self, url: str):
@@ -52,6 +52,28 @@ class Geth(ClientInterface):
         balance = _hex2int(_balance)
         nonce = _hex2int(_nonce)
         return Address(address=address, balance=balance, nonce=nonce, existing=(bool(balance) or bool(nonce)))
+
+    def batch_get_address(self, addresses: List[str]) -> List[Address]:
+        _call_body = []
+        for address in addresses:
+            _call_body.extend(
+                [
+                    # Maybe __LAST_BLOCK__ refers to a different blocks in some case
+                    ("eth_getBalance", [address, self.__LAST_BLOCK__]),
+                    ("eth_getTransactionCount", [address, self.__LAST_BLOCK__]),
+                ]
+            )
+        result = self.rpc.batch_call(_call_body, timeout=10)
+
+        _resp_body = []
+        result_iterator = iter(result)
+        for _address, _balance_str, _nonce_str in zip(addresses, result_iterator, result_iterator):
+            _balance = _hex2int(_balance_str)
+            _nonce = _hex2int(_nonce_str)
+            _resp_body.append(
+                Address(address=_address, balance=_balance, nonce=_nonce, existing=(bool(_balance) or bool(_nonce)))
+            )
+        return _resp_body
 
     def get_balance(self, address: str, token_address: Optional[str] = None) -> int:
         if token_address is None:

@@ -12,6 +12,7 @@ import threading
 import urllib.parse
 from code import InteractiveConsole
 from decimal import Decimal
+from operator import attrgetter
 from os.path import exists, join
 from typing import Dict, List, Optional, Tuple
 
@@ -3263,40 +3264,58 @@ class AndroidCommands(commands.Commands):
 
     def filter_wallet(self):
         recovery_list = []
-        for name, wallet_info in self.recovery_wallets.items():
-            wallet = wallet_info["wallet"]
-            coin = wallet.coin
+        wallet_info = [item["wallet"] for item in self.recovery_wallets.values()]
+        wallet_info = sorted(wallet_info, key=attrgetter('coin'))
+        for coin, items in itertools.groupby(wallet_info, key=attrgetter('coin')):
             if coin in self.coins:
+                wallets = list(items)
                 chain_code = self._coin_to_chain_code(coin)
                 try:
-                    address_info = provider_manager.get_address(chain_code, wallet.get_addresses()[0])
+                    address_info_list = provider_manager.batch_get_address(
+                        chain_code, [wallet.get_addresses()[0] for wallet in wallets]
+                    )
                 except Exception:
-                    address_info = None
+                    address_info_list = None
 
-                if address_info is None or not address_info.existing:
+                if address_info_list is None:
                     continue
 
-                main_coin_balance = Decimal(eth_utils.from_wei(address_info.balance, "ether"))
                 fee_code = coin_manager.get_chain_info(chain_code).fee_code
                 main_coin_price = price_manager.get_last_price(fee_code, self.ccy)
-                fiat_str = self.daemon.fx.ccy_amount_str(main_coin_balance * main_coin_price, True)
-                balance = f"{main_coin_balance} ({fiat_str} {self.ccy})"
+                for index, address_info in enumerate(address_info_list):
+                    if not address_info.existing:
+                        continue
+                    main_coin_balance = Decimal(eth_utils.from_wei(address_info.balance, "ether"))
+                    fiat_str = self.daemon.fx.ccy_amount_str(main_coin_balance * main_coin_price, True)
+                    balance = f"{main_coin_balance} ({fiat_str} {self.ccy})"
+                    recovery_list.append(
+                        {
+                            "coin": coin,
+                            "blance": balance,
+                            "name": str(wallets[index]),
+                            "label": wallets[index].get_name(),
+                            "exist": "1"
+                            if self.daemon.get_wallet(self._wallet_path(wallets[index].identity)) is not None
+                            else "0",
+                        }
+                    )
             else:
-                if not bool(wallet.get_history()):
-                    continue
-                c, u, _ = wallet.get_balance()
-                balance = self.format_amount_and_units(c + u)
-
-            recovery_list.append(
-                {
-                    "coin": coin,
-                    "blance": balance,
-                    "name": str(wallet),
-                    "label": wallet.get_name(),
-                    "exist": "1" if self.daemon.get_wallet(self._wallet_path(wallet.identity)) is not None else "0",
-                }
-            )
-
+                for wallet in items:
+                    if not bool(wallet.get_history()):
+                        continue
+                    c, u, _ = wallet.get_balance()
+                    balance = self.format_amount_and_units(c + u)
+                    recovery_list.append(
+                        {
+                            "coin": coin,
+                            "blance": balance,
+                            "name": str(wallet),
+                            "label": wallet.get_name(),
+                            "exist": "1"
+                            if self.daemon.get_wallet(self._wallet_path(wallet.identity)) is not None
+                            else "0",
+                        }
+                    )
         return recovery_list
 
     def update_recovery_wallet(self, key, wallet_obj, bip39_derivation, name, coin):

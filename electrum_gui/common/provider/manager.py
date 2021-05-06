@@ -1,5 +1,6 @@
 from typing import Dict, List, Optional
 
+from electrum_gui.common.provider import exceptions
 from electrum_gui.common.provider.data import (
     UTXO,
     Address,
@@ -13,13 +14,22 @@ from electrum_gui.common.provider.data import (
     UnsignedTx,
 )
 from electrum_gui.common.provider.exceptions import NoAvailableClient
-from electrum_gui.common.provider.interfaces import SearchTransactionMixin, SearchUTXOMixin
+from electrum_gui.common.provider.interfaces import BatchGetAddressMixin, SearchTransactionMixin, SearchUTXOMixin
 from electrum_gui.common.provider.loader import get_client_by_chain, get_provider_by_chain
 from electrum_gui.common.secret.interfaces import SignerInterface, VerifierInterface
 
 
 def get_address(chain_code: str, address: str) -> Address:
     return get_client_by_chain(chain_code).get_address(address)
+
+
+def batch_get_address(chain_code: str, addresses: List[str]) -> List[Address]:
+    try:
+        client = get_client_by_chain(chain_code, instance_required=BatchGetAddressMixin)
+        return client.batch_get_address(addresses)
+    except exceptions.NoAvailableClient:
+        client = get_client_by_chain(chain_code)
+        return [client.get_address(i) for i in addresses]
 
 
 def get_balance(chain_code: str, address: str, token_address: Optional[str] = None) -> int:

@@ -96,6 +96,16 @@ class ClientInterface(ABC):
         raise Exception("Unsupported")
 
 
+class BatchGetAddressMixin(ABC):
+    @abstractmethod
+    def batch_get_address(self, addresses: List[str]) -> List[Address]:
+        """
+        Batch to get address information by address str list
+        :param addresses: List[address]
+        :return: List[Address]
+        """
+
+
 class SearchTransactionMixin(ABC):
     def search_txs_by_address(  # noqa
         self,
