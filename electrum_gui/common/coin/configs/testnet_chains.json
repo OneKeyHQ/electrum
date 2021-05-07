@@ -7,7 +7,7 @@
     "coins": [
       {
         "code": "tbtc",
-        "symbol": "TBTC",
+        "symbol": "BTC",
         "name": "Bitcoin TestNet3",
         "decimals": 8,
         "icon": "https://onekey.243096.com/onekey/images/token/btc/BTC.png"
@@ -24,7 +24,7 @@
     "coins": [
       {
         "code": "teth",
-        "symbol": "TETH",
+        "symbol": "ETH",
         "name": "Ethereum Ropsten Test Network",
         "decimals": 18,
         "icon": "https://onekey.243096.com/onekey/images/token/eth/ETH.png"
@@ -59,7 +59,7 @@
     "coins": [
       {
         "code": "tbsc",
-        "symbol": "TBNB",
+        "symbol": "BNB",
         "name": "Binance Smart Chain Test Network",
         "decimals": 18,
         "icon": "https://onekey.243096.com/onekey/images/token/bsc/BSC.png"
@@ -83,7 +83,7 @@
     "coins": [
       {
         "code": "theco",
-        "symbol": "THT",
+        "symbol": "HT",
         "name": "Huobi ECO Chain Test Network",
         "decimals": 18,
         "icon": "https://onekey.243096.com/onekey/images/token/heco/HECO.png"
@@ -107,7 +107,7 @@
     "coins": [
       {
         "code": "tokt",
-        "symbol": "TOKT",
+        "symbol": "OKT",
         "name": "OKExChain Testnet",
         "decimals": 18,
         "icon": "https://onekey.243096.com/onekey/images/token/okt/OKT.svg"
