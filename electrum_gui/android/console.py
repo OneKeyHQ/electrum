@@ -3582,8 +3582,8 @@ class AndroidCommands(commands.Commands):
         )
         db.put("keystore", ks.dump())
         if coin in self.coins:
+            db.put("wallet_type", f"{coin}_standard")
             wallet = Standard_Eth_Wallet(db, storage, config=self.config, index=account_id)
-            wallet.wallet_type = "%s_standard" % coin
         else:
             wallet = Standard_Wallet(db, storage, config=self.config)
         wallet.hide_type = True
