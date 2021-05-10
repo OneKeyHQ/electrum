@@ -151,7 +151,7 @@ class WalletContext(object):
             # Sort by coin (btc > eth > bsc > ...)
             # Filter by generic wallet type
             sort_func = _type_info_by_coin_and_time_sort_func
-            order_info = dict(zip(self.get_wallet_location_info(generic_wallet_type)), itertools.count())
+            order_info = dict(zip(self.get_wallet_location_info(generic_wallet_type), itertools.count()))
             if generic_wallet_type == "hd":
                 extra_filter_func = _type_info_wallet_type_is_hd
             elif generic_wallet_type == "hw":
