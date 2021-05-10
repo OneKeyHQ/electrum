@@ -397,7 +397,7 @@ class AndroidCommands(commands.Commands):
     def on_network_event(self, event, *args):
         if event == "set_server_status" and self.callbackIntent is not None:
             self.callbackIntent.onCallback("set_server_status=%s" % args[0])
-        elif event in ("network_updated"):
+        elif event in ("network_updated",):
             # TODO: Update the list of available servers
             pass
         elif event in (
