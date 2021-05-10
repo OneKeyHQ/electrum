@@ -30,7 +30,7 @@ def get_show_addr(addr):
 def get_default_path(coin, purpose):
     if coin == 'btc':
         return bip44_derivation(0, bip43_purpose=purpose)
-    elif coin in ['eth', 'bsc', 'heco']:
+    elif coin in ['eth', 'bsc', 'heco', 'okt']:
         return bip44_eth_derivation(0)
 
 
