@@ -1474,7 +1474,7 @@ class AndroidCommands(commands.Commands):
             "sign_status": [s, r],
             "output_addr": out_list,
             "input_addr": in_list,
-            "height": block_height,
+            "height": 0 if block_height < 0 else block_height,
             "cosigner": [x.xpub if not isinstance(x, Imported_KeyStore) else "" for x in self.wallet.get_keystores()],
             "tx": str(tx),
             "show_status": [1, _("Unconfirmed")]
