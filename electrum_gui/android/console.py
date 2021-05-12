@@ -319,7 +319,8 @@ class AndroidCommands(commands.Commands):
             out = main_balance_info
             out["tokens"] = contracts_balance_info
             out["sum_fiat"] = f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}"
-            out["btc_asset"] = self._fill_balance_info_with_btc(sum_fiat)
+            out["coin_asset"] = self._fill_balance_info_with_coin(sum_fiat, coin)
+            out["name"] = self.wallet.identity
         elif (
             self.network
             and self.network.is_connected()
@@ -332,12 +333,17 @@ class AndroidCommands(commands.Commands):
             fiat = Decimal(balance) / COIN * price_manager.get_last_price(coin, self.ccy)
             fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
 
+            # main balance info
             out["coin"] = "btc"
             out["address"] = address
             out["icon"] = self._get_icon_by_token(coin)
             out["balance"] = self.format_amount(balance)
             out["fiat"] = fiat_str
-            out["btc_asset"] = out["balance"]
+
+            out["tokens"] = []
+            out["sum_fiat"] = fiat_str
+            out["coin_asset"] = out["balance"]
+            out["name"] = self.wallet.identity
 
             if u:
                 out["unconfirmed"] = self.format_amount(u, is_diff=True).strip()
@@ -467,7 +473,7 @@ class AndroidCommands(commands.Commands):
             if db.get_action():
                 return
             wallet_type = db.data["wallet_type"]
-            coin = wallet_context.split_coin_from_wallet_type(wallet_type)
+            coin = db.data["coin"]
             chain_affinity = _get_chain_affinity(coin)
             if chain_affinity == "btc":
                 wallet = Wallet(db, storage, config=self.config)
@@ -3816,19 +3822,19 @@ class AndroidCommands(commands.Commands):
               "name": "",
               "coin":""
               "label": "",
-              "btc": "0.005 BTC",
-              "fiat": "1,333.55",
+              "sum_fiat": "1,333.55",
               "wallets": [
-                {"coin": "btc", "balance": "", "fiat": "", "icon":""}
+                {"coin": "btc", "address":"", "balance": "", "fiat": "", "icon":""}
               ]
             },
             {
               "name": "",
               "coin":""
               "label": "",
+              "sum_fiat": "",
               "wallets": [
-                { "coin": "btc", "balance": "", "fiat": "", "icon":""},
-                { "coin": "usdt", "balance": "", "fiat": "", "icon":""}
+                { "coin": "btc", "address":"", "balance": "", "fiat": "", "icon":""},
+                { "coin": "usdt", "address":"", "balance": "", "fiat": "", "icon":""}
               ]
             }
           ]
@@ -3855,13 +3861,12 @@ class AndroidCommands(commands.Commands):
                     fiat = Decimal(balance) / COIN * price_manager.get_last_price(coin, self.ccy)
                     fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
                     all_balance += fiat
-                    wallet_info["btc"] = self.format_amount(balance)  # fixme deprecated field
-                    wallet_info["fiat"] = fiat_str  # fixme deprecated field
                     wallet_info["wallets"] = [
                         {
                             "coin": "btc",
-                            "balance": wallet_info["btc"],
-                            "fiat": wallet_info["fiat"],
+                            "address": wallet.get_addresses()[0],
+                            "balance": self.format_amount(balance),
+                            "fiat": fiat_str,
                             "icon": self._get_icon_by_token(coin),
                         }
                     ]
@@ -3878,6 +3883,7 @@ class AndroidCommands(commands.Commands):
             zero_balance_wallets = (i for i in all_wallet_info if i["sum_fiat"] <= 0)
             zero_balance_wallets_dict = {i["label"]: i for i in zero_balance_wallets}
             sorted_wallet_labels = (i[0] for i in self.wallet_context.get_stored_wallets_types())
+
             zero_balance_wallets = [
                 zero_balance_wallets_dict[i] for i in sorted_wallet_labels if i in zero_balance_wallets_dict
             ]  # sort zero balance wallet by created time in reverse order
@@ -3885,7 +3891,7 @@ class AndroidCommands(commands.Commands):
             all_wallet_info = [*no_zero_balance_wallets, *zero_balance_wallets]
 
             out["all_balance"] = f"{self.daemon.fx.ccy_amount_str(all_balance, True)} {self.ccy}"
-            out["btc_asset"] = self._fill_balance_info_with_btc(all_balance)
+            out["btc_asset"] = self._fill_balance_info_with_coin(all_balance, "btc")
             out["wallet_info"] = all_wallet_info
             return json.dumps(out, cls=DecimalEncoder)
         except BaseException as e:
@@ -4218,7 +4224,9 @@ class AndroidCommands(commands.Commands):
         :return: json like
         {
           "all_balance": "",
-          "btc_asset":"",
+          "coin_asset":"",
+          "coin":"",
+          "name":"",
           "wallets": [
             {"coin": "eth", "address": "", "balance": "", "fiat": "", "icon":""},
             {"coin": "usdt", "address": "", "balance": "", "fiat": "", "icon":""}
@@ -4227,33 +4235,37 @@ class AndroidCommands(commands.Commands):
         """
         self._assert_wallet_isvalid()
         coin = self.wallet.coin
+        info = {"name": self.wallet.identity, "label": self.wallet.get_name(), "coin": coin}
         chain_affinity = _get_chain_affinity(coin)
         if chain_affinity == "eth":
             main_balance_info, contracts_balance_info, sum_fiat = self._get_eth_wallet_all_balance(self.wallet)
-            info = {
-                "all_balance": f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}",
-                "wallets": [main_balance_info] + contracts_balance_info,
-                "coin": coin,
-                "btc_asset": self._fill_balance_info_with_btc(sum_fiat),
-            }
+            info.update(
+                {
+                    "all_balance": f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}",
+                    "wallets": [main_balance_info] + contracts_balance_info,
+                    "coin_asset": self._fill_balance_info_with_coin(sum_fiat, coin),
+                }
+            )
         elif chain_affinity == "btc":
             c, u, x = self.wallet.get_balance()
             balance = c + u
             fiat = Decimal(balance) / COIN * price_manager.get_last_price(coin, self.ccy)
             fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
-            info = {
-                "all_balance": fiat_str,  # fixme deprecated field
-                "wallets": [
-                    {
-                        "coin": "btc",
-                        "balance": self.format_amount(balance),
-                        "icon": self._get_icon_by_token(coin),
-                        "fiat": fiat_str,
-                    }
-                ],
-                "coin": coin,
-                "btc_asset": self.format_amount(balance),
-            }
+            info.update(
+                {
+                    "all_balance": fiat_str,  # fixme deprecated field
+                    "wallets": [
+                        {
+                            "coin": "btc",
+                            "address": self.wallet.get_addresses()[0],
+                            "balance": self.format_amount(balance),
+                            "icon": self._get_icon_by_token(coin),
+                            "fiat": fiat_str,
+                        }
+                    ],
+                    "coin_asset": self.format_amount(balance),
+                }
+            )
             if self.label_flag and self.wallet.wallet_type != "standard":
                 self.label_plugin.load_wallet(self.wallet)
         else:
@@ -4364,9 +4376,13 @@ class AndroidCommands(commands.Commands):
         )
         return ret_main_balance_info, ret_contracts_balance_info, sum_fiat
 
-    def _fill_balance_info_with_btc(self, fiat: Decimal) -> str:
-        price = price_manager.get_last_price("btc", self.ccy)
-        return self.format_amount((int(Decimal(fiat) / Decimal(price) * COIN)))
+    def _fill_balance_info_with_coin(self, fiat: Decimal, coin: str) -> str:
+        price = price_manager.get_last_price(coin, self.ccy)
+        chain_affinity = _get_chain_affinity(coin)
+        if chain_affinity == "btc":
+            return self.format_amount((int(Decimal(fiat) / Decimal(price) * COIN)))
+        else:
+            return Decimal(fiat) / Decimal(price)
 
     def set_wallet_location_info(self, wallet_location_info: list, wallet_type="btc") -> None:
         """
