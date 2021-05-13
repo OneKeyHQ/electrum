@@ -170,6 +170,15 @@
       {
         "class": "Geth",
         "url": "https://exchainrpc.okex.org"
+      },
+      {
+        "class": "OKLink",
+        "oklink_url": "https://www.oklink.com",
+        "geth_url": "https://exchainrpc.okex.org",
+        "net_symbol": "OKEXCHAIN",
+        "api_keys": [
+          "99039f24-702b-4849-a50e-b00178aedcb4"
+        ]
       }
     ],
     "chain_affinity": "eth",
