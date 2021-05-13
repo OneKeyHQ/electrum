@@ -3845,7 +3845,7 @@ class AndroidCommands(commands.Commands):
             all_balance = Decimal("0")
             all_wallet_info = []
             for wallet in self.daemon.get_wallets().values():
-                wallet_info = {"name": wallet.get_name(), "label": str(wallet)}
+                wallet_info = {"name": wallet.identity, "label": wallet.get_name()}
                 coin = wallet.coin
                 wallet_info["coin"] = coin
                 chain_affinity = _get_chain_affinity(coin)
@@ -3881,7 +3881,7 @@ class AndroidCommands(commands.Commands):
             )  # sort no-zero balance wallet by fiat currency in reverse order
 
             zero_balance_wallets = (i for i in all_wallet_info if i["sum_fiat"] <= 0)
-            zero_balance_wallets_dict = {i["label"]: i for i in zero_balance_wallets}
+            zero_balance_wallets_dict = {i["name"]: i for i in zero_balance_wallets}
             sorted_wallet_labels = (i[0] for i in self.wallet_context.get_stored_wallets_types())
 
             zero_balance_wallets = [
