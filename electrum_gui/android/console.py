@@ -2968,6 +2968,7 @@ class AndroidCommands(commands.Commands):
             is_checksum, is_wordlist = keystore.bip39_is_checksum_valid(data)
             if not keystore.is_seed(data) and not is_checksum:
                 raise BaseException(_("Incorrect mnemonic format."))
+            return
         chain_affinity = _get_chain_affinity(coin)
         if chain_affinity == "btc":
             if flag == "private":
