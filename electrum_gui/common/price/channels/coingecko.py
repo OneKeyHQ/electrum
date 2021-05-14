@@ -80,7 +80,7 @@ class Coingecko(PriceChannelInterface):
             yield from rates
 
     def pricing(self, coins: Iterable[CoinInfo]) -> Iterable[YieldedPrice]:
-        coin_dict = {i.code: i for i in coins}
+        coin_dict = {settings.PRICING_COIN_MAPPING.get(i.code, i.code): i for i in coins}
 
         if codes.BTC in coin_dict:
             try:
