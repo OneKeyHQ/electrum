@@ -469,7 +469,7 @@ class Abstract_Eth_Wallet(abc.ABC):
             "nonce": args[1],
             "gasPrice": args[2],
             "gas": args[3],
-            "to": args[4],
+            "to":  eth_utils.to_checksum_address(args[4]),
             "value": args[5],
             "chainId": kwargs["chain_id"],
         }
