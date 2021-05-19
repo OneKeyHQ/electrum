@@ -122,5 +122,34 @@
     "chain_affinity": "eth",
     "qr_code_prefix": "okt",
     "chain_id": "65"
+  },
+  {
+    "chain_code": "tsol",
+    "name": "Solana",
+    "fee_code": "tsol",
+    "chain_model": "account",
+    "curve": "ed25519",
+    "bip44_coin_type": 501,
+    "bip44_target_level": "CHANGE",
+    "bip44_auto_increment_level": "ACCOUNT",
+    "bip44_last_hardened_level": "CHANGE",
+    "fee_price_decimals_for_legibility": 1,
+    "coins": [
+      {
+        "code": "tsol",
+        "symbol": "SOL",
+        "name": "Solana",
+        "decimals": 9,
+        "icon": ""
+      }
+    ],
+    "clients": [
+      {
+        "class": "Solana",
+        "url": "https://devnet.solana.com"
+      }
+    ],
+    "chain_affinity": "sol",
+    "qr_code_prefix": "tsol"
   }
 ]

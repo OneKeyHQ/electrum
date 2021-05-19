@@ -16,6 +16,6 @@ def require_not_none(obj: Any, message: str = None) -> Any:
 
 
 def require_none(obj: Any, message: str = None):
-    if obj is None:
+    if obj is not None:
         message = message or f"require none but {repr(obj)} found"
         raise AssertionError(message)

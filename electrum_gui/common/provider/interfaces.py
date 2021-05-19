@@ -43,11 +43,11 @@ class ClientInterface(ABC):
         :return: Address
         """
 
-    def get_balance(self, address: str, contract_address: Optional[str] = None) -> int:
+    def get_balance(self, address: str, token_address: Optional[str] = None) -> int:
         """
         get address balance
+        :param token_address:
         :param address: address
-        :param token: token, optional
         :return: balance
         """
         return self.get_address(address).balance
@@ -202,6 +202,6 @@ class ProviderInterface(ABC):
     def get_token_info_by_address(self, token_address: str) -> Tuple[str, str, int]:
         """
         Get the base information (symbol, name, decimals) of a token on the chain.
-        :param address: token address
+        :param token_address:
         :return: Tuple[str, str, int], token symbol, token name, token decimals
         """

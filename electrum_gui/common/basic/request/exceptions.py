@@ -21,3 +21,8 @@ class JsonRPCException(IOError):
         self.json_response = json_response
 
         super(JsonRPCException, self).__init__(message)
+
+
+class RPCError(Exception):
+    def __init__(self, code, message):
+        super().__init__(f"rpc error: with code: {code} and message: {message}")

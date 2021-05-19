@@ -47,3 +47,8 @@ class TransactionGasLimitExceeded(UnknownBroadcastError):
 class FailedToGetGasPrices(Exception):
     def __init__(self):
         super(FailedToGetGasPrices, self).__init__("Failed to get gas prices.")
+
+
+class AccountNotFund(Exception):
+    def __init__(self, address: str):
+        super(AccountNotFund, self).__init__(f"Account: {address} not fund")
