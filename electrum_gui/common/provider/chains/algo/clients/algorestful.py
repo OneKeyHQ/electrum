@@ -1,4 +1,7 @@
+import base64
 from typing import List, Optional
+
+from algosdk.future.transaction import SuggestedParams
 
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.text import force_text
@@ -20,11 +23,11 @@ from electrum_gui.common.provider.data import (
     TxBroadcastReceiptCode,
     TxPaginate,
 )
-from electrum_gui.common.provider.exceptions import FailedToGetGasPrices, TransactionNotFound
+from electrum_gui.common.provider.exceptions import FailedToGetSuggestedParams, TransactionNotFound
 from electrum_gui.common.provider.interfaces import ClientInterface, SearchTransactionMixin
 
 
-class Algod(ClientInterface, SearchTransactionMixin):
+class ALGORestful(ClientInterface, SearchTransactionMixin):
     __raw_tx_status_mapping__ = {
         -1: TransactionStatus.PENDING,
         0: TransactionStatus.CONFIRM_REVERTED,
@@ -65,7 +68,7 @@ class Algod(ClientInterface, SearchTransactionMixin):
 
     def get_balance(self, address: str, token_address: Optional[str] = None) -> int:
         if token_address is None:
-            return super(Algod, self).get_balance(address)
+            return super(ALGORestful, self).get_balance(address)
         else:
             resp = self._get_raw_address_info(address)
             tokens = {
@@ -79,7 +82,7 @@ class Algod(ClientInterface, SearchTransactionMixin):
     def get_transaction_by_txid(self, txid: str) -> Transaction:
         try:
             # todo handle pending tx
-            # pending = self.restful.get(f"/ps2/v2/accounts/{txid}")
+            # pending = self.restful.get(f"/ps2/v2/transactions/pending/{txid}")
             resp = self.restful.get(f"/idx2/v2/transactions/{txid}")
         except ResponseException as e:
             if e.response is not None and "no transaction found" in force_text(e.response.text):
@@ -141,7 +144,9 @@ class Algod(ClientInterface, SearchTransactionMixin):
 
     def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
         try:
-            resp = self.restful.post("/ps2/v2/transaction", data=raw_tx)
+            resp = self.restful.post(
+                "/ps2/v2/transaction", data=base64.b64decode(raw_tx), headers={'Content-Type': 'application/x-binary'}
+            )
         except ResponseException as e:
             try:
                 resp = e.response.json()
@@ -158,11 +163,28 @@ class Algod(ClientInterface, SearchTransactionMixin):
         try:
             resp = self.restful.get("/ps2/v2/transactions/params")
         except RequestException:
-            raise FailedToGetGasPrices()
-        min_fee = resp.get("min-fee", 1000)
+            raise FailedToGetSuggestedParams()
+        min_fee = resp.get("min-fee", 1000)  # flat fee
 
         return PricesPerUnit(
             fast=EstimatedTimeOnPrice(price=min_fee, time=60),
             normal=EstimatedTimeOnPrice(price=min_fee, time=180),
             slow=EstimatedTimeOnPrice(price=min_fee, time=600),
+        )
+
+    def suggested_params(self) -> SuggestedParams:
+        try:
+            resp = self.restful.get("/ps2/v2/transactions/params")
+        except RequestException:
+            raise FailedToGetSuggestedParams()
+
+        return SuggestedParams(
+            resp["fee"],
+            resp["last-round"],
+            resp["last-round"] + 1000,
+            resp["genesis-hash"],
+            resp["genesis-id"],
+            False,
+            resp["consensus-version"],
+            resp["min-fee"],
         )
