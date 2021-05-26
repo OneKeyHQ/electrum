@@ -3010,9 +3010,9 @@ class AndroidCommands(commands.Commands):
         for coin in create_coin_list:
             chain_affinity = _get_chain_affinity(coin)
             wallet_info = None
+            chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+            chain_info = coin_manager.get_chain_info(chain_code)
             if is_coin_migrated(coin):
-                chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
-                chain_info = coin_manager.get_chain_info(chain_code)
                 last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
                 target_level = BIP44Level[chain_info.bip44_target_level.upper()]
                 wallet_info = self.create(
@@ -3038,14 +3038,16 @@ class AndroidCommands(commands.Commands):
                     hd=True,
                 )
             elif chain_affinity == "eth":
+                chain_code_main = coin_manager.chain_code_to_legacy_coin(chain_info.chain_code)
+                coin = coin_manager.get_coin_info(chain_info.fee_code)
                 wallet_info = self.create(
-                    coin.upper(),
+                    f"{coin.symbol}",
                     password,
                     seed=seed,
                     passphrase=passphrase,
                     bip39_derivation=bip44_eth_derivation(0),
                     hd=True,
-                    coin=coin,
+                    coin=chain_code_main,
                 )
 
             if wallet_info is not None:
