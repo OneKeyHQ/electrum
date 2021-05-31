@@ -143,5 +143,29 @@
     "chain_affinity": "eth",
     "qr_code_prefix": "okt",
     "chain_id": "65"
+  },
+  {
+    "chain_code": "tftm",
+    "name": "Fantom Testnet",
+    "fee_code": "tftm",
+    "chain_model": "account",
+    "coins": [
+      {
+        "code": "tftm",
+        "symbol": "FTM",
+        "name": "Fantom Testnet",
+        "decimals": 18,
+        "icon": "https://onekey.243096.com/onekey/images/token/ftm/FTM.png"
+      }
+    ],
+    "clients": [
+      {
+        "class": "Geth",
+        "url": "https://rpc.testnet.fantom.network"
+      }
+    ],
+    "chain_affinity": "eth",
+    "qr_code_prefix": "ftm",
+    "chain_id": "4002"
   }
 ]

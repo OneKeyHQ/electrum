@@ -33,7 +33,7 @@ from electrum.bip32 import convert_bip32_path_to_list_of_uint32 as parse_path
 from electrum.bip32 import get_uncompressed_key
 from electrum.bitcoin import COIN
 from electrum.constants import read_json
-from electrum.eth_wallet import Abstract_Eth_Wallet, Eth_Wallet, Imported_Eth_Wallet, Standard_Eth_Wallet
+from electrum.eth_wallet import Abstract_Eth_Wallet, Imported_Eth_Wallet, Standard_Eth_Wallet
 from electrum.i18n import _, set_language
 from electrum.interface import ServerAddr
 from electrum.keystore import (
@@ -493,7 +493,7 @@ class AndroidCommands(commands.Commands):
                 wallet.start_network(self.network)
             elif chain_affinity == "eth":
                 if "importe" in wallet_type:
-                    wallet = Eth_Wallet(db, storage, config=self.config)
+                    wallet = Imported_Eth_Wallet(db, storage, config=self.config)
                 else:
                     index = 0
                     if "address_index" in db.data:
@@ -2028,6 +2028,11 @@ class AndroidCommands(commands.Commands):
         data = data.strip()
         try:
             out = util.parse_URI(data)
+            coin = out.get("coin")
+            if coin is None or coin == "btc":
+                pass
+            elif not coin_manager.is_chain_enabled(coin_manager.get_chain_code_by_legacy_wallet_chain(coin)):
+                out["coin"] = "eth"
 
             r = out.get("r")
             sig = out.get("sig")
@@ -4640,7 +4645,7 @@ class AndroidCommands(commands.Commands):
     def list_wallets(self, type_=None):
         """
         List available wallets
-        :param type: None/hw/hd/btc/eth/bsc/heco/okt
+        :param type: None/hw/hd/btc/eth/...
         :return: json like "[{"wallet_key":{'type':"", "addr":"", "name":"", "label":"", "device_id": ""}}, ...]"
         exp:
             all_list = testcommond.list_wallets()
@@ -4654,7 +4659,7 @@ class AndroidCommands(commands.Commands):
         generic_wallet_type = None
         if type_ in ("hw", "hd"):
             generic_wallet_type = type_
-        elif type_ in ("btc", "eth", "bsc", "heco", "okt"):
+        elif coin_manager.is_chain_enabled(coin_manager.get_chain_code_by_legacy_wallet_chain(type_)):
             coin = type_
         elif type_ is not None:
             raise BaseException(_("Unsupported coin types"))

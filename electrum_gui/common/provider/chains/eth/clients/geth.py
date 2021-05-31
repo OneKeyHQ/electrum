@@ -7,6 +7,7 @@ import eth_utils
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.request.exceptions import JsonRPCException
 from electrum_gui.common.basic.request.json_rpc import JsonRPCRequest
+from electrum_gui.common.conf import settings
 from electrum_gui.common.provider.chains.eth.clients import utils
 from electrum_gui.common.provider.data import (
     Address,
@@ -26,6 +27,8 @@ from electrum_gui.common.provider.exceptions import FailedToGetGasPrices, Transa
 from electrum_gui.common.provider.interfaces import BatchGetAddressMixin, ClientInterface
 
 _hex2int = partial(int, base=16)
+
+CLIENT_ALIVE_THRESHOLD = 600 if settings.IS_DEV else 120
 
 
 def _extract_eth_call_str_result(data: bytes) -> str:
@@ -53,7 +56,7 @@ class Geth(ClientInterface, BatchGetAddressMixin):
         return ClientInfo(
             "geth",
             best_block_number=_hex2int(the_latest_block["number"]),
-            is_ready=time.time() - _hex2int(the_latest_block["timestamp"]) < 120,
+            is_ready=time.time() - _hex2int(the_latest_block["timestamp"]) < CLIENT_ALIVE_THRESHOLD,
         )
 
     def get_address(self, address: str) -> Address:

@@ -177,7 +177,7 @@ class Abstract_Eth_Wallet(abc.ABC):
     def check_customer_and_default_path(self):
         derivation_path = self.get_derivation_path(self.get_addresses()[0])
         wallet_path_list = derivation_path.split('/')
-        default_path = helpers.get_default_path(self.coin, int(helpers.get_path_info(derivation_path, pos=1)))
+        default_path = keystore.bip44_eth_derivation(0)
         default_path_list = default_path.split('/')
 
         wallet_path_list.pop(-1)

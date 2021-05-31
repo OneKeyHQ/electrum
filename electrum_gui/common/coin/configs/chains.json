@@ -196,5 +196,53 @@
     "chain_affinity": "eth",
     "qr_code_prefix": "okt",
     "chain_id": "66"
+  },
+  {
+    "chain_code": "ftm",
+    "name": "Fantom Mainnet",
+    "fee_code": "ftm",
+    "chain_model": "account",
+    "coins": [
+      {
+        "code": "ftm",
+        "symbol": "FTM",
+        "name": "Fantom Mainnet",
+        "decimals": 18,
+        "icon": "https://onekey.243096.com/onekey/images/token/ftm/FTM.png"
+      }
+    ],
+    "clients": [
+      {
+        "class": "Geth",
+        "url": "https://rpcapi.fantom.network"
+      }
+    ],
+    "chain_affinity": "eth",
+    "qr_code_prefix": "ftm",
+    "chain_id": "250"
+  },
+  {
+    "chain_code": "xdai",
+    "name": "XDai Mainnet",
+    "fee_code": "xdai",
+    "chain_model": "account",
+    "coins": [
+      {
+        "code": "xdai",
+        "symbol": "xDai",
+        "name": "xDai Mainet",
+        "decimals": 18,
+        "icon": "https://onekey.243096.com/onekey/images/token/xdai/xDai.png"
+      }
+    ],
+    "clients": [
+      {
+        "class": "Geth",
+        "url": "https://rpc.xdaichain.com"
+      }
+    ],
+    "chain_affinity": "eth",
+    "qr_code_prefix": "xdai",
+    "chain_id": "100"
   }
 ]

@@ -52,6 +52,7 @@ ENABLED_CHAIN_COINS = (
         codes.TBSC,
         codes.THECO,
         codes.TOKT,
+        codes.TFTM,
     ]
     if IS_DEV
     else [
@@ -60,6 +61,8 @@ ENABLED_CHAIN_COINS = (
         codes.BSC,
         codes.HECO,
         codes.OKT,
+        codes.FTM,
+        codes.XDAI,
     ]
 )
 
@@ -70,6 +73,7 @@ PRICING_COIN_MAPPING = {
     codes.TBSC: codes.BSC,
     codes.THECO: codes.HECO,
     codes.TOKT: codes.OKT,
+    codes.TFTM: codes.FTM,
 }  # Map the price of the mainnet coin to the testnet coin
 
 COINGECKO_API_HOST = "https://api.coingecko.com"
@@ -78,6 +82,8 @@ COINGECKO_IDS = {
     codes.BSC: "binancecoin",
     codes.HECO: "huobi-token",
     codes.OKT: "okexchain",
+    codes.FTM: "fantom",
+    codes.XDAI: "xdai",
 }  # Map the coin code to coingecko id
 
 # loading local_settings.py on project root

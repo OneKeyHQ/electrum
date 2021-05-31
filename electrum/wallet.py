@@ -78,7 +78,6 @@ from .interface import NetworkException
 from .mnemonic import Mnemonic
 from .logging import get_logger
 from .lnworker import LNWallet, LNBackups
-from electrum_gui.android import helpers
 from .paymentrequest import PaymentRequest
 from .util import read_json_file, write_json_file, UserFacingException
 if TYPE_CHECKING:
@@ -360,11 +359,14 @@ class Abstract_Wallet(AddressSynchronizer, ABC):
     def check_customer_and_default_path(self):
         derivation_path = self.get_derivation_path(self.get_addresses()[0])
         wallet_path_list = derivation_path.split('/')
-        default_path = helpers.get_default_path(self.coin, int(helpers.get_path_info(derivation_path, pos=1)))
+
+        bip43_purpose = wallet_path_list[1].split("'")[0]
+        default_path = keystore.bip44_derivation(0, bip43_purpose=bip43_purpose)
         default_path_list = default_path.split('/')
         default_path_list += ['0', '0']
-        wallet_path_list.pop(3)
         default_path_list.pop(3)
+
+        wallet_path_list.pop(3)
         return wallet_path_list == default_path_list
 
     def set_key_pool_size(self):

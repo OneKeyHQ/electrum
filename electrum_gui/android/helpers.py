@@ -4,7 +4,6 @@ from typing import Tuple
 
 import eth_utils
 
-from electrum.keystore import bip44_derivation, bip44_eth_derivation
 from electrum_gui.common.secret import interfaces as secret_interfaces
 
 
@@ -29,13 +28,6 @@ def get_best_block_by_feerate(feerate, fee_info_list):
 
 def get_show_addr(addr):
     return f"{addr[0:6]}...{addr[-6:]}"
-
-
-def get_default_path(coin, purpose):
-    if coin == 'btc':
-        return bip44_derivation(0, bip43_purpose=purpose)
-    elif coin in ['eth', 'bsc', 'heco', 'okt']:
-        return bip44_eth_derivation(0)
 
 
 def get_temp_file():
