@@ -177,7 +177,7 @@ class Help:
 
 
 def _get_chain_affinity(coin):
-    chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+    chain_code = coin_manager.legacy_coin_to_chain_code(coin)
     chain_info = coin_manager.get_chain_info(chain_code)
     return chain_info.chain_affinity
 
@@ -1003,7 +1003,7 @@ class AndroidCommands(commands.Commands):
         gas_price=None,
         gas_limit=None,
     ):
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
         main_coin_code = coin_manager.get_chain_info(chain_code).fee_code
         main_coin = coin_manager.get_coin_info(main_coin_code)
 
@@ -1671,7 +1671,7 @@ class AndroidCommands(commands.Commands):
     def get_eth_tx_list(self, contract_address=None, search_type=None):
         ret = []
 
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
         main_coin = coin_manager.get_coin_info(coin_manager.get_chain_info(chain_code).fee_code)
         main_coin_price = price_manager.get_last_price(main_coin.code, self.ccy)
         if contract_address is not None:
@@ -1844,7 +1844,7 @@ class AndroidCommands(commands.Commands):
             raise UnsupportedCurrencyCoin()
 
     def get_eth_tx_info(self, tx_hash) -> str:
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
         fee_code = coin_manager.get_chain_info(chain_code).fee_code
         symbol = coin_manager.get_coin_info(fee_code).symbol
 
@@ -2315,7 +2315,7 @@ class AndroidCommands(commands.Commands):
                 "rank": 0
         """
         self._assert_wallet_isvalid()
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
         symbol, name, decimals = provider_manager.get_token_info_by_address(chain_code, contract_address)
         token_info = {
             "chain_id": coin_manager.get_chain_info(chain_code).chain_id,
@@ -2337,7 +2337,7 @@ class AndroidCommands(commands.Commands):
         if coin is None:
             coin = self.wallet.coin if self.wallet is not None else "eth"
 
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
         return json.dumps(list(self._load_tokens_dict(chain_code).values()))
 
     def _load_tokens_dict(self, chain_code: str) -> dict:
@@ -2352,7 +2352,7 @@ class AndroidCommands(commands.Commands):
         return tokens_dict
 
     def _get_icon_by_token(self, coin, address=""):
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
         if not address:
             coin = coin_manager.get_coin_info(chain_code, nullable=True)
         else:
@@ -2364,7 +2364,7 @@ class AndroidCommands(commands.Commands):
         if coin is None:
             coin = self.wallet.coin if self.wallet is not None else "eth"
 
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
 
         token_dict = self._load_tokens_dict(chain_code)
         top_50_tokens = set(itertools.islice(token_dict.keys(), 50))
@@ -2400,7 +2400,7 @@ class AndroidCommands(commands.Commands):
         if coin is None:
             coin = self.wallet.coin if self.wallet is not None else "eth"
 
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
         chain_info = coin_manager.get_chain_info(chain_code)
         if chain_info.chain_affinity == "eth":
             contract_addr = contract_addr.lower()
@@ -2601,7 +2601,7 @@ class AndroidCommands(commands.Commands):
                 data=data,
             )
 
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
         if contract_addr is None:
             main_coin_code = coin_manager.get_chain_info(chain_code).fee_code
             coin = coin_manager.get_coin_info(main_coin_code)
@@ -2719,7 +2719,7 @@ class AndroidCommands(commands.Commands):
         return json.dumps(signed_tx_info)
 
     def dapp_eth_send_tx(self, tx_hex: str):
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.wallet.coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
         try:
             receipt = provider_manager.broadcast_transaction(chain_code, tx_hex)
         except provider_exceptions.TransactionAlreadyKnown:
@@ -2732,7 +2732,7 @@ class AndroidCommands(commands.Commands):
             # TODO: check coin is eth-based
             legacy_chain_code = self.wallet.coin
 
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(legacy_chain_code)
+        chain_code = coin_manager.legacy_coin_to_chain_code(legacy_chain_code)
         chain_info = coin_manager.get_chain_info(chain_code)
         ret = {
             "rpc": chain_info.clients[0]["url"],  # TODO: use the URL of an alive client
@@ -3094,7 +3094,7 @@ class AndroidCommands(commands.Commands):
             chain_affinity = _get_chain_affinity(coin)
             wallet_info = None
             if is_coin_migrated(coin):
-                chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+                chain_code = coin_manager.legacy_coin_to_chain_code(coin)
                 chain_info = coin_manager.get_chain_info(chain_code)
                 last_hardened_level = BIP44Level[chain_info.bip44_last_hardened_level.upper()]
                 target_level = BIP44Level[chain_info.bip44_target_level.upper()]
@@ -3696,7 +3696,7 @@ class AndroidCommands(commands.Commands):
             chain_affinity = _get_chain_affinity(coin)
             if chain_affinity == "eth":
                 wallets = list(items)
-                chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+                chain_code = coin_manager.legacy_coin_to_chain_code(coin)
                 try:
                     address_info_list = provider_manager.batch_get_address(
                         chain_code, [wallet.get_addresses()[0] for wallet in wallets]
@@ -3950,7 +3950,7 @@ class AndroidCommands(commands.Commands):
         seed = self.get_hd_wallet().get_seed(password)
         chain_affinity = _get_chain_affinity(coin)
         if is_coin_migrated(coin):
-            chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+            chain_code = coin_manager.legacy_coin_to_chain_code(coin)
             chain_info = coin_manager.get_chain_info(chain_code)
             encode_seed = self.get_hd_wallet_encode_seed(seed=seed, coin=coin, purpose="44")
             account_id = self._get_derived_account_id(encode_seed)
@@ -4058,7 +4058,7 @@ class AndroidCommands(commands.Commands):
         return derived_num
 
     def get_account_id(self, path, coin):
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
         chain_info = coin_manager.get_chain_info(chain_code)
         return helpers.get_path_info(path, BIP44Level[chain_info.bip44_auto_increment_level.upper()])
 
@@ -4647,7 +4647,7 @@ class AndroidCommands(commands.Commands):
         self, wallet: Optional[Abstract_Eth_Wallet] = None, with_sum_fiat: bool = True
     ) -> Tuple[Dict, List, Decimal]:
         wallet = wallet or self.wallet
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(wallet.coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(wallet.coin)
         main_balance, tokens_balance_info = wallet.get_all_balance()
         sum_fiat = Decimal('0')
 
@@ -4794,7 +4794,7 @@ class AndroidCommands(commands.Commands):
         chain_affinity = _get_chain_affinity(coin)
         if chain_affinity == "eth":
             # TODO: try implementing get_history for eth wallets.
-            chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+            chain_code = coin_manager.legacy_coin_to_chain_code(coin)
             try:
                 address_info = provider_manager.get_address(chain_code, wallet_obj.get_addresses()[0])
             except Exception:

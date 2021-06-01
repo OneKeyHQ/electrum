@@ -50,7 +50,7 @@ class GeneralWallet(object):
     def from_pubkey_or_addresses(
         cls, name: str, coin: str, config: simple_config.SimpleConfig, pubkey_or_addresses: str
     ):
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
         pubkey_or_address = pubkey_or_addresses.split()[0]
 
         address_validation = provider_manager.verify_address(chain_code, pubkey_or_address)
@@ -72,7 +72,7 @@ class GeneralWallet(object):
 
     @classmethod
     def from_prvkeys(cls, name: str, coin: str, config: simple_config.SimpleConfig, prvkeys: str, password: str):
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
         prvkey = prvkeys.split()[0]
         wallet_info = wallet_manager.import_standalone_wallet_by_prvkey(
             name=name, chain_code=chain_code, prvkey=bytes.fromhex(prvkey), password=password
@@ -94,7 +94,7 @@ class GeneralWallet(object):
         as_primary_wallet: bool = False,
     ):
         require(mnemonic is not None)
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(coin)
 
         if not as_primary_wallet:
             wallet_info = wallet_manager.import_standalone_wallet_by_mnemonic(

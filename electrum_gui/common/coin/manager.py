@@ -209,14 +209,14 @@ def get_coin_by_token_address(chain_code: str, token_address: str, add_if_missin
     return coin
 
 
-def get_chain_code_by_legacy_wallet_chain(chain_code: str) -> str:
-    # Return chain code for legacy wallets
+def legacy_coin_to_chain_code(legacy_coin: str) -> str:
+    # Return chain code for legacy coin
     prefix = "t" if settings.IS_DEV else ""
-    return f"{prefix}{chain_code}"
+    return f"{prefix}{legacy_coin}"
 
 
 def chain_code_to_legacy_coin(chain_code: str) -> str:
-    # Return legacy chain code for new chain codes
+    # Return legacy coin for chain code
     if settings.IS_DEV and chain_code.startswith("t"):
         return chain_code[1:]
     else:

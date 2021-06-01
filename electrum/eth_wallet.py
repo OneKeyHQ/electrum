@@ -156,7 +156,7 @@ class Abstract_Eth_Wallet(abc.ABC):
     def contracts(self) -> dict:
         if self._contracts is None:
             self._contracts = {}
-            chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.coin)
+            chain_code = coin_manager.legacy_coin_to_chain_code(self.coin)
             for token_address in self.db.get("contracts", {}).keys():
                 try:
                     token = coin_manager.get_coin_by_token_address(chain_code, token_address, add_if_missing=True)
@@ -256,7 +256,7 @@ class Abstract_Eth_Wallet(abc.ABC):
                 self._total_balance["balance_info"][1].copy()
             )
 
-        chain_code = coin_manager.get_chain_code_by_legacy_wallet_chain(self.coin)
+        chain_code = coin_manager.legacy_coin_to_chain_code(self.coin)
         checksum_address = eth_utils.to_checksum_address(self.get_addresses()[0])
         try:
             raw_main_balance = provider_manager.get_balance(chain_code, checksum_address)
