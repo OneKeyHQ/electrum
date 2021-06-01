@@ -153,8 +153,8 @@ def add_coin(
 
 
 def _generate_coin_code(chain_code: str, token_address: str, symbol: str) -> str:
-    slice_length = 6
     address_length = len(token_address)  # length of ERC20 token_address is 42
+    slice_length = min(address_length, 6)
     token_address = token_address.lower()
 
     coin_code_base_str = f"{chain_code}_{symbol}".lower()
@@ -187,7 +187,10 @@ def _deduplicate_coins(coins: List[CoinInfo]) -> List[CoinInfo]:
 
 
 def query_coins_by_token_addresses(chain_code: str, token_addresses: List[str]) -> List[CoinInfo]:
-    return daos.query_coins_by_token_addresses(chain_code, token_addresses)
+    coins = [i for i in COINS_DICT.values() if i.chain_code == chain_code and i.token_address in token_addresses]
+    coins.extend(daos.query_coins_by_token_addresses(chain_code, token_addresses))
+    coins = _deduplicate_coins(coins)
+    return coins
 
 
 def get_coin_by_token_address(chain_code: str, token_address: str, add_if_missing: bool = False) -> Optional[CoinInfo]:
@@ -214,7 +217,7 @@ def get_chain_code_by_legacy_wallet_chain(chain_code: str) -> str:
 
 def chain_code_to_legacy_coin(chain_code: str) -> str:
     # Return legacy chain code for new chain codes
-    if settings.IS_DEV:
+    if settings.IS_DEV and chain_code.startswith("t"):
         return chain_code[1:]
     else:
         return chain_code

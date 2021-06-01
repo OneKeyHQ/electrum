@@ -41,9 +41,8 @@ def update_coin_info(coin_code: str, name: str = None, icon: str = None):
 
 
 def query_coins_by_token_addresses(chain_code: str, token_addresses: List[str]) -> List[CoinInfo]:
-    return list(
-        CoinModel.select().where(
-            CoinModel.chain_code == chain_code,
-            CoinModel.token_address.collate("NOCASE") << token_addresses,
-        )
+    models = CoinModel.select().where(
+        CoinModel.chain_code == chain_code,
+        CoinModel.token_address.collate("NOCASE") << token_addresses,
     )
+    return [i.to_dataclass() for i in models]
