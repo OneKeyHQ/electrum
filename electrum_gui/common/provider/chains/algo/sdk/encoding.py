@@ -1,8 +1,8 @@
 import base64
+import hashlib
 from collections import OrderedDict
 
 import umsgpack
-from Cryptodome.Hash import SHA512
 
 from electrum_gui.common.provider.chains.algo.sdk import constants, error
 
@@ -156,6 +156,6 @@ def checksum(data):
     Returns:
         bytes: checksum of the data
     """
-    chksum = SHA512.new(truncate="256")
+    chksum = hashlib.new('sha512_256')
     chksum.update(data)
     return chksum.digest()
