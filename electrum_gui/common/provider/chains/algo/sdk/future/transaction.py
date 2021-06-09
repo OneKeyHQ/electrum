@@ -248,7 +248,7 @@ class PaymentTxn(Transaction):
         if sp.flat_fee:
             self.fee = max(constants.min_txn_fee, self.fee)
         else:
-            self.fee = max(self.estimate_size() * self.fee, constants.min_txn_fee)
+            raise error.EstimateSizeError
 
     def dictify(self):
         d = dict()
@@ -406,7 +406,7 @@ class AssetConfigTxn(Transaction):
         if sp.flat_fee:
             self.fee = max(constants.min_txn_fee, self.fee)
         else:
-            self.fee = max(self.estimate_size() * self.fee, constants.min_txn_fee)
+            raise error.EstimateSizeError
 
     def dictify(self):
         d = dict()
@@ -613,7 +613,7 @@ class AssetTransferTxn(Transaction):
         if sp.flat_fee:
             self.fee = max(constants.min_txn_fee, self.fee)
         else:
-            self.fee = max(self.estimate_size() * self.fee, constants.min_txn_fee)
+            raise error.EstimateSizeError
 
     def dictify(self):
         d = dict()

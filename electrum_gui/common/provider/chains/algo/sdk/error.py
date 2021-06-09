@@ -70,3 +70,8 @@ class ZeroAddressError(Exception):
         Exception.__init__(
             self, "For the zero address, please specify " "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY5HFKQ"
         )
+
+
+class EstimateSizeError(Exception):
+    def __init__(self):
+        Exception.__init__(self, "estimating size is not currently supported")
