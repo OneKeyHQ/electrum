@@ -1,11 +1,10 @@
 import base64
 from typing import Dict, Tuple
 
-from algosdk import constants, encoding
-from algosdk.future.transaction import PaymentTxn, SignedTransaction
-
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.provider.chains.algo import ALGORestful
+from electrum_gui.common.provider.chains.algo.sdk import constants, encoding
+from electrum_gui.common.provider.chains.algo.sdk.future.transaction import PaymentTxn, SignedTransaction
 from electrum_gui.common.provider.data import AddressValidation, SignedTx, UnsignedTx
 from electrum_gui.common.provider.interfaces import ProviderInterface
 from electrum_gui.common.secret.interfaces import SignerInterface, VerifierInterface
@@ -22,8 +21,13 @@ class _ALGKey(object):
 
 class ALGOProvider(ProviderInterface):
     def verify_address(self, address: str) -> AddressValidation:
+        _normalized_address, _display_address = "", ""
         is_valid = encoding.is_valid_address(address)
-        return AddressValidation(is_valid=is_valid)
+        if is_valid:
+            _normalized_address, _display_address = address, address
+        return AddressValidation(
+            normalized_address=_normalized_address, display_address=_display_address, is_valid=is_valid
+        )
 
     def pubkey_to_address(self, verifier: VerifierInterface, enc: str = None) -> str:
         pubkey = verifier.get_pubkey(compressed=False)
@@ -35,9 +39,9 @@ class ALGOProvider(ProviderInterface):
         return self.client_selector(instance_required=ALGOProvider)
 
     def fill_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
-        params = self.client.suggested_params()
+        params = self.algo_restful.suggested_params()
         params.flat_fee = True
-        params.fee = unsigned_tx.flat_fee or 1000
+        params.fee = unsigned_tx.flat_fee or params.min_fee
         payload = unsigned_tx.payload.copy()
         tx_input = unsigned_tx.inputs[0] if unsigned_tx.inputs else None
         tx_output = unsigned_tx.outputs[0] if unsigned_tx.outputs else None

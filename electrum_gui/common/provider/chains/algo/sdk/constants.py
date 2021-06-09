@@ -26,8 +26,6 @@ address_len = 58
 """int: how long addresses are in base32, including the checksum"""
 min_txn_fee = 1000
 """int: minimum transaction fee"""
-microalgos_to_algos_ratio = 1000000
-"""int: how many microalgos per algo"""
 metadata_length = 32
 """int: length of asset metadata"""
 note_max_length = 1024

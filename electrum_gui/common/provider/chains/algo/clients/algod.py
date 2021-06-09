@@ -1,12 +1,11 @@
 import base64
 from typing import List, Optional
 
-from algosdk.future.transaction import SuggestedParams
-
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.text import force_text
 from electrum_gui.common.basic.request.exceptions import RequestException, ResponseException
 from electrum_gui.common.basic.request.restful import RestfulRequest
+from electrum_gui.common.provider.chains.algo.sdk.future.transaction import SuggestedParams
 from electrum_gui.common.provider.chains.eth.clients import utils
 from electrum_gui.common.provider.data import (
     Address,
@@ -28,12 +27,6 @@ from electrum_gui.common.provider.interfaces import ClientInterface, SearchTrans
 
 
 class ALGORestful(ClientInterface, SearchTransactionMixin):
-    __raw_tx_status_mapping__ = {
-        -1: TransactionStatus.PENDING,
-        0: TransactionStatus.CONFIRM_REVERTED,
-        1: TransactionStatus.CONFIRM_SUCCESS,
-    }
-
     def __init__(self, url: str, api_keys: List[str] = None):
         self.restful = RestfulRequest(url, timeout=10, headers={"x-api-key": api_keys[0] if api_keys else None})
 
@@ -168,8 +161,8 @@ class ALGORestful(ClientInterface, SearchTransactionMixin):
 
         return PricesPerUnit(
             fast=EstimatedTimeOnPrice(price=min_fee, time=60),
-            normal=EstimatedTimeOnPrice(price=min_fee, time=180),
-            slow=EstimatedTimeOnPrice(price=min_fee, time=600),
+            normal=EstimatedTimeOnPrice(price=min_fee, time=90),
+            slow=EstimatedTimeOnPrice(price=min_fee, time=120),
         )
 
     def suggested_params(self) -> SuggestedParams:
