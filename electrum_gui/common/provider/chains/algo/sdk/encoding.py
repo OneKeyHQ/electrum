@@ -2,7 +2,7 @@ import base64
 import hashlib
 from collections import OrderedDict
 
-import umsgpack
+import msgpack
 
 from electrum_gui.common.provider.chains.algo.sdk import constants, error
 
@@ -32,7 +32,7 @@ def msgpack_encode(obj):
     if not isinstance(obj, dict):
         d = obj.dictify()
     od = _sort_dict(d)
-    return base64.b64encode(umsgpack.packb(od, use_bin_type=True)).decode()
+    return base64.b64encode(msgpack.packb(od, use_bin_type=True)).decode()
 
 
 def _sort_dict(d):
