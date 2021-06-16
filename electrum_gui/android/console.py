@@ -1686,14 +1686,13 @@ class AndroidCommands(commands.Commands):
             self.old_history_info = all_data
             return json.dumps(all_data[start:end])
 
-    def get_eth_tx_list(self, contract_address=None, search_type=None):
+    def get_general_coin_tx_list(self, contract_address=None, search_type=None):
         ret = []
 
         chain_code = coin_manager.legacy_coin_to_chain_code(self.wallet.coin)
-        main_coin = coin_manager.get_coin_info(coin_manager.get_chain_info(chain_code).fee_code)
+        main_coin = coin_manager.get_coin_info(coin_manager.get_chain_info(chain_code).chain_code)
         main_coin_price = price_manager.get_last_price(main_coin.code, self.ccy)
         if contract_address is not None:
-            contract_address = contract_address.lower()
             coin = coin_manager.get_coin_by_token_address(chain_code, contract_address)
             coin_price = price_manager.get_last_price(coin.code, self.ccy)
         else:
@@ -1701,10 +1700,11 @@ class AndroidCommands(commands.Commands):
             coin = main_coin
             coin_price = main_coin_price
 
-        decimal_divisor = pow(10, coin.decimals)
+        main_coin_decimal_divisor = pow(10, main_coin.decimals)
+        coin_decimal_divisor = pow(10, coin.decimals)
         address = self.wallet.get_addresses()[0].lower()
         for transaction in provider_manager.search_txs_by_address(chain_code, address):
-            fee = Decimal(eth_utils.from_wei(transaction.fee.used * transaction.fee.price_per_unit, "ether"))
+            fee = Decimal(transaction.fee.used * transaction.fee.price_per_unit / main_coin_decimal_divisor)
             fee_fiat = fee * main_coin_price
             detailed_status = transaction.detailed_status
             show_status = transaction.show_status
@@ -1727,7 +1727,7 @@ class AndroidCommands(commands.Commands):
                     continue
 
                 show_address = output_address if input_address == address else input_address
-                amount = Decimal(output.value) / decimal_divisor
+                amount = Decimal(output.value) / coin_decimal_divisor
                 fiat = amount * coin_price
                 ret.append(
                     {
@@ -1792,8 +1792,8 @@ class AndroidCommands(commands.Commands):
         chain_affinity = _get_chain_affinity(coin)
         if chain_affinity == "btc":
             return self.get_btc_tx_list(start=start, end=end, search_type=search_type)
-        elif chain_affinity == "eth":
-            return self.get_eth_tx_list(contract_address=contract_address, search_type=search_type)
+        elif chain_affinity == "eth" or is_coin_migrated(coin):
+            return self.get_general_coin_tx_list(contract_address=contract_address, search_type=search_type)
         else:
             raise UnsupportedCurrencyCoin()
 
