@@ -19,7 +19,7 @@ def _verify_signing_process(sk: KeyInterface, verifier: VerifierInterface = None
     require(verifier.verify(message, sig))
 
 
-def _verify_key(curve: CurveEnum, prvkey: bytes = None, pubkey: bytes = None):
+def verify_key(curve: CurveEnum, prvkey: bytes = None, pubkey: bytes = None):
     try:
         ins = registry.key_class_on_curve(curve).from_key(prvkey=prvkey, pubkey=pubkey)
         if ins.has_prvkey():
@@ -77,7 +77,7 @@ def _verify_parent_pubkey_id(parent_pubkey_id: int):
 def import_pubkey(
     curve: CurveEnum, pubkey: bytes, path: str = None, parent_pubkey_id: int = None, secret_key_id: int = None
 ) -> PubKeyModel:
-    _verify_key(curve, pubkey=pubkey)
+    verify_key(curve, pubkey=pubkey)
     path is None or _verify_bip32_path(path)
     parent_pubkey_id is None or _verify_parent_pubkey_id(parent_pubkey_id)
     secret_key_id is None or require(daos.get_secret_key_model_by_id(secret_key_id) is not None)
@@ -120,7 +120,7 @@ def import_prvkey(
     parent_pubkey_id: int = None,
 ) -> Tuple[PubKeyModel, SecretKeyModel]:
     require(bool(password))
-    _verify_key(curve, prvkey=prvkey)
+    verify_key(curve, prvkey=prvkey)
     path is None or _verify_bip32_path(path)
     parent_pubkey_id is None or _verify_parent_pubkey_id(parent_pubkey_id)
 
@@ -290,7 +290,7 @@ def get_pubkey_by_id(pubkey_id: int) -> PubKeyModel:
 
 
 def raw_create_verifier_by_pubkey(curve: CurveEnum, pubkey: bytes) -> VerifierInterface:
-    _verify_key(curve, pubkey=pubkey)
+    verify_key(curve, pubkey=pubkey)
     return registry.key_class_on_curve(curve).from_key(pubkey=pubkey)
 
 
@@ -315,7 +315,7 @@ def mnemonic_to_seed(mnemonic: str, passphrase: str = None) -> bytes:
 
 
 def raw_create_key_by_prvkey(curve: CurveEnum, prvkey: bytes) -> KeyInterface:
-    _verify_key(curve, prvkey=prvkey)
+    verify_key(curve, prvkey=prvkey)
     return registry.key_class_on_curve(curve).from_key(prvkey=prvkey)
 
 

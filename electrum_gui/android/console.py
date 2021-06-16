@@ -87,6 +87,7 @@ from ..common.coin import codes
 from ..common.coin import manager as coin_manager
 from ..common.price import manager as price_manager
 from ..common.provider import provider_manager
+from ..common.secret import manager as secret_manager
 from ..common.wallet import manager as wallet_manager
 from ..common.wallet.bip44 import BIP44Level, BIP44Path
 from .create_wallet_info import CreateWalletInfo
@@ -3201,7 +3202,27 @@ class AndroidCommands(commands.Commands):
                 raise exceptions.InvalidMnemonicFormat()
             return
         chain_affinity = _get_chain_affinity(coin)
-        if chain_affinity == "btc":
+        if coin and is_coin_migrated(coin):
+            chain_code = coin_manager.legacy_coin_to_chain_code(coin)
+            chain_info = coin_manager.get_chain_info(chain_code)
+            if flag == "private":
+                data = eth_utils.remove_0x_prefix(data)
+                try:
+                    data = bytes.fromhex(data)
+                    secret_manager.verify_key(chain_info.curve, prvkey=data)
+                except ValueError:
+                    raise exceptions.UnavailablePrivateKey()
+            elif flag == "public":
+                try:
+                    data = bytes.fromhex(data)
+                    secret_manager.verify_key(chain_info.curve, pubkey=data)
+                except ValueError:
+                    raise exceptions.UnavailablePublicKey()
+            elif flag == "address":
+                validation = provider_manager.verify_address(chain_code, data)
+                if not validation.is_valid:
+                    raise exceptions.UnavailableAddress()
+        elif chain_affinity == "btc":
             if flag == "private":
                 try:
                     ecc.ECPrivkey(bfh(data))

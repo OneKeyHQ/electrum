@@ -51,6 +51,10 @@ class UnavailableEthAddr(OneKeyException):
     key = "msg__incorrect_eth_address"
 
 
+class UnavailableAddress(OneKeyException):
+    key = "msg__incorrect_address"
+
+
 def catch_exception(force_api_version: int = None):
     def middle(func):
         @functools.wraps(func)
