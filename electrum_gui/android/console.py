@@ -335,7 +335,7 @@ class AndroidCommands(commands.Commands):
             out["tokens"] = contracts_balance_info
             out["sum_fiat"] = f"{self.daemon.fx.ccy_amount_str(sum_fiat, True)} {self.ccy}"
             out["coin_asset"] = self._fill_balance_info_with_coin(sum_fiat, coin)
-            out["name"] = self.wallet.identity
+            out["id"] = self.wallet.identity
         elif (
             self.network
             and self.network.is_connected()
@@ -358,7 +358,7 @@ class AndroidCommands(commands.Commands):
             out["tokens"] = []
             out["sum_fiat"] = fiat_str
             out["coin_asset"] = out["balance"]
-            out["name"] = self.wallet.identity
+            out["id"] = self.wallet.identity
 
             if u:
                 out["unconfirmed"] = self.format_amount(u, is_diff=True).strip()
@@ -3608,7 +3608,7 @@ class AndroidCommands(commands.Commands):
             self.wallet_context.set_backup_info(wallet.keystore.xpub)
         ret = {
             "seed": seed if new_seed else "",
-            "wallet_info": [{"coin_type": coin, "name": wallet.identity, "exist": 0}],
+            "wallet_info": [{"coin_type": coin, "id": wallet.identity, "exist": 0}],
             "derived_info": [],
         }
         return json.dumps(ret)
@@ -3767,8 +3767,8 @@ class AndroidCommands(commands.Commands):
                         {
                             "coin": coin,
                             "blance": balance,
-                            "name": str(wallets[index]),
-                            "label": wallets[index].get_name(),
+                            "id": wallets[index].identity,
+                            "name": wallets[index].get_name(),
                             "exist": "1"
                             if self.daemon.get_wallet(self._wallet_path(wallets[index].identity)) is not None
                             else "0",
@@ -3784,8 +3784,8 @@ class AndroidCommands(commands.Commands):
                         {
                             "coin": coin,
                             "blance": balance,
-                            "name": str(wallet),
-                            "label": wallet.get_name(),
+                            "id": wallet.identity,
+                            "name": wallet.get_name(),
                             "exist": "1"
                             if self.daemon.get_wallet(self._wallet_path(wallet.identity)) is not None
                             else "0",
@@ -3888,9 +3888,9 @@ class AndroidCommands(commands.Commands):
                     exist = 1 if self.daemon.get_wallet(self._wallet_path(wallet_id)) is not None else 0
                     wallet_info = {
                         'coin_type': coin,
-                        'name': wallet.identity,
+                        'id': wallet.identity,
                         'exist': exist,
-                        'label': wallet.get_name(),
+                        'name': wallet.get_name(),
                     }
                     wallet_list.append(wallet_info)
             except BaseException as e:
@@ -4130,18 +4130,18 @@ class AndroidCommands(commands.Commands):
           "btc_asset":"",
           "wallet_info": [
             {
-              "name": "",
+              "id": "",
               "coin":""
-              "label": "",
+              "name": "",
               "sum_fiat": "1,333.55",
               "wallets": [
                 {"coin": "btc", "address":"", "balance": "", "fiat": "", "icon":""}
               ]
             },
             {
-              "name": "",
+              "id": "",
               "coin":""
-              "label": "",
+              "name": "",
               "sum_fiat": "",
               "wallets": [
                 { "coin": "btc", "address":"", "balance": "", "fiat": "", "icon":""},
@@ -4156,7 +4156,7 @@ class AndroidCommands(commands.Commands):
             all_balance = Decimal("0")
             all_wallet_info = []
             for wallet in self.daemon.get_wallets().values():
-                wallet_info = {"name": wallet.identity, "label": wallet.get_name()}
+                wallet_info = {"name": wallet.get_name(), "id": wallet.identity}
                 coin = wallet.coin
                 wallet_info["coin"] = coin
                 chain_affinity = _get_chain_affinity(coin)
@@ -4198,7 +4198,7 @@ class AndroidCommands(commands.Commands):
             )  # sort no-zero balance wallet by fiat currency in reverse order
 
             zero_balance_wallets = (i for i in all_wallet_info if i["sum_fiat"] <= 0)
-            zero_balance_wallets_dict = {i["name"]: i for i in zero_balance_wallets}
+            zero_balance_wallets_dict = {i["id"]: i for i in zero_balance_wallets}
             sorted_wallet_labels = (i[0] for i in self.wallet_context.get_stored_wallets_types())
 
             zero_balance_wallets = [
@@ -4493,14 +4493,14 @@ class AndroidCommands(commands.Commands):
         except BaseException as e:
             raise e
 
-    def switch_wallet(self, name):
+    def switch_wallet(self, id):
         """
         Switching to a specific wallet
-        :param name: name as string
+        :param id: id as string
         :return: json like
         {
+            "id": "",
             "name": "",
-            "label": "",
             "wallets": [
             {"coin": "usdt", "address": ""},
             ...
@@ -4508,10 +4508,10 @@ class AndroidCommands(commands.Commands):
         }
         """
         self._assert_daemon_running()
-        if name is None:
+        if id is None:
             raise FailedToSwitchWallet()
 
-        self.wallet = self.daemon.get_wallet(self._wallet_path(name))
+        self.wallet = self.daemon.get_wallet(self._wallet_path(id))
         # self.wallet.use_change = self.config.get("use_change", False)
         chain_affinity = _get_chain_affinity(self.wallet.coin)
         if is_coin_migrated(self.wallet.coin) and isinstance(self.wallet, GeneralWallet):
@@ -4524,7 +4524,7 @@ class AndroidCommands(commands.Commands):
         elif chain_affinity == "eth":
             contract_info = self.wallet.get_contract_symbols_with_address()
 
-            info = {"name": name, "label": self.wallet.get_name(), "wallets": contract_info}
+            info = {"id": id, "name": self.wallet.get_name(), "wallets": contract_info}
         elif chain_affinity == "btc":
             if not isinstance(self.wallet, Imported_Wallet):
                 self.wallet.set_key_pool_size()
@@ -4532,8 +4532,8 @@ class AndroidCommands(commands.Commands):
             util.trigger_callback("wallet_updated", self.wallet)
 
             info = {
-                "name": name,
-                "label": self.wallet.get_name(),
+                "id": id,
+                "name": self.wallet.get_name(),
                 "wallets": [],
             }
             if self.label_flag and self.wallet.wallet_type != "standard":
@@ -4550,6 +4550,7 @@ class AndroidCommands(commands.Commands):
           "all_balance": "",
           "coin_asset":"",
           "coin":"",
+          "id":"",
           "name":"",
           "wallets": [
             {"coin": "eth", "address": "", "balance": "", "fiat": "", "icon":""},
@@ -4559,7 +4560,7 @@ class AndroidCommands(commands.Commands):
         """
         self._assert_wallet_isvalid()
         coin = self.wallet.coin
-        info = {"name": self.wallet.identity, "label": self.wallet.get_name(), "coin": coin}
+        info = {"id": self.wallet.identity, "name": self.wallet.get_name(), "coin": coin}
         chain_affinity = _get_chain_affinity(coin)
         if is_coin_migrated(coin):
             main_balance_info, contracts_balance_info, sum_fiat = self._get_general_wallet_all_balance(self.wallet)
@@ -4605,14 +4606,14 @@ class AndroidCommands(commands.Commands):
             raise UnsupportedCurrencyCoin()
         return json.dumps(info, cls=DecimalEncoder)
 
-    def select_wallet(self, name):  # TODO: Will be deleted later
+    def select_wallet(self, id):  # TODO: Will be deleted later
         """
         Select wallet by name
         :param name: name as string
         :return: json like
         {
+          "id": "",
           "name": "",
-          "label": "",
           "wallets": [
             {"coin": "eth", "balance": "", "fiat": ""},
             {"coin": "usdt", "balance": "", "fiat": ""}
@@ -4620,10 +4621,10 @@ class AndroidCommands(commands.Commands):
         }
         """
         self._assert_daemon_running()
-        if name is None:
+        if id is None:
             self.wallet = None
         else:
-            self.wallet = self.daemon.get_wallet(self._wallet_path(name))
+            self.wallet = self.daemon.get_wallet(self._wallet_path(id))
 
         self.wallet.use_change = self.config.get("use_change", False)
         coin = self.wallet.coin
@@ -4641,8 +4642,8 @@ class AndroidCommands(commands.Commands):
                 self.wallet, with_sum_fiat=False
             )
             info = {
-                "name": name,
-                "label": self.wallet.get_name(),
+                "id": id,
+                "name": self.wallet.get_name(),
                 "wallets": [main_balance_info] + contracts_balance_info,
             }
             return json.dumps(info, cls=DecimalEncoder)
@@ -4655,8 +4656,8 @@ class AndroidCommands(commands.Commands):
             fiat_str = f"{self.daemon.fx.ccy_amount_str(fiat, True)} {self.ccy}"
             info = {
                 "balance": self.format_amount(balance) + " (%s)" % fiat_str,  # fixme deprecated field
-                "name": name,
-                "label": self.wallet.get_name(),
+                "id": id,
+                "name": self.wallet.get_name(),
                 "wallets": [{"coin": "btc", "balance": self.format_amount(balance), "fiat": fiat_str}],
             }
             if self.label_flag and self.wallet.wallet_type != "standard":
@@ -4774,7 +4775,7 @@ class AndroidCommands(commands.Commands):
         """
         List available wallets
         :param type: None/hw/hd/btc/eth/bsc/heco/okt
-        :return: json like "[{"wallet_key":{'type':"", "addr":"", "name":"", "label":"", "device_id": ""}}, ...]"
+        :return: json like "[{"wallet_key":{'type':"", "addr":"", "id":"", "name":"", "device_id": ""}}, ...]"
         exp:
             all_list = testcommond.list_wallets()
             hd_list = testcommond.list_wallets(type='hd')
@@ -4803,8 +4804,8 @@ class AndroidCommands(commands.Commands):
                     wallet_id: {
                         "type": wallet_type,
                         "addr": wallet.get_addresses()[0],
-                        "name": wallet.identity,
-                        "label": wallet.get_name(),
+                        "id": wallet.identity,
+                        "name": wallet.get_name(),
                         "device_id": device_id,
                         "derivation_path": wallet.get_derivation_path(wallet.get_addresses()[0]),
                     }
