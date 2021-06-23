@@ -83,6 +83,7 @@ from electrum_gui.common.basic.request.exceptions import ResponseException
 from electrum_gui.common.basic.request.restful import RestfulRequest
 from electrum_gui.common.coin import codes
 from electrum_gui.common.coin import manager as coin_manager
+from electrum_gui.common.conf import chains as chains_config
 from electrum_gui.common.price import manager as price_manager
 from electrum_gui.common.provider import data as provider_data
 from electrum_gui.common.provider import exceptions as provider_exceptions
@@ -5064,6 +5065,12 @@ class AndroidCommands(commands.Commands):
         wallets_dir = join(self.user_dir, "tx_history")
         util.make_dir(wallets_dir)
         return util.standardize_path(join(wallets_dir, name))
+
+    @api.api_entry(force_version=api.Version.V3)
+    def network_list(self, params):
+        refresh = params.get("refresh", False)
+        _ = chains_config.list_chain_settings(refresh=refresh)
+        return []  # TODO
 
 
 all_commands = commands.known_commands.copy()
