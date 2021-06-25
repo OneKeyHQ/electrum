@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, call, patch
 
 from electrum_gui.common.price import data
 from electrum_gui.common.price.channels.coingecko import Coingecko
@@ -7,10 +7,12 @@ from electrum_gui.common.price.channels.coingecko import Coingecko
 
 class TestCoingecko(TestCase):
     def setUp(self) -> None:
-        self.cgk = Coingecko("")
+        self.cgk = Coingecko()
         self.cgk.restful = Mock()
 
-    def test_pricing_btc(self):
+    @patch("electrum_gui.common.conf.chains.get_coingecko_ids")
+    def test_pricing_btc(self, fake_get_cgkids):
+        fake_get_cgkids.return_value = []
         self.cgk.restful.get.return_value = {
             "rates": {
                 "usd": {
@@ -34,19 +36,27 @@ class TestCoingecko(TestCase):
         )
         self.cgk.restful.get.assert_called_once_with("/api/v3/exchange_rates")
 
-    @patch("electrum_gui.common.price.channels.coingecko.settings")
-    def test_pricing_pre_config_cgk_id_coins(self, fake_settings):
-        fake_settings.PRICING_COIN_MAPPING = {}
-        fake_settings.COINGECKO_IDS = {"eth": "ethereum", "bsc": "binancecoin"}
-        self.cgk.restful.get.return_value = [
-            {
-                "id": "ethereum",
-                "current_price": 0.125,
-            },
-            {
-                "id": "binancecoin",
-                "current_price": 0.001,
-            },
+    @patch("electrum_gui.common.conf.chains.get_coin_codes_by_coingecko_id")
+    @patch("electrum_gui.common.conf.chains.get_coingecko_ids")
+    def test_pricing_pre_config_cgk_id_coins(self, fake_get_cgkids, fake_get_coin_codes):
+        mappings = {
+            "ethereum": ["eth"],
+            "binancecoin": ["bsc"],
+        }
+        fake_get_cgkids.return_value = list(mappings.keys())
+        fake_get_coin_codes.side_effect = lambda cgkid: mappings.get(cgkid)
+        self.cgk.restful.get.side_effect = [
+            {},
+            [
+                {
+                    "id": "ethereum",
+                    "current_price": 0.125,
+                },
+                {
+                    "id": "binancecoin",
+                    "current_price": 0.001,
+                },
+            ],
         ]
 
         self.assertEqual(
@@ -64,16 +74,24 @@ class TestCoingecko(TestCase):
                 )
             ),
         )
-        self.cgk.restful.get.assert_called_once_with(
-            "/api/v3/coins/markets",
-            params={
-                "ids": "ethereum,binancecoin",
-                "vs_currency": "btc",
-            },
+        self.assertEqual(2, self.cgk.restful.get.call_count)
+        self.cgk.restful.get.assert_has_calls(
+            [
+                call("/api/v3/exchange_rates"),
+                call(
+                    "/api/v3/coins/markets",
+                    params={
+                        "ids": "ethereum,binancecoin",
+                        "vs_currency": "btc",
+                    },
+                ),
+            ]
         )
 
-    def test_pricing_erc20(self):
-        self.cgk.restful.get.return_value = {"0x11": {"btc": 0.000125}, "0xab": {"btc": 0.00011}}
+    @patch("electrum_gui.common.conf.chains.get_coingecko_ids")
+    def test_pricing_erc20(self, fake_get_cgkids):
+        fake_get_cgkids.return_value = []
+        self.cgk.restful.get.side_effect = [{}, {"0x11": {"btc": 0.000125}, "0xab": {"btc": 0.00011}}]
 
         self.assertEqual(
             [
@@ -89,10 +107,16 @@ class TestCoingecko(TestCase):
                 )
             ),
         )
-        self.cgk.restful.get.assert_called_once_with(
-            "/api/v3/simple/token_price/ethereum",
-            params={
-                "contract_addresses": "0x11,0xab",
-                "vs_currencies": "btc",
-            },
+        self.assertEqual(2, self.cgk.restful.get.call_count)
+        self.cgk.restful.get.assert_has_calls(
+            [
+                call("/api/v3/exchange_rates"),
+                call(
+                    "/api/v3/simple/token_price/ethereum",
+                    params={
+                        "contract_addresses": "0x11,0xab",
+                        "vs_currencies": "btc",
+                    },
+                ),
+            ]
         )

@@ -63,23 +63,6 @@ ENABLED_CHAIN_COINS = (
     ]
 )
 
-
-PRICING_COIN_MAPPING = {
-    codes.TBTC: codes.BTC,
-    codes.TETH: codes.ETH,
-    codes.TBSC: codes.BSC,
-    codes.THECO: codes.HECO,
-    codes.TOKT: codes.OKT,
-}  # Map the price of the mainnet coin to the testnet coin
-
-COINGECKO_API_HOST = "https://api.coingecko.com"
-COINGECKO_IDS = {
-    codes.ETH: "ethereum",
-    codes.BSC: "binancecoin",
-    codes.HECO: "huobi-token",
-    codes.OKT: "okexchain",
-}  # Map the coin code to coingecko id
-
 # loading local_settings.py on project root
 try:
     from local_settings import *  # noqa

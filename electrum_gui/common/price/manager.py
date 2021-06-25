@@ -1,4 +1,3 @@
-import functools
 import logging
 from decimal import Decimal
 from typing import Callable, Dict, Iterable, List, Sequence, Set, Tuple
@@ -8,7 +7,6 @@ from electrum_gui.common.basic.functional.wraps import cache_it
 from electrum_gui.common.basic.ticker.utils import on_interval
 from electrum_gui.common.coin import codes
 from electrum_gui.common.coin import manager as coin_manager
-from electrum_gui.common.conf import settings
 from electrum_gui.common.price import daos
 from electrum_gui.common.price.channels import coingecko, uniswap
 from electrum_gui.common.price.data import Channel
@@ -17,7 +15,7 @@ from electrum_gui.common.price.interfaces import PriceChannelInterface
 logger = logging.getLogger("app.price")
 
 _registry: Dict[Channel, Callable[[], PriceChannelInterface]] = {
-    Channel.CGK: functools.partial(coingecko.Coingecko, settings.COINGECKO_API_HOST),
+    Channel.CGK: coingecko.Coingecko,
     Channel.UNISWAP: uniswap.Uniswap,
 }
 
@@ -48,9 +46,6 @@ def pricing(coin_codes: List[str] = None):
 
 @cache_it(timeout=5 * 60)
 def get_last_price(coin_code: str, unit: str, default: Decimal = 0) -> Decimal:
-    coin_code = settings.PRICING_COIN_MAPPING.get(coin_code) or coin_code
-    unit = settings.PRICING_COIN_MAPPING.get(unit) or unit
-
     paths = list(_generate_searching_paths(coin_code, unit))
     pairs = _split_paths_to_pairs(paths)
     pair_prices = daos.load_price_by_pairs(pairs)

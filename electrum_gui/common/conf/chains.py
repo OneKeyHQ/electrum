@@ -129,3 +129,18 @@ def _load_data(refresh=False):
 def list_chain_settings(refresh: bool = False) -> List[Dict]:
     _load_data(refresh=refresh)
     return list(CHAINS.values())
+
+
+def get_coingecko_ids() -> List[str]:
+    _load_data()
+    return list(PRICE["coingecko_mappings"].keys())
+
+
+def get_coin_codes_by_coingecko_id(cgk_id: str) -> List[str]:
+    _load_data()
+    return PRICE["coingecko_mappings"].get(cgk_id) or []
+
+
+def get_uniswap_configs(chain_code: str) -> Optional[Dict]:
+    _load_data()
+    return PRICE["uniswap_configs"].get(chain_code)
