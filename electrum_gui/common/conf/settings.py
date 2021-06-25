@@ -1,6 +1,5 @@
 from os import path
 
-from electrum_gui.common.coin import codes
 from electrum_gui.common.conf.utils import get_data_dir
 
 try:
@@ -44,24 +43,6 @@ DB_MODULES = [
     "electrum_gui.common.secret",
     "electrum_gui.common.wallet",
 ]
-
-ENABLED_CHAIN_COINS = (
-    [
-        codes.TBTC,
-        codes.TETH,
-        codes.TBSC,
-        codes.THECO,
-        codes.TOKT,
-    ]
-    if IS_DEV
-    else [
-        codes.BTC,
-        codes.ETH,
-        codes.BSC,
-        codes.HECO,
-        codes.OKT,
-    ]
-)
 
 # loading local_settings.py on project root
 try:

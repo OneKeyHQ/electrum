@@ -4,7 +4,7 @@ import io
 import json
 import os
 import zipfile
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 from electrum_gui.common.conf import settings, utils
 
@@ -19,19 +19,27 @@ CHAIN_IMPLS = {
         "curve": "secp256k1",
         "chain_affinity": "btc",
         "bip44_coin_type": 0,
+        "bip44_target_level": "ADDRESS_INDEX",
         "bip44_auto_increment_level": "ACCOUNT",
+        "bip44_last_hardened_level": "ACCOUNT",
         "default_address_encoding": "P2WPKH-P2SH",
         "bip44_purpose_options": {
             "P2PKH": 44,
             "P2WPKH-P2SH": 49,
             "P2WPKH": 84,
         },
+        "fee_price_decimals_for_legibility": 0,
     },
     "evm": {
         "chain_model": "account",
         "curve": "secp256k1",
         "chain_affinity": "eth",
         "bip44_coin_type": 60,
+        "bip44_target_level": "ADDRESS_INDEX",
+        "bip44_auto_increment_level": "ADDRESS_INDEX",
+        "bip44_last_hardened_level": "ACCOUNT",
+        "default_address_encoding": None,
+        "bip44_purpose_options": {},
         "fee_price_decimals_for_legibility": 9,
     },
     "stc": {
@@ -43,6 +51,8 @@ CHAIN_IMPLS = {
         "bip44_auto_increment_level": "ADDRESS_INDEX",
         "bip44_last_hardened_level": "ADDRESS_INDEX",
         "default_address_encoding": "HEX",
+        "bip44_purpose_options": {},
+        "fee_price_decimals_for_legibility": 0,
     },
     "sol": {
         "chain_model": "account",
@@ -52,6 +62,9 @@ CHAIN_IMPLS = {
         "bip44_target_level": "CHANGE",
         "bip44_auto_increment_level": "ACCOUNT",
         "bip44_last_hardened_level": "CHANGE",
+        "default_address_encoding": None,
+        "bip44_purpose_options": {},
+        "fee_price_decimals_for_legibility": 0,
     },
 }
 
@@ -108,10 +121,18 @@ def _load_data(refresh=False):
             elif conf_type == "settings":
                 chain_settings = json.loads(chains_zip.read(filename))
 
-                if chain_settings["impl"] not in CHAIN_IMPLS:
+                impl = CHAIN_IMPLS.get(chain_settings["impl"])
+                if impl is None:
                     continue
                 if chain_settings.get("staging", False) and not settings.IS_DEV:
                     continue
+
+                # Fill with implementation defaults
+                for k, v in impl.items():
+                    chain_settings.setdefault(k, v)
+                # Fill with defaults
+                chain_settings.setdefault("chain_id", None)
+                chain_settings.setdefault("qr_code_prefix", chain)
 
                 CHAINS[chain] = chain_settings
                 # Extract price configs
@@ -149,3 +170,55 @@ def get_uniswap_configs(chain_code: str) -> Optional[Dict]:
 def get_client_configs(chain_code: str) -> List[Dict[str, str]]:
     _load_data()
     return CHAINS.get(chain_code, {}).get("clients") or []
+
+
+def get_added_coins(existing_coin_codes: Set[str]) -> List[Dict[str, str]]:
+    ret = []
+
+    _load_data()
+    for chain_code, chain_settings in CHAINS.items():
+        for coin_info in chain_settings.get("coins", []):
+            coin_code = coin_info["code"]
+            if coin_code in existing_coin_codes:
+                continue
+            ret.append(
+                {
+                    "code": coin_code,
+                    "chain_code": chain_code,
+                    "name": coin_info["symbol"],  # This doesn't matter.
+                    "symbol": coin_info["symbol"],
+                    "decimals": coin_info["decimals"],
+                }
+            )
+
+    return ret
+
+
+def get_added_chains(existing_chain_codes: Set[str]) -> List[Dict]:
+    ret = []
+
+    _load_data()
+    for chain_code, chain_settings in CHAINS.items():
+        if chain_code in existing_chain_codes:
+            continue
+
+        added_chain = {
+            "chain_code": chain_code,
+            "fee_code": chain_settings["fee_coin"],
+            "name": chain_settings["name"],
+            "chain_model": chain_settings["chain_model"],
+            "curve": chain_settings["curve"],
+            "chain_affinity": chain_settings["chain_affinity"],
+            "qr_code_prefix": chain_settings["qr_code_prefix"],
+            "bip44_coin_type": chain_settings["bip44_coin_type"],
+            "bip44_target_level": chain_settings["bip44_target_level"],
+            "bip44_auto_increment_level": chain_settings["bip44_auto_increment_level"],
+            "bip44_last_hardened_level": chain_settings["bip44_last_hardened_level"],
+            "default_address_encoding": chain_settings["default_address_encoding"],
+            "chain_id": chain_settings["chain_id"],
+            "bip44_purpose_options": chain_settings["bip44_purpose_options"],
+            "fee_price_decimals_for_legibility": chain_settings["fee_price_decimals_for_legibility"],
+        }
+        ret.append(added_chain)
+
+    return ret

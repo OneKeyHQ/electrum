@@ -1,110 +1,102 @@
 from typing import List, Optional, Tuple
 
-from electrum_gui.common.coin import daos, exceptions
-from electrum_gui.common.coin.data import ChainInfo, CoinInfo
-from electrum_gui.common.coin.loader import CHAINS_DICT, COINS_DICT
+from electrum_gui.common.coin import daos, data, exceptions, loader
 from electrum_gui.common.conf import settings
 from electrum_gui.common.provider import manager as provider_manager
 
 
-def get_chain_info(chain_code: str) -> ChainInfo:
+@loader.refresh_chains
+def get_chain_info(chain_code: str) -> data.ChainInfo:
     """
     Get chain info by chain_code
     :param chain_code: chain_code
-    :return: ChainInfo
+    :return: data.ChainInfo
     :raise ChainNotFound: if nothing found by chain_code
     """
-    if chain_code not in CHAINS_DICT:
+    if chain_code not in loader.CHAINS_DICT:
         raise exceptions.ChainNotFound(chain_code)
 
-    return CHAINS_DICT[chain_code]
+    return loader.CHAINS_DICT[chain_code]
 
 
-def get_chains_by_affinity(chain_affinity: str) -> List[ChainInfo]:
+@loader.refresh_chains
+def get_chains_by_affinity(chain_affinity: str) -> List[data.ChainInfo]:
     """
     Get chains by affinity
     :param chain_affinity: chain_affinity used to search the chains
-    :return: list of ChainInfo with the specified chain_affinity
+    :return: list of data.ChainInfo with the specified chain_affinity
     """
-    return [chain_info for chain_info in CHAINS_DICT.values() if chain_info.chain_affinity == chain_affinity]
+    return [chain_info for chain_info in loader.CHAINS_DICT.values() if chain_info.chain_affinity == chain_affinity]
 
 
-def is_chain_enabled(chain_code: str) -> bool:
-    """
-    Check if a specific chain is enabled
-    :param chain_code: chain_code
-    :return: enabled or not
-    """
-    return chain_code in settings.ENABLED_CHAIN_COINS
-
-
-def get_coin_info(coin_code: str, nullable: bool = False) -> Optional[CoinInfo]:
+@loader.refresh_coins
+def get_coin_info(coin_code: str, nullable: bool = False) -> Optional[data.CoinInfo]:
     """
     Get coin info by coin_code
     :param coin_code:  coin_code
     :param nullable: return None if coin not found
-    :return: CoinInfo
+    :return: data.CoinInfo
     :raise CoinNotFound: raise if coin not found and no-nullable
     """
-    coin = COINS_DICT.get(coin_code) or daos.get_coin_info(coin_code)
+    coin = loader.COINS_DICT.get(coin_code) or daos.get_coin_info(coin_code)
     if not coin and not nullable:
         raise exceptions.CoinNotFound(coin_code)
 
     return coin
 
 
-def query_coins_by_codes(coin_codes: List[str]) -> List[CoinInfo]:
+@loader.refresh_coins
+def query_coins_by_codes(coin_codes: List[str]) -> List[data.CoinInfo]:
     """
     Query coins by codes
     :param coin_codes: list of coin codes
-    :return: list of CoinInfo found
+    :return: list of data.CoinInfo found
     """
     coin_codes = set(coin_codes)
-    coins = list(i for i in COINS_DICT.values() if i.code in coin_codes)
+    coins = list(i for i in loader.COINS_DICT.values() if i.code in coin_codes)
     coins.extend(daos.query_coins_by_codes(coin_codes))
 
     coins = _deduplicate_coins(coins)
     return coins
 
 
-def get_all_chains(only_enabled: bool = False) -> List[ChainInfo]:
+@loader.refresh_chains
+def get_all_chains() -> List[data.ChainInfo]:
     """
     Get all chains info
-    :return: list of ChainInfo
+    :return: list of data.ChainInfo
     """
-    chains = CHAINS_DICT.values()
-    if only_enabled:
-        chains = (i for i in chains if is_chain_enabled(i.chain_code))
-
-    return list(chains)
+    return list(loader.CHAINS_DICT.values())
 
 
-def get_all_coins() -> List[CoinInfo]:
+@loader.refresh_coins
+def get_all_coins() -> List[data.CoinInfo]:
     """
     Get all coins info
-    :return: list of CoinInfo
+    :return: list of data.CoinInfo
     """
-    coins = list(COINS_DICT.values())
+    coins = list(loader.COINS_DICT.values())
     coins.extend(daos.get_all_coins())
 
     coins = _deduplicate_coins(coins)
     return coins
 
 
-def get_coins_by_chain(chain_code: str) -> List[CoinInfo]:
+@loader.refresh_coins
+def get_coins_by_chain(chain_code: str) -> List[data.CoinInfo]:
     """
     Get coins by specific chain_code
     :param chain_code: chain_code
-    :return: list of CoinInfo
+    :return: list of data.CoinInfo
     """
-    coins = [i for i in COINS_DICT.values() if i.chain_code == chain_code]
+    coins = [i for i in loader.COINS_DICT.values() if i.chain_code == chain_code]
     coins.extend(daos.get_coins_by_chain(chain_code))
 
     coins = _deduplicate_coins(coins)
     return coins
 
 
-def get_related_coins(coin_code: str) -> Tuple[CoinInfo, CoinInfo, CoinInfo]:
+def get_related_coins(coin_code: str) -> Tuple[data.CoinInfo, data.CoinInfo, data.CoinInfo]:
     """
     Get tuple of (coin info of chain_code, coin info of coin_code, coin info of fee_code) at the same time
     :param coin_code: coin code
@@ -119,6 +111,7 @@ def get_related_coins(coin_code: str) -> Tuple[CoinInfo, CoinInfo, CoinInfo]:
     return chain_coin, coin_info, fee_coin
 
 
+@loader.refresh_coins
 def add_coin(
     chain_code: str,
     token_address: str,
@@ -129,14 +122,14 @@ def add_coin(
 ) -> str:
     coin_code = _generate_coin_code(chain_code, token_address, symbol)
 
-    if coin_code in COINS_DICT:
+    if coin_code in loader.COINS_DICT:
         return coin_code
 
     coin = daos.get_coin_info(coin_code)
 
     if coin is None:
         daos.add_coin(
-            CoinInfo(
+            data.CoinInfo(
                 code=coin_code,
                 chain_code=chain_code,
                 token_address=token_address,
@@ -172,7 +165,7 @@ def _generate_coin_code(chain_code: str, token_address: str, symbol: str) -> str
     return candidate
 
 
-def _deduplicate_coins(coins: List[CoinInfo]) -> List[CoinInfo]:
+def _deduplicate_coins(coins: List[data.CoinInfo]) -> List[data.CoinInfo]:
     codes = set()
     deduplicate_coins = []
 
@@ -186,14 +179,17 @@ def _deduplicate_coins(coins: List[CoinInfo]) -> List[CoinInfo]:
     return deduplicate_coins
 
 
-def query_coins_by_token_addresses(chain_code: str, token_addresses: List[str]) -> List[CoinInfo]:
-    coins = [i for i in COINS_DICT.values() if i.chain_code == chain_code and i.token_address in token_addresses]
+@loader.refresh_coins
+def query_coins_by_token_addresses(chain_code: str, token_addresses: List[str]) -> List[data.CoinInfo]:
+    coins = [i for i in loader.COINS_DICT.values() if i.chain_code == chain_code and i.token_address in token_addresses]
     coins.extend(daos.query_coins_by_token_addresses(chain_code, token_addresses))
     coins = _deduplicate_coins(coins)
     return coins
 
 
-def get_coin_by_token_address(chain_code: str, token_address: str, add_if_missing: bool = False) -> Optional[CoinInfo]:
+def get_coin_by_token_address(
+    chain_code: str, token_address: str, add_if_missing: bool = False
+) -> Optional[data.CoinInfo]:
     coin = None
     coins = query_coins_by_token_addresses(chain_code, [token_address])
 
