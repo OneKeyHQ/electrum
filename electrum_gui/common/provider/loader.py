@@ -4,6 +4,7 @@ from functools import partial
 from typing import Any, Iterable
 
 from electrum_gui.common.coin import manager as coin_manager
+from electrum_gui.common.conf import chains as chains_conf
 from electrum_gui.common.provider import chains, exceptions
 from electrum_gui.common.provider.interfaces import ClientInterface, ProviderInterface
 
@@ -21,17 +22,21 @@ def _load_clients_by_chain(chain_code: str) -> Iterable[ClientInterface]:
     if clients is not None:
         return clients
 
+    clients_confs = chains_conf.get_client_configs(chain_code)
+    if not clients_confs:
+        return []
+
     chain_info = coin_manager.get_chain_info(chain_code)
     chain_affinity = chain_info.chain_affinity
     chain = getattr(chains, chain_affinity, object())
     client_classes = {
         i["class"]: getattr(chain, i["class"])
-        for i in chain_info.clients
+        for i in clients_confs
         if i.get("class") and hasattr(chain, i["class"]) and issubclass(getattr(chain, i["class"]), ClientInterface)
     }
 
     clients = []
-    for config in chain_info.clients:
+    for config in clients_confs:
         class_name = config.get("class")
         if class_name not in client_classes:
             continue

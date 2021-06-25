@@ -144,3 +144,8 @@ def get_coin_codes_by_coingecko_id(cgk_id: str) -> List[str]:
 def get_uniswap_configs(chain_code: str) -> Optional[Dict]:
     _load_data()
     return PRICE["uniswap_configs"].get(chain_code)
+
+
+def get_client_configs(chain_code: str) -> List[Dict[str, str]]:
+    _load_data()
+    return CHAINS.get(chain_code, {}).get("clients") or []
