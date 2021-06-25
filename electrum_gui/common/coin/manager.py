@@ -1,7 +1,6 @@
 from typing import List, Optional, Tuple
 
 from electrum_gui.common.coin import daos, data, exceptions, loader
-from electrum_gui.common.conf import settings
 from electrum_gui.common.provider import manager as provider_manager
 
 
@@ -203,17 +202,3 @@ def get_coin_by_token_address(
         raise exceptions.CoinNotFoundByTokenAddress(token_address)
 
     return coin
-
-
-def legacy_coin_to_chain_code(legacy_coin: str) -> str:
-    # Return chain code for legacy coin
-    prefix = "t" if settings.IS_DEV else ""
-    return f"{prefix}{legacy_coin}"
-
-
-def chain_code_to_legacy_coin(chain_code: str) -> str:
-    # Return legacy coin for chain code
-    if settings.IS_DEV and chain_code.startswith("t"):
-        return chain_code[1:]
-    else:
-        return chain_code

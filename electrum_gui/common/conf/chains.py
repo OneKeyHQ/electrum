@@ -152,6 +152,14 @@ def list_chain_settings(refresh: bool = False) -> List[Dict]:
     return list(CHAINS.values())
 
 
+def get_evm_chains_to_recover() -> List[str]:
+    # See issue #1751
+    if settings.IS_DEV:
+        return [chain_code for chain_code in ("teth", "tbsc", "theco", "tokt") if chain_code in CHAINS]
+    else:
+        return [chain_code for chain_code in ("eth", "bsc", "heco", "okt") if chain_code in CHAINS]
+
+
 def get_coingecko_ids() -> List[str]:
     _load_data()
     return list(PRICE["coingecko_mappings"].keys())
