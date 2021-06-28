@@ -53,6 +53,8 @@ def api_entry(force_version: int = None):
                         pre_run_failure_msg = "Failed to load params."
                     else:
                         kwargs["params"] = params
+                else:
+                    kwargs["params"] = {}
 
             ret = {
                 "status": ResultStatus.FAILED,

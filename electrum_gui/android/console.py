@@ -5066,9 +5066,33 @@ class AndroidCommands(commands.Commands):
 
     @api.api_entry(force_version=api.Version.V3)
     def network_list(self, params):
+        ret = []
+
         refresh = params.get("refresh", False)
-        _ = chains_config.list_chain_settings(refresh=refresh)
-        return []  # TODO
+        chains = chains_config.list_chain_settings(refresh=refresh)
+        for chain in chains:
+            main_coin = coin_manager.get_coin_info(chain["code"])
+            fee_coin = coin_manager.get_coin_info(chain["fee_coin"])
+
+            chain_info = {
+                "impl": chain["impl"],
+                "chain_id": chain["chain_id"],
+                "code": chain["code"],
+                "name": chain["name"],
+                "shortname": chain["shortname"],
+                "testnet_of": chain["testnet_of"],
+                "main_coin_symbol": main_coin.symbol,
+                "main_coin_decimals": main_coin.decimals,
+                "fee_coin_symbol": fee_coin.symbol,
+                "fee_coin_decimals": fee_coin.decimals,
+                "bip44_coin_type": chain["bip44_coin_type"],
+                "hardware_supported": chain["hardware_supported"],
+                "tokens_supported": chain["tokens_supported"],
+                "explorers_urls": chain["explorers"],
+            }
+            ret.append(chain_info)
+
+        return ret
 
 
 all_commands = commands.known_commands.copy()

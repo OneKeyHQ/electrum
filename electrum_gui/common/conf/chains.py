@@ -133,6 +133,8 @@ def _load_data(refresh=False):
                 # Fill with defaults
                 chain_settings.setdefault("chain_id", None)
                 chain_settings.setdefault("qr_code_prefix", chain)
+                chain_settings.setdefault("testnet_of", None)
+                chain_settings.setdefault("explorers", [])
 
                 CHAINS[chain] = chain_settings
                 # Extract price configs
