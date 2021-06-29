@@ -138,7 +138,7 @@ class ALGORestful(ClientInterface, SearchTransactionMixin):
     def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
         try:
             resp = self.restful.post(
-                "/ps2/v2/transaction", data=base64.b64decode(raw_tx), headers={'Content-Type': 'application/x-binary'}
+                "/ps2/v2/transactions", data=base64.b64decode(raw_tx), headers={'Content-Type': 'application/x-binary'}
             )
         except ResponseException as e:
             try:
@@ -161,8 +161,8 @@ class ALGORestful(ClientInterface, SearchTransactionMixin):
 
         return PricesPerUnit(
             fast=EstimatedTimeOnPrice(price=min_fee, time=60),
-            normal=EstimatedTimeOnPrice(price=min_fee, time=90),
-            slow=EstimatedTimeOnPrice(price=min_fee, time=120),
+            normal=EstimatedTimeOnPrice(price=min_fee, time=60),
+            slow=EstimatedTimeOnPrice(price=min_fee, time=60),
         )
 
     def suggested_params(self) -> SuggestedParams:

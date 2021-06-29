@@ -45,7 +45,7 @@ class ALGOProvider(ProviderInterface):
     def fill_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
         params = self.algo_restful.suggested_params()
         params.flat_fee = True
-        params.fee = unsigned_tx.flat_fee or params.min_fee
+        params.fee = params.min_fee
         payload = unsigned_tx.payload.copy()
         tx_input = unsigned_tx.inputs[0] if unsigned_tx.inputs else None
         tx_output = unsigned_tx.outputs[0] if unsigned_tx.outputs else None
@@ -60,7 +60,7 @@ class ALGOProvider(ProviderInterface):
         return unsigned_tx.clone(
             inputs=[tx_input] if tx_input is not None else [],
             outputs=[tx_output] if tx_output is not None else [],
-            flat_fee=params.fee,
+            fee_limit=params.fee,
             payload=payload,
         )
 

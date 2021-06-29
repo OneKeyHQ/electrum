@@ -192,7 +192,6 @@ class UnsignedTx(DataClassMixin):
     nonce: int = None
     fee_limit: int = None
     fee_price_per_unit: int = None
-    flat_fee: int = None
     payload: dict = field(default_factory=dict)
 
 

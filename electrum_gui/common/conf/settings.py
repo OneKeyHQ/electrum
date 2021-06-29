@@ -70,6 +70,7 @@ PRICING_COIN_MAPPING = {
     codes.TBSC: codes.BSC,
     codes.THECO: codes.HECO,
     codes.TOKT: codes.OKT,
+    codes.TALGO: codes.ALGO,
 }  # Map the price of the mainnet coin to the testnet coin
 
 COINGECKO_API_HOST = "https://api.coingecko.com"
@@ -78,6 +79,7 @@ COINGECKO_IDS = {
     codes.BSC: "binancecoin",
     codes.HECO: "huobi-token",
     codes.OKT: "okexchain",
+    codes.ALGO: "algorand",
 }  # Map the coin code to coingecko id
 
 # loading local_settings.py on project root
