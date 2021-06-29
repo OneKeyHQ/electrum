@@ -68,7 +68,210 @@ CHAIN_IMPLS = {
     },
 }
 
-CHAINS = {}
+CHAINS = {
+    # Below are basic example of btc/tbtc/eth/teth
+    #
+    # "btc": {
+    #     # Properties required by app
+    #     "impl": "bitcoin",
+    #     "chain_id": None,
+    #     "code": "btc",
+    #     "name": "Bitcoin",
+    #     "shortname": "BTC",
+    #     "testnet_of": None,
+    #     "fee_coin": "btc",
+    #     "bip44_coin_type": 0,
+    #     "hardware_supported": True,
+    #     "tokens_supported": False,
+    #     "explorers": [
+    #         {
+    #             "name": "https://btc.com/",
+    #             "address": "https://btc.com/{address}",
+    #             "transaction": "https://btc.com/{transaction}",
+    #             "block": "https://btc.com/{block}",
+    #         },
+    #     ],
+    #     # Properties required by python lib
+    #     "qr_code_prefix": "btc",
+    #     "chain_model": "utxo",
+    #     "curve": "secp256k1",
+    #     "chain_affinity": "btc",
+    #     "bip44_target_level": "ADDRESS_INDEX",
+    #     "bip44_auto_increment_level": "ACCOUNT",
+    #     "bip44_last_hardened_level": "ADDRESS_INDEX",
+    #     "default_address_encoding": "P2WPKH-P2SH",
+    #     "bip44_purpose_options": {
+    #         "P2PKH": 44,
+    #         "P2WPKH-P2SH": 49,
+    #         "P2WPKH": 84,
+    #     },
+    #     "fee_price_decimals_for_legibility": 0,
+    #     # Coins
+    #     "coins": [
+    #         {
+    #             "code": "btc",
+    #             "symbol": "BTC",
+    #             "decimals": 8,
+    #         },
+    #     ],
+    # },
+    # "tbtc": {
+    #     # Properties required by app
+    #     "impl": "bitcoin",
+    #     "chain_id": None,
+    #     "code": "tbtc",
+    #     "name": "Bitcoin TestNet3",
+    #     "shortname": "TBTC",
+    #     "testnet_of": "btc",
+    #     "fee_coin": "tbtc",
+    #     "bip44_coin_type": 1,
+    #     "hardware_supported": True,
+    #     "tokens_supported": False,
+    #     "explorers": [
+    #         {
+    #             "name": "https://live.blockcypher.com/",
+    #             "address": "https://live.blockcypher.com/btc-testnet/address/{address}",
+    #             "transaction": "https://live.blockcypher.com/btc-testnet/tx/{transaction}",
+    #             "block": "https://https://live.blockcypher.com/btc-testnet/block/{block}",
+    #         },
+    #     ],
+    #     # Properties required by python lib
+    #     "qr_code_prefix": "btc",
+    #     "chain_model": "utxo",
+    #     "curve": "secp256k1",
+    #     "chain_affinity": "btc",
+    #     "bip44_target_level": "ADDRESS_INDEX",
+    #     "bip44_auto_increment_level": "ACCOUNT",
+    #     "bip44_last_hardened_level": "ADDRESS_INDEX",
+    #     "default_address_encoding": "P2WPKH-P2SH",
+    #     "bip44_purpose_options": {
+    #         "P2PKH": 44,
+    #         "P2WPKH-P2SH": 49,
+    #         "P2WPKH": 84,
+    #     },
+    #     "fee_price_decimals_for_legibility": 0,
+    #     # Coins
+    #     "coins": [
+    #         {
+    #             "code": "tbtc",
+    #             "symbol": "TBTC",
+    #             "decimals": 8,
+    #         },
+    #     ],
+    # },
+    # "eth": {
+    #     # Properties required by app
+    #     "impl": "evm",
+    #     "chain_id": "1",
+    #     "code": "eth",
+    #     "name": "Ethereum",
+    #     "shortname": "ETH",
+    #     "testnet_of": None,
+    #     "fee_coin": "eth",
+    #     "bip44_coin_type": 60,
+    #     "hardware_supported": True,
+    #     "tokens_supported": True,
+    #     "explorers": [
+    #         {
+    #             "name": "https://cn.etherscan.com/",
+    #             "address": "https://cn.etherscan.com/address/{address}",
+    #             "transaction": "https://cn.etherscan.com/tx/{transaction}",
+    #             "block": "https://cn.etherscan.com/block/{block}",
+    #         },
+    #     ],
+    #     # Properties required by python lib
+    #     "qr_code_prefix": "eth",
+    #     "chain_model": "account",
+    #     "curve": "secp256k1",
+    #     "chain_affinity": "eth",
+    #     "bip44_target_level": "ADDRESS_INDEX",
+    #     "bip44_auto_increment_level": "ADDRESS_INDEX",
+    #     "bip44_last_hardened_level": "ACCOUNT",
+    #     "default_address_encoding": None,
+    #     "bip44_purpose_options": {},
+    #     "fee_price_decimals_for_legibility": 9,
+    #     "clients": [
+    #         {
+    #             "class": "Geth",
+    #             "url": "https://rpc.blkdb.cn/eth",
+    #         },
+    #         {
+    #             "class": "Geth",
+    #             "url": "https://eth1.onekey.so/rpc",
+    #         },
+    #     ],
+    #     "prices": {
+    #         [
+    #             {
+    #                 "channel": "coingecko",
+    #                 "code_mappings": {"eth": "ethereum"},
+    #             },
+    #             {
+    #                 "channel": "uniswap",
+    #                 "router_address": "0x7a250d5630b4cf539739df2c5dacb4c659f2488d",
+    #                 "base_token_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    #                 "media_token_addresses": [
+    #                     "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    #                 ],
+    #             },
+    #         ],
+    #     },
+    #     # Coins
+    #     "coins": [
+    #         {
+    #             "code": "eth",
+    #             "symbol": "ETH",
+    #             "decimals": 18,
+    #         },
+    #     ],
+    # },
+    # "teth": {
+    #     # Properties required by app
+    #     "impl": "evm",
+    #     "chain_id": "3",
+    #     "code": "teth",
+    #     "name": "Ethereum ropsten Test Network",
+    #     "shortname": "Ropsten",
+    #     "testnet_of": "eth",
+    #     "fee_coin": "teth",
+    #     "bip44_coin_type": 60,
+    #     "hardware_supported": True,
+    #     "tokens_supported": True,
+    #     "explorers": [
+    #         {
+    #             "name": "https://teth.bitaps.com/",
+    #             "address": "https://teth.bitaps.com/{address}",
+    #             "transaction": "https://teth.bitaps.com/{transaction}",
+    #             "block": "https://teth.bitaps.com/{block}",
+    #         },
+    #     ],
+    #     # Properties required by python lib
+    #     "qr_code_prefix": "eth",
+    #     "chain_model": "account",
+    #     "curve": "secp256k1",
+    #     "chain_affinity": "eth",
+    #     "bip44_target_level": "ADDRESS_INDEX",
+    #     "bip44_auto_increment_level": "ADDRESS_INDEX",
+    #     "bip44_last_hardened_level": "ACCOUNT",
+    #     "default_address_encoding": None,
+    #     "bip44_purpose_options": {},
+    #     "fee_price_decimals_for_legibility": 9,
+    #     "clients": [
+    #         {
+    #             "class": "Geth",
+    #             "url": "https://ropsten.infura.io/v3/f001ce716b6e4a33a557f74df6fe8eff",
+    #         },
+    #     ],
+    #     # Coins
+    #     "coins": [
+    #         {
+    #             "code": "teth",
+    #             "symbol": "TETH",
+    #             "decimals": 18,
+    #         },
+    #     ],
+    # },
+}
 TOKENS = {}
 
 _CONF_FILENAME = "chain_configs.dat"
@@ -232,3 +435,10 @@ def get_added_chains(existing_chain_codes: Set[str]) -> List[Dict]:
         ret.append(added_chain)
 
     return ret
+
+
+try:
+    # Add chains from local settings
+    CHAINS.update(settings.CHAINS)
+except AttributeError:
+    pass
