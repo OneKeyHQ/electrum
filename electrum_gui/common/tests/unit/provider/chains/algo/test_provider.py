@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from electrum_gui.common.provider.chains.algo import ALGOProvider
+from electrum_gui.common.provider.chains.algo import ALGOProvider, ALGORestful
 from electrum_gui.common.provider.chains.algo.sdk.future.transaction import SuggestedParams
 from electrum_gui.common.provider.data import (
     AddressValidation,
@@ -30,6 +30,7 @@ class TestALGOProvider(TestCase):
                 normalized_address="GD64YIY3TWGDMCNPP553DZPPR6LDUSFQOIJVFDPPXWEG3FVOJCCDBBHU5A",
                 display_address="GD64YIY3TWGDMCNPP553DZPPR6LDUSFQOIJVFDPPXWEG3FVOJCCDBBHU5A",
                 is_valid=True,
+                encoding="BASE32",
             ),
             self.provider.verify_address("GD64YIY3TWGDMCNPP553DZPPR6LDUSFQOIJVFDPPXWEG3FVOJCCDBBHU5A"),
         )
@@ -68,7 +69,7 @@ class TestALGOProvider(TestCase):
         )
         self.assertEqual(
             "6KRBCIZBFF2BJHGOROIJ2UUXUU6D5QV7F4XZPV2IHJF2QCKMU7S4ECYHUA",
-            self.provider.pubkey_to_address(verifier=verifier),
+            self.provider.pubkey_to_address(verifier=verifier, encoding="BASE32"),
         )
         verifier.get_pubkey.assert_called_once_with(compressed=False)
 
@@ -90,7 +91,7 @@ class TestALGOProvider(TestCase):
 
         def _client_selector_side_effect(**kwargs):
             instance_required = kwargs.get("instance_required")
-            if instance_required and issubclass(instance_required, ALGOProvider):
+            if instance_required and issubclass(instance_required, ALGORestful):
                 return fake_algo_restful
 
         self.fake_client_selector.side_effect = _client_selector_side_effect

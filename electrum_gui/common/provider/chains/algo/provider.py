@@ -3,7 +3,7 @@ from typing import Dict, Tuple
 
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.provider.chains.algo import ALGORestful
-from electrum_gui.common.provider.chains.algo.sdk import constants, encoding
+from electrum_gui.common.provider.chains.algo import sdk as algo_sdk
 from electrum_gui.common.provider.chains.algo.sdk.future.transaction import PaymentTxn, SignedTransaction
 from electrum_gui.common.provider.data import AddressValidation, SignedTx, UnsignedTx
 from electrum_gui.common.provider.interfaces import ProviderInterface
@@ -21,22 +21,26 @@ class _ALGKey(object):
 
 class ALGOProvider(ProviderInterface):
     def verify_address(self, address: str) -> AddressValidation:
-        _normalized_address, _display_address = "", ""
-        is_valid = encoding.is_valid_address(address)
+        _normalized_address, _display_address, _encoding = "", "", None
+        is_valid = algo_sdk.encoding.is_valid_address(address)
         if is_valid:
-            _normalized_address, _display_address = address, address
+            _normalized_address, _display_address, _encoding = address, address, "BASE32"
         return AddressValidation(
-            normalized_address=_normalized_address, display_address=_display_address, is_valid=is_valid
+            normalized_address=_normalized_address,
+            display_address=_display_address,
+            is_valid=is_valid,
+            encoding=_encoding,
         )
 
-    def pubkey_to_address(self, verifier: VerifierInterface, enc: str = None) -> str:
+    def pubkey_to_address(self, verifier: VerifierInterface, encoding: str = None) -> str:
+        require(encoding == "BASE32")
         pubkey = verifier.get_pubkey(compressed=False)
-        address = encoding.encode_address(pubkey)
+        address = algo_sdk.encoding.encode_address(pubkey)
         return address
 
     @property
     def algo_restful(self) -> ALGORestful:
-        return self.client_selector(instance_required=ALGOProvider)
+        return self.client_selector(instance_required=ALGORestful)
 
     def fill_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
         params = self.algo_restful.suggested_params()
@@ -67,16 +71,15 @@ class ALGOProvider(ProviderInterface):
         require(unsigned_tx.payload.get("txScript") is not None)
 
         algo_key = _ALGKey(signers[from_address])
-
-        txn = encoding.msgpack_encode(unsigned_tx.payload["txScript"])
-        signature = algo_key.sign_msg_hash(constants.txid_prefix + base64.b64decode(txn))
+        txn = algo_sdk.encoding.msgpack_encode(unsigned_tx.payload["txScript"])
+        signature = algo_key.sign_msg_hash(algo_sdk.constants.txid_prefix + base64.b64decode(txn))
 
         signature = base64.b64encode(signature).decode()
         stx = SignedTransaction(unsigned_tx.payload["txScript"], signature, None)
 
         return SignedTx(
             txid=stx.get_txid(),
-            raw_tx=encoding.msgpack_encode(stx),
+            raw_tx=algo_sdk.encoding.msgpack_encode(stx),
         )
 
     def get_token_info_by_address(self, token_address: str) -> Tuple[str, str, int]:
