@@ -342,7 +342,11 @@
         "symbol": "ALGO",
         "name": "algo mainnet",
         "decimals": 6,
-        "icon": "https://onekey-asset.com/assets/algo/algo.png",
+        "icon": "https://onekey-asset.com/assets/algo/algo.png"
+      }
+    ],
+    "clients": [
+      {
         "class": "ALGORestful",
         "url": "https://mainnet-algorand.api.purestake.io",
         "api_keys": [
