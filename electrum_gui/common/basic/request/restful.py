@@ -15,12 +15,14 @@ class RestfulRequest(RestfulInterface):
         self,
         base_url: str,
         timeout: int = 30,  # in seconds
+        headers: dict = None,
         response_jsonlize: bool = True,
         debug_mode: bool = False,
         session_initializer: Callable[[Session], None] = None,
     ):
         self.base_url = base_url
         self.timeout = timeout
+        self.headers = headers
         self.response_jsonlize = response_jsonlize
         self.debug_mode = debug_mode
         self.session = self._new_session()
@@ -56,6 +58,10 @@ class RestfulRequest(RestfulInterface):
         url = urljoin(self.base_url, path)
         method = method.as_str()
         timeout = timeout or self.timeout
+        if self.headers:
+            tmp_headers = self.headers.copy()
+            tmp_headers.update(headers or {})
+            headers = tmp_headers
         args_str = (
             f"url: {url}, "
             f"method: {method}, "

@@ -230,5 +230,39 @@
     "chain_affinity": "cfx",
     "qr_code_prefix": "conflux",
     "chain_id": "1"
+  },
+  {
+    "chain_code": "talgo",
+    "name": "algo testnet",
+    "chain_model": "account",
+    "fee_code": "talgo",
+    "curve": "ed25519",
+    "bip44_coin_type": 283,
+    "bip44_target_level": "ADDRESS_INDEX",
+    "bip44_auto_increment_level": "ADDRESS_INDEX",
+    "bip44_last_hardened_level": "ADDRESS_INDEX",
+    "fee_price_decimals_for_legibility": 0,
+    "default_address_encoding": "BASE32",
+    "coins": [
+      {
+        "code": "talgo",
+        "symbol": "TALGO",
+        "name": "algo testnet",
+        "decimals": 6,
+        "icon": "https://onekey-asset.com/assets/algo/algo.png"
+      }
+    ],
+    "clients": [
+      {
+        "class": "ALGORestful",
+        "url": "https://testnet-algorand.api.purestake.io",
+        "api_keys": [
+          "8jJInqXbv62sgMKKOlP6qaWZeiTAjLij7FarYay5"
+        ]
+      }
+    ],
+    "chain_affinity": "algo",
+    "qr_code_prefix": "algorand",
+    "chain_id": ""
   }
 ]

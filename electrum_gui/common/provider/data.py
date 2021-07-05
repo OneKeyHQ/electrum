@@ -130,6 +130,7 @@ class Transaction(DataClassMixin):
 @dataclass
 class TxPaginate(DataClassMixin):
     start_block_number: int
+    cursor: str = ""
     page_number: int = 1  # start from 1
     items_per_page: int = None
 
