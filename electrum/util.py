@@ -131,8 +131,7 @@ class ReplaceWatchonlyWallet(Exception):
 
 class DustTransaction(exceptions.DustTransaction):
     def __str__(self):
-        return (_("Dust transaction"))
-
+        return _("Dust transaction")
 
 class InvalidPassword(exceptions.InvalidPassword):
     def __str__(self):
@@ -159,7 +158,7 @@ class NotChosenWallet(exceptions.NotChosenWallet):
         return _("You haven't chosen a wallet yet.")
 
 
-class NotSupportExportSeed(Exception):
+class NotSupportExportSeed(exceptions.NotSupportExportSeed):
     def __str__(self):
         return _("Current wallet does not support exporting Mnemonic.")
 
@@ -184,6 +183,31 @@ class UnavailableEthAddr(BaseException):
         return _("Incorrect eth address.")
 
 
+class IncorrectAddress(exceptions.IncorrectAddress):
+    def __str__(self):
+        return _("Incorrect address.")
+
+
+class AddressNotInCurrentWallet(exceptions.AddressNotInCurrentWallet):
+    def __str__(self):
+        return _("The address is not in the current wallet.")
+
+
+class ThisIsWatchOnlyWallet(exceptions.ThisIsWatchOnlyWallet):
+    def __str__(self):
+        return _("This is a watching-only wallet.")
+
+
+class CurWalletNotSuppSigMesg(exceptions.CurWalletNotSuppSigMesg):
+    def __str__(self):
+        return _("Current wallet does not support signature message:{}".format(self.other_info))
+
+
+class ReplaceWatchOnlyWallet(exceptions.ReplaceWatchOnlyWallet):
+    def __str__(self):
+        return "Replace Watch-olny wallet:%s" % self.other_info
+
+
 class UnavaiableHdWallet(Exception):
     def __str__(self):
         return _("Please create HD wallet first.")
@@ -204,12 +228,12 @@ class DerivedWalletLimit(exceptions.DerivedWalletLimit):
         return _("The number of wallets created is limited, currently up to 20 HD wallets can be created.")
 
 
-class FileAlreadyExist(Exception):
+class FileAlreadyExist(exceptions.FileAlreadyExist):
     def __str__(self):
         return _("File already exists.")
 
 
-class FailedGetTx(Exception):
+class FailedGetTx(exceptions.FailedGetTx):
     def __str__(self):
         return _("Failed to get transaction.")
 

@@ -16,7 +16,6 @@ class Version(enum.IntEnum):
 class ResultStatus(enum.IntEnum):
     SUCCESS = 0
     FAILED = 1
-    APP_USED = 2
 
 
 def api_entry(force_version: int = None):
@@ -40,7 +39,7 @@ def api_entry(force_version: int = None):
                     result = func(*args, **kwargs)
                     out = {"status": ResultStatus.SUCCESS, "info": result}
                 except exceptions.OneKeyException as e:
-                    out = {"status": ResultStatus.FAILED, "err_msg_key": e.key}
+                    out = {"status": ResultStatus.FAILED, "err_msg_key": e.key, "other_info": e.other_info}
                 except Exception as e:
                     out = {
                         "status": ResultStatus.FAILED,
