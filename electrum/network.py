@@ -66,7 +66,7 @@ if TYPE_CHECKING:
     from .lnworker import LNGossip
     from .lnwatcher import WatchTower
     from .daemon import Daemon
-
+from electrum_gui.common.basic import exceptions
 
 _logger = get_logger(__name__)
 
@@ -190,7 +190,7 @@ def deserialize_proxy(s: str) -> Optional[dict]:
 class BestEffortRequestFailed(NetworkException): pass
 
 
-class TxBroadcastError(NetworkException):
+class TxBroadcastError(NetworkException, exceptions.TxBroadcastError):
     def get_message_for_gui(self):
         raise NotImplementedError()
 
