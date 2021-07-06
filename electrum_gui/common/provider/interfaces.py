@@ -1,27 +1,14 @@
-from abc import ABC, abstractmethod
+import abc
 from typing import Callable, Dict, List, Optional, Tuple
 
-from electrum_gui.common.coin.data import ChainInfo, CoinInfo
-from electrum_gui.common.provider.data import (
-    UTXO,
-    Address,
-    AddressValidation,
-    ClientInfo,
-    PricesPerUnit,
-    SignedTx,
-    Transaction,
-    TransactionStatus,
-    TxBroadcastReceipt,
-    TxPaginate,
-    UnsignedTx,
-)
-from electrum_gui.common.provider.exceptions import TransactionNotFound
-from electrum_gui.common.secret.interfaces import SignerInterface, VerifierInterface
+from electrum_gui.common.coin import data as coin_data
+from electrum_gui.common.provider import data, exceptions
+from electrum_gui.common.secret import interfaces as secret_interfaces
 
 
-class ClientInterface(ABC):
-    @abstractmethod
-    def get_info(self) -> ClientInfo:
+class ClientInterface(abc.ABC):
+    @abc.abstractmethod
+    def get_info(self) -> data.ClientInfo:
         """
         Get information of client
         :return: ClientInfo
@@ -35,8 +22,8 @@ class ClientInterface(ABC):
         """
         return self.get_info().is_ready
 
-    @abstractmethod
-    def get_address(self, address: str) -> Address:
+    @abc.abstractmethod
+    def get_address(self, address: str) -> data.Address:
         """
         Get address information by address str
         :param address: address
@@ -52,8 +39,8 @@ class ClientInterface(ABC):
         """
         return self.get_address(address).balance
 
-    @abstractmethod
-    def get_transaction_by_txid(self, txid: str) -> Transaction:
+    @abc.abstractmethod
+    def get_transaction_by_txid(self, txid: str) -> data.Transaction:
         """
         Get transaction by txid
         :param txid: transaction hash
@@ -61,7 +48,7 @@ class ClientInterface(ABC):
         :raise: raise TransactionNotFound if target tx not found
         """
 
-    def get_transaction_status(self, txid: str) -> TransactionStatus:
+    def get_transaction_status(self, txid: str) -> data.TransactionStatus:
         """
         Get transaction status by txid
         :param txid: transaction hash
@@ -69,25 +56,25 @@ class ClientInterface(ABC):
         """
         try:
             return self.get_transaction_by_txid(txid).status
-        except TransactionNotFound:
-            return TransactionStatus.UNKNOWN
+        except exceptions.TransactionNotFound:
+            return data.TransactionStatus.UNKNOWN
 
-    @abstractmethod
-    def broadcast_transaction(self, raw_tx: str) -> TxBroadcastReceipt:
+    @abc.abstractmethod
+    def broadcast_transaction(self, raw_tx: str) -> data.TxBroadcastReceipt:
         """
         push transaction to chain
         :param raw_tx: transaction in str
         :return: txid, optional
         """
 
-    @abstractmethod
-    def get_prices_per_unit_of_fee(self) -> PricesPerUnit:
+    @abc.abstractmethod
+    def get_prices_per_unit_of_fee(self) -> data.PricesPerUnit:
         """
         get the price per unit of the fee, likes the gas_price on eth
         :return: price per unit
         """
 
-    def utxo_can_spend(self, utxo: UTXO) -> bool:
+    def utxo_can_spend(self, utxo: data.UTXO) -> bool:
         """
         Check whether the UTXO is unspent
         :param utxo:
@@ -96,9 +83,9 @@ class ClientInterface(ABC):
         raise Exception("Unsupported")
 
 
-class BatchGetAddressMixin(ABC):
-    @abstractmethod
-    def batch_get_address(self, addresses: List[str]) -> List[Address]:
+class BatchGetAddressMixin(abc.ABC):
+    @abc.abstractmethod
+    def batch_get_address(self, addresses: List[str]) -> List[data.Address]:
         """
         Batch to get address information by address str list
         :param addresses: List[address]
@@ -106,12 +93,12 @@ class BatchGetAddressMixin(ABC):
         """
 
 
-class SearchTransactionMixin(ABC):
+class SearchTransactionMixin(abc.ABC):
     def search_txs_by_address(
         self,
         address: str,
-        paginate: Optional[TxPaginate] = None,
-    ) -> List[Transaction]:
+        paginate: Optional[data.TxPaginate] = None,
+    ) -> List[data.Transaction]:
         """
         Search transactions by address
         :param address: address
@@ -123,7 +110,7 @@ class SearchTransactionMixin(ABC):
     def search_txids_by_address(
         self,
         address: str,
-        paginate: Optional[TxPaginate] = None,
+        paginate: Optional[data.TxPaginate] = None,
     ) -> List[str]:
         """
         Search transaction hash by address
@@ -138,9 +125,9 @@ class SearchTransactionMixin(ABC):
         return txids
 
 
-class SearchUTXOMixin(ABC):
-    @abstractmethod
-    def search_utxos_by_address(self, address: str) -> List[UTXO]:
+class SearchUTXOMixin(abc.ABC):
+    @abc.abstractmethod
+    def search_utxos_by_address(self, address: str) -> List[data.UTXO]:
         """
         Search UTXOs by address
         :param address: address
@@ -149,11 +136,11 @@ class SearchUTXOMixin(ABC):
         """
 
 
-class ProviderInterface(ABC):
+class ProviderInterface(abc.ABC):
     def __init__(
         self,
-        chain_info: ChainInfo,
-        coins_loader: Callable[[], List[CoinInfo]],
+        chain_info: coin_data.ChainInfo,
+        coins_loader: Callable[[], List[coin_data.CoinInfo]],
         client_selector: Callable,
     ):
         self.chain_info = chain_info
@@ -164,16 +151,16 @@ class ProviderInterface(ABC):
     def client(self):
         return self.client_selector()
 
-    @abstractmethod
-    def verify_address(self, address: str) -> AddressValidation:
+    @abc.abstractmethod
+    def verify_address(self, address: str) -> data.AddressValidation:
         """
         Check whether the address can be recognized
         :param address: address
         :return: AddressValidation
         """
 
-    @abstractmethod
-    def pubkey_to_address(self, verifier: VerifierInterface, encoding: str = None) -> str:
+    @abc.abstractmethod
+    def pubkey_to_address(self, verifier: secret_interfaces.VerifierInterface, encoding: str = None) -> str:
         """
         Convert pubkey to address
         :param verifier: VerifierInterface
@@ -181,16 +168,18 @@ class ProviderInterface(ABC):
         :return: address
         """
 
-    @abstractmethod
-    def fill_unsigned_tx(self, unsigned_tx: UnsignedTx) -> UnsignedTx:
+    @abc.abstractmethod
+    def fill_unsigned_tx(self, unsigned_tx: data.UnsignedTx) -> data.UnsignedTx:
         """
         Filling unsigned tx as much as possible
         :param unsigned_tx: incomplete UnsignedTx
         :return: filled UnsignedTx
         """
 
-    @abstractmethod
-    def sign_transaction(self, unsigned_tx: UnsignedTx, signers: Dict[str, SignerInterface]) -> SignedTx:
+    @abc.abstractmethod
+    def sign_transaction(
+        self, unsigned_tx: data.UnsignedTx, signers: Dict[str, secret_interfaces.SignerInterface]
+    ) -> data.SignedTx:
         """
         Sign transaction
         :param unsigned_tx: complete UnsignedTx
@@ -198,7 +187,7 @@ class ProviderInterface(ABC):
         :return: SignedTx
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_token_info_by_address(self, token_address: str) -> Tuple[str, str, int]:
         """
         Get the base information (symbol, name, decimals) of a token on the chain.
