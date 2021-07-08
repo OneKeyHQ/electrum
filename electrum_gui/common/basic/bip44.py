@@ -1,5 +1,5 @@
 from enum import IntEnum, unique
-from typing import Optional
+from typing import List, Optional
 
 from electrum_gui.common.basic.functional.require import require
 
@@ -113,3 +113,14 @@ class BIP44Path(object):
             levels.extend([value_filling_if_none] * (target_level - len(levels)))
 
         return self.__class__(*levels, last_hardened_level=self._last_hardened_level)
+
+    @classmethod
+    def from_bip44_int_path(cls, ints: List[int]) -> "BIP44Path":
+        import electrum.bip32
+
+        return cls.from_bip44_path(electrum.bip32.convert_bip32_intpath_to_strpath(ints))
+
+    def to_bip44_int_path(self) -> List[int]:
+        import electrum.bip32
+
+        return electrum.bip32.convert_bip32_path_to_list_of_uint32(self.to_bip44_path())

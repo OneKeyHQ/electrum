@@ -75,7 +75,7 @@ from electrum.wallet import Imported_Wallet, Standard_Wallet, Wallet
 from electrum.wallet_db import WalletDB
 from electrum_gui.android import hardware, helpers, wallet_context
 from electrum_gui.common import the_begging
-from electrum_gui.common.basic import api, exceptions
+from electrum_gui.common.basic import api, bip44, exceptions
 from electrum_gui.common.basic.functional import json_encoders
 from electrum_gui.common.basic.functional import text as text_utils
 from electrum_gui.common.basic.orm import database as orm_database
@@ -91,7 +91,6 @@ from electrum_gui.common.provider.chains.eth.clients import geth as geth_client
 from electrum_gui.common.secret import manager as secret_manager
 from electrum_gui.common.transaction import data as transaction_data
 from electrum_gui.common.transaction import manager as transaction_manager
-from electrum_gui.common.wallet import bip44
 from electrum_gui.common.wallet import manager as wallet_manager
 
 from .create_wallet_info import CreateWalletInfo

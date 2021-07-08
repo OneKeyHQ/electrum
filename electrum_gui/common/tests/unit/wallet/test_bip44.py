@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from electrum_gui.common.wallet.bip44 import BIP44Level, BIP44Path
+from electrum_gui.common.basic.bip44 import BIP44Level, BIP44Path
 
 
 class TestBIP44Path(TestCase):
