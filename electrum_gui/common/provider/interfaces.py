@@ -1,7 +1,9 @@
 import abc
 from typing import Callable, Dict, List, Optional, Tuple
 
+from electrum_gui.common.basic import bip44
 from electrum_gui.common.coin import data as coin_data
+from electrum_gui.common.hardware import interfaces as hardware_interfaces
 from electrum_gui.common.provider import data, exceptions
 from electrum_gui.common.secret import interfaces as secret_interfaces
 
@@ -194,3 +196,57 @@ class ProviderInterface(abc.ABC):
         :param token_address:
         :return: Tuple[str, str, int], token symbol, token name, token decimals
         """
+
+
+class HardwareSupportingMixin(abc.ABC):
+    @abc.abstractmethod
+    def hardware_get_xpub(
+        self,
+        hardware_client: hardware_interfaces.HardwareClientInterface,
+        bip44_path: bip44.BIP44Path,
+        confirm_on_device: bool = False,
+    ) -> str:
+        pass
+
+    @abc.abstractmethod
+    def hardware_get_address(
+        self,
+        hardware_client: hardware_interfaces.HardwareClientInterface,
+        bip44_path: bip44.BIP44Path,
+        confirm_on_device: bool = False,
+    ) -> str:
+        pass
+
+    @abc.abstractmethod
+    def hardware_sign_transaction(
+        self,
+        hardware_client: hardware_interfaces.HardwareClientInterface,
+        bip44_path_of_signers: Dict[str, bip44.BIP44Path],
+        unsigned_tx: data.UnsignedTx,
+    ) -> data.SignedTx:
+        """
+        Sign transaction
+        :param hardware_client: client of hardware device
+        :param bip44_path_of_signers: mapping of signer address to bip44 path
+        :param unsigned_tx: complete UnsignedTx
+        :return: SignedTx
+        """
+
+    @abc.abstractmethod
+    def hardware_sign_message(
+        self,
+        hardware_client: hardware_interfaces.HardwareClientInterface,
+        signer_bip44_path: bip44.BIP44Path,
+        message: str,
+    ) -> str:
+        pass
+
+    @abc.abstractmethod
+    def hardware_verify_message(
+        self,
+        hardware_client: hardware_interfaces.HardwareClientInterface,
+        address: str,
+        message: str,
+        signature: str,
+    ) -> bool:
+        pass

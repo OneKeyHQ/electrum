@@ -1,6 +1,6 @@
 import functools
 import time
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Tuple, Union
 
 import eth_utils
 
@@ -205,7 +205,7 @@ class Geth(ClientInterface, BatchGetAddressMixin):
     def is_contract(self, address: str) -> bool:
         return len(self.get_contract_code(address)) > 0
 
-    def get_token_info_by_address(self, token_address: str) -> str:
+    def get_token_info_by_address(self, token_address: str) -> Tuple[str, str, int]:
         # >>> eth_utils.keccak("symbol()".encode())[:4].hex()
         # '95d89b41'
         # >>> eth_utils.keccak("name()".encode())[:4].hex()

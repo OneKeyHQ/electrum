@@ -1,7 +1,11 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 import requests
 
+from electrum_gui.common.basic import bip44
+from electrum_gui.common.basic.functional.require import require
+from electrum_gui.common.hardware import interfaces as hardware_interfaces
+from electrum_gui.common.hardware import manager as hardware_manager
 from electrum_gui.common.provider import data, exceptions, interfaces, loader
 from electrum_gui.common.secret import interfaces as secret_interfaces
 
@@ -127,3 +131,79 @@ def get_client_by_chain(chain_code: str, instance_required: Any = None) -> inter
 
 def get_provider_by_chain(chain_code: str) -> interfaces.ProviderInterface:
     return loader.get_provider_by_chain(chain_code)
+
+
+def _require_special_provider(chain_code: str, require_type: Type) -> Any:
+    provider = loader.get_provider_by_chain(chain_code)
+    require(
+        isinstance(provider, require_type),
+        NotImplementedError(f"{provider} not yet implemented {require_type}"),
+    )
+    return provider
+
+
+def _ensure_provider_and_hardware_client(
+    chain_code: str, hardware_device_path: str
+) -> Tuple[interfaces.HardwareSupportingMixin, hardware_interfaces.HardwareClientInterface]:
+    provider = _require_special_provider(chain_code, interfaces.HardwareSupportingMixin)
+    hardware_client = hardware_manager.get_client(hardware_device_path)
+    return provider, hardware_client
+
+
+def _ensure_bip44_path(bip44_path: Union[str, bip44.BIP44Path]) -> bip44.BIP44Path:
+    return bip44.BIP44Path.from_bip44_path(bip44_path) if isinstance(bip44_path, str) else bip44_path
+
+
+def hardware_get_xpub(
+    chain_code: str,
+    hardware_device_path: str,
+    bip44_path: Union[str, bip44.BIP44Path],
+    confirm_on_device: bool = False,
+) -> str:
+    provider, hardware_client = _ensure_provider_and_hardware_client(chain_code, hardware_device_path)
+    bip44_path = _ensure_bip44_path(bip44_path)
+    return provider.hardware_get_xpub(hardware_client, bip44_path, confirm_on_device=confirm_on_device)
+
+
+def hardware_get_address(
+    chain_code: str,
+    hardware_device_path: str,
+    bip44_path: Union[str, bip44.BIP44Path],
+    confirm_on_device: bool = False,
+) -> str:
+    provider, hardware_client = _ensure_provider_and_hardware_client(chain_code, hardware_device_path)
+    bip44_path = _ensure_bip44_path(bip44_path)
+    return provider.hardware_get_address(hardware_client, bip44_path, confirm_on_device=confirm_on_device)
+
+
+def hardware_sign_transaction(
+    chain_code: str,
+    hardware_device_path: str,
+    bip44_path_of_signers: Dict[str, Union[str, bip44.BIP44Path]],
+    unsigned_tx: data.UnsignedTx,
+) -> data.SignedTx:
+    provider, hardware_client = _ensure_provider_and_hardware_client(chain_code, hardware_device_path)
+    bip44_path_of_signers = {address: _ensure_bip44_path(path) for address, path in bip44_path_of_signers.items()}
+    return provider.hardware_sign_transaction(hardware_client, bip44_path_of_signers, unsigned_tx)
+
+
+def hardware_sign_message(
+    chain_code: str,
+    hardware_device_path: str,
+    signer_bip44_path: Union[str, bip44.BIP44Path],
+    message: str,
+) -> str:
+    provider, hardware_client = _ensure_provider_and_hardware_client(chain_code, hardware_device_path)
+    signer_bip44_path = _ensure_bip44_path(signer_bip44_path)
+    return provider.hardware_sign_message(hardware_client, signer_bip44_path, message)
+
+
+def hardware_verify_message(
+    chain_code: str,
+    hardware_device_path: str,
+    address: str,
+    message: str,
+    signature: str,
+) -> bool:
+    provider, hardware_client = _ensure_provider_and_hardware_client(chain_code, hardware_device_path)
+    return provider.hardware_verify_message(hardware_client, address, message, signature)
