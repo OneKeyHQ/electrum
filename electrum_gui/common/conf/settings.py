@@ -1,7 +1,14 @@
-from os import path
+from os import environ, path
+from typing import Literal
 
 from electrum_gui.common.coin import codes
 from electrum_gui.common.conf.utils import get_data_dir
+
+runtime: Literal["android", "ios", "others"] = "others"
+if "iOS_DATA" in environ:
+    runtime = "ios"
+elif "ANDROID_DATA" in environ:
+    runtime = "android"
 
 try:
     from electrum import constants
