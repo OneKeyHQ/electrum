@@ -339,6 +339,12 @@ def _load_data(refresh=False):
                 chain_settings.setdefault("testnet_of", None)
                 chain_settings.setdefault("explorers", [])
 
+                if chain == "tbtc":  # Set tbtc chain and coin as btc
+                    chain = "btc"
+                    chain_settings["code"] = "btc"
+                    chain_settings["fee_coin"] = "btc"
+                    chain_settings["coins"][0]["code"] = "btc"
+
                 CHAINS[chain] = chain_settings
                 # Extract price configs
                 for price_config in chain_settings.get("prices", []):
