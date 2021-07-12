@@ -9,6 +9,7 @@ from typing import Iterable, List, Tuple, Union
 
 import eth_account
 
+from electrum_gui.common.basic.bip44 import BIP44Level, BIP44Path
 from electrum_gui.common.basic.functional.require import require
 from electrum_gui.common.basic.functional.timing import timing_logger
 from electrum_gui.common.basic.orm.database import db
@@ -22,7 +23,6 @@ from electrum_gui.common.secret.data import PubKeyType
 from electrum_gui.common.transaction import manager as transaction_manager
 from electrum_gui.common.transaction.data import TxActionStatus
 from electrum_gui.common.wallet import daos, exceptions, utils
-from electrum_gui.common.wallet.bip44 import BIP44Level, BIP44Path
 from electrum_gui.common.wallet.data import WalletType
 from electrum_gui.common.wallet.handlers import get_handler_by_chain_model
 from electrum_gui.common.wallet.models import AccountModel, AssetModel, WalletModel
