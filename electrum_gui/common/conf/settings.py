@@ -1,6 +1,5 @@
 from os import path
 
-from electrum_gui.common.coin import codes
 from electrum_gui.common.conf.utils import get_data_dir
 
 try:
@@ -45,43 +44,8 @@ DB_MODULES = [
     "electrum_gui.common.wallet",
 ]
 
-ENABLED_CHAIN_COINS = (
-    [
-        codes.TBTC,
-        codes.TETH,
-        codes.TBSC,
-        codes.THECO,
-        codes.TOKT,
-    ]
-    if IS_DEV
-    else [
-        codes.BTC,
-        codes.ETH,
-        codes.BSC,
-        codes.HECO,
-        codes.OKT,
-    ]
-)
-
-
-PRICING_COIN_MAPPING = {
-    codes.TBTC: codes.BTC,
-    codes.TETH: codes.ETH,
-    codes.TBSC: codes.BSC,
-    codes.THECO: codes.HECO,
-    codes.TOKT: codes.OKT,
-}  # Map the price of the mainnet coin to the testnet coin
-
-COINGECKO_API_HOST = "https://api.coingecko.com"
-COINGECKO_IDS = {
-    codes.ETH: "ethereum",
-    codes.BSC: "binancecoin",
-    codes.HECO: "huobi-token",
-    codes.OKT: "okexchain",
-}  # Map the coin code to coingecko id
-
 # loading local_settings.py on project root
 try:
-    from local_settings import *  # noqa                                                                                                                               |~
+    from local_settings import *  # noqa
 except ImportError:
     pass

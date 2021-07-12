@@ -62,6 +62,13 @@ class TestCoinManager(TestCase):
             self.coin_db_bsc_usdc,
         )
 
+        for single_mock in [
+            patch("electrum_gui.common.conf.chains.get_added_coins", Mock(return_value=[])),
+            patch("electrum_gui.common.conf.chains.get_added_chains", Mock(return_value=[])),
+        ]:
+            single_mock.start()
+            self.addCleanup(single_mock.stop)
+
     @classmethod
     def tearDownClass(cls) -> None:
         loader.CHAINS_DICT.clear()
@@ -82,14 +89,6 @@ class TestCoinManager(TestCase):
         self.assertEqual([self.chain_btc], manager.get_chains_by_affinity("btc"))
         self.assertEqual([self.chain_eth, self.chain_bsc], manager.get_chains_by_affinity("eth"))
         self.assertEqual([], manager.get_chains_by_affinity("heco"))  # empty as default
-
-    @patch("electrum_gui.common.coin.manager.settings")
-    def test_is_chain_enabled(self, fake_settings):
-        fake_settings.ENABLED_CHAIN_COINS = ["btc", "eth"]
-
-        self.assertTrue(manager.is_chain_enabled("btc"))
-        self.assertTrue(manager.is_chain_enabled("eth"))
-        self.assertFalse(manager.is_chain_enabled("bsc"))
 
     def test_get_coin_info(self):
         self.assertEqual(self.coin_btc, manager.get_coin_info("btc"))
@@ -117,12 +116,8 @@ class TestCoinManager(TestCase):
             _order_coins(manager.query_coins_by_codes(["btc", "eth", "eth_usdt", "bsc", "eth_usdc", "bsc_usdc"])),
         )
 
-    @patch("electrum_gui.common.coin.manager.settings")
-    def test_get_all_chains(self, fake_settings):
-        fake_settings.ENABLED_CHAIN_COINS = ["btc", "eth"]
-
+    def test_get_all_chains(self):
         self.assertEqual([self.chain_btc, self.chain_eth, self.chain_bsc, self.chain_ont], manager.get_all_chains())
-        self.assertEqual([self.chain_btc, self.chain_eth], manager.get_all_chains(only_enabled=True))
 
     def test_get_all_coins(self):
         self.assertEqual(
@@ -236,25 +231,3 @@ class TestCoinManager(TestCase):
                     ),
                     manager.get_coin_by_token_address("eth", "0x13", add_if_missing=True),
                 )
-
-    @patch("electrum_gui.common.coin.manager.settings")
-    def test_legacy_coin_to_chain_code(self, fake_settings):
-        with self.subTest("in DEV model"):
-            fake_settings.IS_DEV = True
-            self.assertEqual("teth", manager.legacy_coin_to_chain_code("eth"))
-
-        with self.subTest("in Release model"):
-            fake_settings.IS_DEV = False
-            self.assertEqual("eth", manager.legacy_coin_to_chain_code("eth"))
-
-    @patch("electrum_gui.common.coin.manager.settings")
-    def test_chain_code_to_legacy_coin(self, fake_settings):
-        with self.subTest("in DEV model"):
-            fake_settings.IS_DEV = True
-            self.assertEqual("eth", manager.chain_code_to_legacy_coin("teth"))
-            self.assertEqual("eth", manager.chain_code_to_legacy_coin("eth"))  # Ignored if it does not start with 't'
-
-        with self.subTest("is Release model"):
-            fake_settings.IS_DEV = False
-            self.assertEqual("eth", manager.chain_code_to_legacy_coin("eth"))
-            self.assertEqual("teth", manager.chain_code_to_legacy_coin("teth"))  # Meaningless, only for testing

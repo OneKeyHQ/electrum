@@ -12,6 +12,9 @@ def initialize():
 
     migrate_manager.migrating(db)
 
+    from electrum_gui.common.conf import chains as chains_conf
+    chains_conf._load_data()
+
     # connect ticker signal here before start
     # example ticker.signals.ticker_signal.connect(my_ticker_callback)
     from electrum_gui.common.basic import ticker

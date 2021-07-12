@@ -11,27 +11,23 @@ class TestUniswap(TestCase):
     def setUp(self) -> None:
         self.uniswap = Uniswap()
 
+    @patch("electrum_gui.common.conf.chains.get_uniswap_configs")
     @patch("electrum_gui.common.price.channels.uniswap.coin_manager")
     @patch("electrum_gui.common.price.channels.uniswap.provider_manager")
-    def test_pricing(self, fake_provider_manager, fake_coin_manager):
-        fake_coin_manager.get_chain_info.side_effect = lambda i: {
-            "eth": Mock(
-                chain_code="eth",
-                dexes={
-                    "ImplUniswapCompatible": {
-                        "router_address": "0x_fake_router_address",
-                        "base_token_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-                        "media_token_addresses": [
-                            "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-                            "0xdac17f958d2ee523a2206206994597c13d831ec7",
-                            "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-                            "0x6b175474e89094c44da98b954eedeac495271d0f",
-                        ],
-                    }
-                },
-            ),
-            "bsc": Mock(dexes={}),
-        }.get(i)
+    def test_pricing(self, fake_provider_manager, fake_coin_manager, fake_get_uniswap_configs):
+        mapping = {
+            "eth": {
+                "router_address": "0x_fake_router_address",
+                "base_token_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+                "media_token_addresses": [
+                    "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+                    "0xdac17f958d2ee523a2206206994597c13d831ec7",
+                    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+                    "0x6b175474e89094c44da98b954eedeac495271d0f",
+                ],
+            },
+        }
+        fake_get_uniswap_configs.side_effect = lambda chain_code: mapping.get(chain_code)
         fake_coin_manager.get_coin_info.return_value = Mock(chain_code="eth", code="eth", decimals=18)
 
         fake_client = Mock()
@@ -76,7 +72,8 @@ class TestUniswap(TestCase):
             ),
         )
 
-        fake_coin_manager.get_chain_info.assert_has_calls([call("bsc"), call("eth")])
+        fake_get_uniswap_configs.assert_has_calls([call("bsc"), call("eth")])
+        self.assertEqual(2, fake_get_uniswap_configs.call_count)
         fake_coin_manager.get_coin_info.assert_called_once_with("eth")
 
         fake_provider_manager.get_client_by_chain.assert_called_once_with("eth", instance_required=geth_client.Geth)

@@ -1,35 +1,43 @@
-import json
-import os
-from typing import Dict, List, Tuple
+import functools
 
-from electrum_gui.common.coin.data import ChainInfo, ChainModel, CoinInfo
-from electrum_gui.common.conf import settings
-from electrum_gui.common.secret.data import CurveEnum
+from electrum_gui.common.coin import data
+from electrum_gui.common.conf import chains as chains_conf
+from electrum_gui.common.secret import data as secret_data
 
-
-def _load_config(json_name: str) -> Tuple[Dict[str, ChainInfo], Dict[str, CoinInfo]]:
-    configs: List[dict] = json.loads(open(json_name).read())
-    chains, coins = {}, {}
-
-    for chain_config in configs:
-        coins_config = chain_config.pop("coins")
-        chain_config["chain_model"] = ChainModel[chain_config["chain_model"].upper()]
-        chain_config["curve"] = CurveEnum[chain_config["curve"].upper()]
-        chain_info = ChainInfo(**chain_config)
-        chains[chain_info.chain_code] = chain_info
-        coins.update({i["code"]: CoinInfo(chain_code=chain_info.chain_code, **i) for i in coins_config})
-
-    return chains, coins
+CHAINS_DICT = {}
+COINS_DICT = {}
 
 
-_BASE_PATH = os.path.dirname(__file__)
+def refresh_coins(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        global COINS_DICT
+        added_coins = chains_conf.get_added_coins(set(COINS_DICT.keys()))
+        if added_coins:
+            for coin in added_coins:
+                coininfo = data.CoinInfo(**coin)
+                COINS_DICT.setdefault(coininfo.code, coininfo)
 
-if settings.IS_DEV:
-    _MAINNET_CHAINS, _MAINNET_COINS = {}, {}
-    _TESTNET_CHAINS, _TESTNET_COINS = _load_config(os.path.join(_BASE_PATH, "./configs/testnet_chains.json"))
-else:
-    _MAINNET_CHAINS, _MAINNET_COINS = _load_config(os.path.join(_BASE_PATH, "./configs/chains.json"))
-    _TESTNET_CHAINS, _TESTNET_COINS = {}, {}
+        return func(*args, **kwargs)
 
-CHAINS_DICT = {**_MAINNET_CHAINS, **_TESTNET_CHAINS}
-COINS_DICT = {**_MAINNET_COINS, **_TESTNET_COINS}
+    return wrapper
+
+
+def refresh_chains(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        global CHAINS_DICT
+        added_chains = chains_conf.get_added_chains(set(CHAINS_DICT.keys()))
+        if added_chains:
+            for chain in added_chains:
+                chain.update(
+                    {
+                        "chain_model": data.ChainModel[chain["chain_model"].upper()],
+                        "curve": secret_data.CurveEnum[chain["curve"].upper()],
+                    }
+                )
+                chaininfo = data.ChainInfo(**chain)
+                CHAINS_DICT.setdefault(chaininfo.chain_code, chaininfo)
+        return func(*args, **kwargs)
+
+    return wrapper

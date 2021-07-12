@@ -7,6 +7,7 @@ import eth_abi
 
 from electrum_gui.common.coin import data as coin_data
 from electrum_gui.common.coin import manager as coin_manager
+from electrum_gui.common.conf import chains as chains_conf
 from electrum_gui.common.price import data, interfaces
 from electrum_gui.common.provider import manager as provider_manager
 from electrum_gui.common.provider.chains.eth.clients import geth as geth_client
@@ -32,13 +33,13 @@ def _extract_price_from_resp(resp: str) -> int:
 
 
 def _obtain_prices_from_dex(
-    chain: coin_data.ChainInfo,
+    chain_code: str,
     router_address: str,
     base_divisor: int,
     coins: List[Tuple[coin_data.CoinInfo, int]],
     call_data: List[str],
 ) -> Iterable[data.YieldedPrice]:
-    client = provider_manager.get_client_by_chain(chain.chain_code, instance_required=geth_client.Geth)
+    client = provider_manager.get_client_by_chain(chain_code, instance_required=geth_client.Geth)
 
     resp_iterator = iter(client.call_contract(router_address, call_data))
     for coin, paths_count in coins:
@@ -52,7 +53,7 @@ def _obtain_prices_from_dex(
             / base_divisor
         )
         if price > 0:
-            yield data.YieldedPrice(coin_code=coin.code, unit=chain.chain_code, price=price)
+            yield data.YieldedPrice(coin_code=coin.code, unit=chain_code, price=price)
 
     yield from tuple()
 
@@ -61,9 +62,7 @@ class Uniswap(interfaces.PriceChannelInterface):
     def pricing(self, coins: Iterable[coin_data.CoinInfo]) -> Iterable[data.YieldedPrice]:
         coins = sorted(coins, key=operator.attrgetter("chain_code"))
         for chain_code, coins_on_chain in itertools.groupby(coins, operator.attrgetter("chain_code")):
-            chain = coin_manager.get_chain_info(chain_code)
-
-            uniswap_config = chain.dexes.get("ImplUniswapCompatible")
+            uniswap_config = chains_conf.get_uniswap_configs(chain_code)
             if uniswap_config is None:
                 continue
 
@@ -75,7 +74,7 @@ class Uniswap(interfaces.PriceChannelInterface):
                 itertools.product(media_token_addresses, [base_token_address])
             )
 
-            base_coin = coin_manager.get_coin_info(chain.chain_code)
+            base_coin = coin_manager.get_coin_info(chain_code)
             base_divisor = 10 ** base_coin.decimals
 
             total_paths_count = 0
@@ -99,7 +98,7 @@ class Uniswap(interfaces.PriceChannelInterface):
                 total_paths_count += paths_count_of_this_coin
                 if total_paths_count >= BATCH_SIZE:
                     yield from _obtain_prices_from_dex(
-                        chain, router_address, base_divisor, coins_in_one_request, data_in_one_request
+                        chain_code, router_address, base_divisor, coins_in_one_request, data_in_one_request
                     )
                     total_paths_count = 0
                     coins_in_one_request = []
@@ -107,7 +106,7 @@ class Uniswap(interfaces.PriceChannelInterface):
 
             if data_in_one_request:
                 yield from _obtain_prices_from_dex(
-                    chain, router_address, base_divisor, coins_in_one_request, data_in_one_request
+                    chain_code, router_address, base_divisor, coins_in_one_request, data_in_one_request
                 )
             else:
                 yield from tuple()

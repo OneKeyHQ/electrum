@@ -6,18 +6,18 @@ import peewee
 from electrum_gui.common.basic.request.restful import RestfulRequest
 from electrum_gui.common.coin import codes
 from electrum_gui.common.coin.data import CoinInfo
-from electrum_gui.common.conf import settings
+from electrum_gui.common.conf import chains as chains_conf
 from electrum_gui.common.price.data import YieldedPrice
 from electrum_gui.common.price.interfaces import PriceChannelInterface
 
 logger = logging.getLogger("app.price")
 
+API_HOST = "https://api.coingecko.com"
+
 
 class Coingecko(PriceChannelInterface):
-    COINGECKO_ID_TO_CODES = None
-
-    def __init__(self, url: str):
-        self.restful = RestfulRequest(url)
+    def __init__(self):
+        self.restful = RestfulRequest(API_HOST)
 
     def fetch_btc_to_fiats(self) -> Iterable[YieldedPrice]:
         resp = self.restful.get("/api/v3/exchange_rates")
@@ -31,11 +31,6 @@ class Coingecko(PriceChannelInterface):
         if not cgk_ids:
             return
 
-        if self.COINGECKO_ID_TO_CODES is None:
-            self.COINGECKO_ID_TO_CODES = {cgk_id: code for code, cgk_id in settings.COINGECKO_IDS.items()}
-
-        mapping = self.COINGECKO_ID_TO_CODES
-
         resp = (
             self.restful.get(
                 "/api/v3/coins/markets",
@@ -46,13 +41,13 @@ class Coingecko(PriceChannelInterface):
             )
             or ()
         )
-
-        rates = (rate for rate in resp if rate and rate.get("id") in mapping)
-        rates = (
-            YieldedPrice(coin_code=mapping[rate.get("id")], unit=currency, price=rate.get("current_price") or 0)
-            for rate in rates
-        )
-        yield from rates
+        for rate in resp:
+            if not rate:
+                continue
+            coingecko_id = rate.get("id")
+            coin_codes = chains_conf.get_coin_codes_by_coingecko_id(coingecko_id)
+            for coin_code in coin_codes:
+                yield YieldedPrice(coin_code=coin_code, unit=currency, price=rate.get("current_price") or 0)
 
     def fetch_erc20_to_currency(self, erc20_coins: List[CoinInfo], currency: str) -> Iterable[YieldedPrice]:
         if not erc20_coins:
@@ -80,22 +75,19 @@ class Coingecko(PriceChannelInterface):
             yield from rates
 
     def pricing(self, coins: Iterable[CoinInfo]) -> Iterable[YieldedPrice]:
-        coin_dict = {settings.PRICING_COIN_MAPPING.get(i.code, i.code): i for i in coins}
+        try:
+            yield from self.fetch_btc_to_fiats()
+        except Exception as e:
+            logger.exception("Error in fetching fiat rate of btc.", e)
 
-        if codes.BTC in coin_dict:
-            try:
-                yield from self.fetch_btc_to_fiats()
-            except Exception as e:
-                logger.exception("Error in fetching fiat rate of btc.", e)
-
-        cgk_ids = [cgk_id for code, cgk_id in settings.COINGECKO_IDS.items() if code in coin_dict]
+        cgk_ids = chains_conf.get_coingecko_ids()
         if cgk_ids:
             try:
                 yield from self.fetch_cgk_ids_to_currency(cgk_ids, currency=codes.BTC)
             except Exception as e:
                 logger.exception("Error in fetching btc rate of config cgk ids.", e)
 
-        erc20_coins = [coin for coin in coin_dict.values() if coin.token_address and coin.chain_code == codes.ETH]
+        erc20_coins = [coin for coin in coins if coin.token_address and coin.chain_code == codes.ETH]
         if erc20_coins:
             try:
                 yield from self.fetch_erc20_to_currency(erc20_coins, currency=codes.BTC)
