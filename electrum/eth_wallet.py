@@ -1391,7 +1391,10 @@ class Eth_Wallet(object):
         self, db: 'wallet_db.WalletDB', storage: Optional[storage.WalletStorage], *, config: simple_config.SimpleConfig
     ):
         wallet_type = db.get('wallet_type')
-        WalletClass = Eth_Wallet.wallet_class(wallet_type)
+        if wallet_type.endswith("imported"):
+            WalletClass = Imported_Eth_Wallet
+        else:
+            WalletClass = Standard_Eth_Wallet
         wallet = WalletClass(db, storage, config=config)
         return wallet
 
