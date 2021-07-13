@@ -10,13 +10,12 @@ from typing import Any, Optional
 from trezorlib import customer_ui as trezorlib_customer_ui
 from trezorlib import exceptions as trezor_exceptions
 from trezorlib import firmware as trezor_firmware
-from trezorlib.cli import trezorctl
 
 from electrum import plugin as electrum_plugin
 from electrum.i18n import _
 from electrum.plugins.trezor import clientbase as trezor_clientbase
 from electrum_gui.android import firmware_sign_nordic_dfu
-from electrum_gui.common.basic import api
+from electrum_gui.common.basic import api, exceptions
 
 TREZOR_PLUGIN_NAME = 'trezor'
 
@@ -369,6 +368,7 @@ class TrezorManager(object):
             client = self._get_client(path=path)
         return json.dumps(client.features_dict)
 
+    @api.api_entry(force_version=api.Version.V2)
     def firmware_update(
         self,
         filename: str,
@@ -384,10 +384,15 @@ class TrezorManager(object):
         Note : Device must be in bootloader mode.
         :param filename: full path to local upgrade file
         :param path: NFC/android_usb/bluetooth as str
+        :param fingerprint: use default
+        :param skip_check: use default
+        :param raw: if raw data passed
+        :param dry_run: use default
+        :param type: use to different nrf and stm32, "" means stm32
         :return: None
         """
         if not filename:
-            raise BaseException(("Please give the file name"))
+            raise BaseException("Please give the file name")
 
         try:
             if type:
@@ -399,9 +404,18 @@ class TrezorManager(object):
             raise BaseException(e)
 
         client = self._get_client(path)
-        if not client.reboot_to_bootloader():
-            raise BaseException(_("Switch the device to bootloader mode."))
-
+        try:
+            is_bootloader = client.reboot_to_bootloader()
+        except Exception as e:
+            if "PIN" in str(e):
+                raise exceptions.HardwareInvalidPIN() from e
+            else:
+                raise exceptions.HardwareUpdateFailed() from e
+        else:
+            if not is_bootloader:
+                # reboot returned normal with initial state
+                raise exceptions.HardwareUpdateFailed(_("Upgrade failed due to invalid state"))
+        # raw is always False currently
         if raw:
             return _do_firmware_update(client, data, type, dry_run=dry_run)
 
@@ -412,28 +426,7 @@ class TrezorManager(object):
             data = data[256:]
 
         if skip_check:
-            return _do_firmware_update(client, data, type, dry_run=dry_run)
-
-        try:
-            version, fw = trezor_firmware.parse(data)
-        except Exception as e:
-            raise BaseException(e)
-
-        version_too_low = (
-            bootloader_onev2 and version == trezor_firmware.FirmwareFormat.TREZOR_ONE and not fw.embedded_onev2
-        )
-        need_upgrade = bootloader_onev2 and version == trezor_firmware.FirmwareFormat.TREZOR_ONE_V2
-
-        if version_too_low:
-            raise BaseException(_("Your device's firmware version is too low. Aborting."))
-        elif need_upgrade:
-            raise BaseException(_("You need to upgrade the bootloader immediately."))
-
-        compatible_versions = trezorctl.ALLOWED_FIRMWARE_FORMATS.get(client.features.major_version)
-        if compatible_versions is None:
-            raise BaseException(_("Trezorctl doesn't know your device version. Aborting."))
-        elif version not in compatible_versions:
-            raise BaseException(_("Firmware not compatible with your equipment, Aborting."))
-
-        trezorctl.validate_firmware(version, fw, fingerprint)
-        return _do_firmware_update(client, data, type, dry_run=dry_run)
+            try:
+                _do_firmware_update(client, data, type, dry_run=dry_run)
+            except Exception as e:
+                raise exceptions.HardwareUpdateFailed() from e

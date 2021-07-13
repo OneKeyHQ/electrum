@@ -451,13 +451,11 @@ class TrezorClientBase(HardwareClientBase, Logger):
         :return: True if the device enters or is already in bootloader mode,
                  False otherwise.
         """
-        if not self.features.bootloader_mode:
-            try:
-                trezorlib.device.reboot(self.client)
-            except Exception:
-                return False
-            else:
-                time.sleep(2)
-                self.client.init_device()
-
-        return self.features.bootloader_mode
+        if self.features.bootloader_mode:
+            return True
+        else:
+            trezorlib.device.reboot(self.client)
+            time.sleep(2)
+            # this line would refresh features
+            self.client.init_device()
+            return self.features.bootloader_mode

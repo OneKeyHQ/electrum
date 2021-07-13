@@ -64,3 +64,14 @@ class NotChosenWallet(OneKeyException):
 
 class DustTransaction(OneKeyException):
     key = "msg__dust_transaction"
+
+
+#####################################
+#      hardware exceptions          #
+#####################################
+class HardwareInvalidPIN(OneKeyException):
+    key = "msg__incorrect_pin_please_try_again"
+
+
+class HardwareUpdateFailed(OneKeyException):
+    key = "msg__update_failed_please_try_again"
